@@ -21,7 +21,8 @@ const slides = [
     title: "PLAYAS DORADAS",
     description:
       "Relájate en arenas cálidas y aguas cristalinas donde el sol nunca deja de brillar.",
-    image: "https://placehold.co/1920x1080?text=Playas+Doradas", // Placeholder
+    image:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Placeholder
     href: "/playas-doradas",
   },
   {
@@ -29,7 +30,8 @@ const slides = [
     title: "BOSQUES ENCANTADOS",
     description:
       "Adéntrate en la naturaleza más pura y conecta con el entorno en una experiencia única.",
-    image: "https://placehold.co/1920x1080?text=Bosques+Encantados", // Placeholder
+    image:
+      "https://images.unsplash.com/photo-1470770841072-f978cf9d4ff1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Placeholder
     href: "/bosques-encantados",
   },
 ];
@@ -46,7 +48,7 @@ export function Hero() {
   };
 
   return (
-    <div className="relative w-full h-[85vh] overflow-hidden bg-black">
+    <div className="relative w-full h-[70vh] overflow-hidden bg-black">
       {/* Background Image Carousel */}
       <AnimatePresence mode="popLayout">
         <motion.div
@@ -81,7 +83,7 @@ export function Hero() {
           onClick={prevSlide}
           className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center text-white/70 hover:text-white transition-colors z-50 hover:bg-white/10 rounded-full"
         >
-          <ArrowLeft className=" w-4 h-4 md:w-6 md:h-6 stroke-1" />
+          <ArrowLeft className="hidden md:block w-4 h-4 md:w-6 md:h-6 stroke-1" />
         </button>
 
         <button
@@ -103,10 +105,10 @@ export function Hero() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-2xl md:text-5xl font-bold text-white tracking-wide uppercase font-serif-variation text-left">
+                <h2 className="text-lg md:text-3xl font-bold text-white tracking-wide uppercase font-serif-variation text-left">
                   {slides[currentIndex].title}
                 </h2>
-                <p className="text-white/80 text-lg md:text-xl font-light tracking-wide mt-2 text-left">
+                <p className="text-white/80 text-sm md:text-lg font-light tracking-wide mt-2 text-left">
                   {slides[currentIndex].description}
                 </p>
               </motion.div>

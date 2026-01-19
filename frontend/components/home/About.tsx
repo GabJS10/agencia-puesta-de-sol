@@ -3,16 +3,15 @@
 import { motion } from "framer-motion";
 
 const stats = [
-  { value: "200+", label: "Happy Customers" },
-  { value: "65+", label: "Top Hotels" },
-  { value: "250+", label: "Experienced Guides" },
+  { value: "200+", label: "Clientes Felices" },
+  { value: "65+", label: "Hoteles" },
+  { value: "250+", label: "Guías Expertos" },
 ];
 
 export function About() {
   return (
     <section className="bg-white py-20 px-6 md:px-12">
       <div className="max-w-480 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Left Side: Text Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -20,11 +19,11 @@ export function About() {
           transition={{ duration: 0.6 }}
         >
           <span className="text-[#00B4D8] text-sm font-medium tracking-widest uppercase mb-6 block">
-            About Us
+            Sobre Nosotros
           </span>
           <p className="text-lg md:text-xl lg:text-2xl font-normal text-black leading-tight max-w-480">
-            We are a passionate team of travel enthusiasts dedicated to making
-            your travel dreams come true.{" "}
+            Somos un equipo apasionado de entusiastas de los viajes dedicados a
+            hacer realidad tus sueños.{" "}
           </p>
         </motion.div>
 
