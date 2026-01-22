@@ -9,12 +9,25 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { QuoteSection } from "@/components/home/QuoteSection";
 import { Footer } from "@/components/layout/Footer";
 
-export default function Home() {
+//api call
+import { getHome } from "@/lib/get-home";
+
+const stats = [
+  { value: "198+", label: "Clientes Felices" },
+  { value: "63+", label: "Hoteles" },
+  { value: "248+", label: "Guías Expertos" },
+];
+
+export default async function Home() {
+  const home = await getHome();
+
+  console.log(home);
+
   return (
     <main className="min-h-screen bg-black text-white relative">
       <Navbar />
       <Hero />
-      <About />
+      <About stats={home.estadistica} description={home.sobreNosotros} />
       <ScrollReveal>
         <Destinations />
       </ScrollReveal>

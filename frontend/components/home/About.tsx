@@ -2,13 +2,15 @@
 
 import { motion } from "framer-motion";
 
-const stats = [
-  { value: "200+", label: "Clientes Felices" },
-  { value: "65+", label: "Hoteles" },
-  { value: "250+", label: "Guías Expertos" },
-];
+interface Props {
+  description: string;
+  stats: {
+    value: string;
+    label: string;
+  }[];
+}
 
-export function About() {
+export function About({ description, stats }: Props) {
   return (
     <section className="bg-white py-20 px-6 md:px-12">
       <div className="max-w-480 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -22,8 +24,7 @@ export function About() {
             Sobre Nosotros
           </span>
           <p className="text-lg md:text-xl lg:text-2xl font-normal text-black leading-tight max-w-480">
-            Somos un equipo apasionado de entusiastas de los viajes dedicados a
-            hacer realidad tus sueños.{" "}
+            {description}{" "}
           </p>
         </motion.div>
 

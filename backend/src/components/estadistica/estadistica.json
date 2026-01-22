@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_estadistica_estadisticas",
+  "info": {
+    "displayName": "Estadistica",
+    "icon": "question"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "maxLength": 4
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 20
+    }
+  },
+  "config": {}
+}

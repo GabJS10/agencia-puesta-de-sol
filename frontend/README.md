@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Puesta del Sol - Web
 
-## Getting Started
+Plataforma web moderna para la agencia de viajes **Puesta del Sol**, diseñada para ofrecer experiencias de viaje inolvidables. Este proyecto es una landing page interactiva y responsiva construida con las últimas tecnologías web.
 
-First, run the development server:
+## 🚀 Tecnologías
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Este proyecto utiliza un stack moderno enfocado en rendimiento y experiencia de usuario:
+
+- **[Next.js 16](https://nextjs.org/)**: Framework de React con App Router.
+- **[React 19](https://react.dev/)**: Biblioteca para interfaces de usuario.
+- **[Tailwind CSS v4](https://tailwindcss.com/)**: Framework de utilidades para estilos rápidos y responsivos.
+- **[Framer Motion](https://www.framer.com/motion/)**: Biblioteca para animaciones fluidas y complejas.
+- **[Lucide React](https://lucide.dev/)**: Iconografía moderna y consistente.
+- **TypeScript**: Tipado estático para un desarrollo robusto.
+
+## ✨ Características
+
+- **Diseño Responsivo**: Adaptable a dispositivos móviles, tablets y escritorio.
+- **Animaciones Suaves**: Integración de Framer Motion para transiciones y efectos de scroll (ScrollReveal).
+- **Secciones Informativas**:
+  - Hero impactante.
+  - Sobre Nosotros (estadísticas y misión).
+  - Destinos destacados.
+  - Reseñas de clientes.
+  - Ubicación y contacto.
+
+## 🛠️ Instalación y Uso
+
+Sigue estos pasos para ejecutar el proyecto localmente:
+
+1. **Clonar el repositorio:**
+
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd puestadelsol-web/frontend
+   ```
+
+2. **Instalar dependencias:**
+
+   ```bash
+   npm install
+   # o
+   pnpm install
+   # o
+   yarn install
+   ```
+
+3. **Ejecutar el servidor de desarrollo:**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Ver en el navegador:**
+   Abre [http://localhost:3000](http://localhost:3000) para ver la aplicación.
+
+## 📂 Estructura del Proyecto
+
+```text
+app/            # Rutas y layouts (Next.js App Router)
+components/     # Componentes reutilizables
+  ├── home/     # Componentes específicos de la página de inicio (Hero, About, etc.)
+  ├── layout/   # Componentes estructurales (Navbar, Footer)
+  └── ui/       # Componentes de interfaz genéricos (Button, ScrollReveal)
+public/         # Archivos estáticos
+lib/            # Utilidades y funciones auxiliares
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📄 Licencia
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este proyecto está bajo la licencia MIT.
