@@ -61,7 +61,7 @@ export default async function Home() {
   } = home.Footer;
 
   return (
-    <main className="min-h-screen bg-black text-white relative">
+    <main className="min-h-screen relative overflow-hidden">
       <Navbar />
       <Hero slides={HeroTours} />
       <About stats={home.estadistica} description={home.sobreNosotros} />

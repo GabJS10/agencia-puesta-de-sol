@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -10,6 +11,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Puesta del Sol",
   description: "Travel Agency",
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default function RootLayout({
@@ -18,9 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} font-sans antialiased`}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

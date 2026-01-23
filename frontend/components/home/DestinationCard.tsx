@@ -29,7 +29,7 @@ export function DestinationCard({
     <Link href={url}>
       <div
         className={cn(
-          "group relative h-80 w-64 md:h-100 md:w-full md:min-w-75 overflow-hidden rounded-3xl md:rounded-4xl",
+          "group relative h-80 w-64 md:h-96 md:w-full md:min-w-72 overflow-hidden rounded-2xl bg-surface border border-border transition-all hover:shadow-lg",
           className,
         )}
       >
@@ -37,25 +37,24 @@ export function DestinationCard({
           src={image}
           alt={title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        {/* Overlay - Gradient for better readability if needed, mostly handled by the glass card */}
-        <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20" />
+        {/* Minimalist Overlay - subtle gradient for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity group-hover:opacity-70" />
 
-        {/* Glassmorphism details card */}
-        <div className="absolute bottom-4 left-4 right-4 rounded-3xl bg-white/10 p-5 backdrop-blur-md border border-white/20 shadow-lg">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <h3 className="text-xl font-medium text-white">{title}</h3>
-              <div className="flex items-center gap-2 text-white/80">
-                <MapPin className="h-4 w-4" />
-                <span className="text-sm">{location}</span>
-              </div>
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-2">
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold text-white leading-tight group-hover:text-primary transition-colors">{title}</h3>
+            <div className="flex items-center gap-2 text-white/70">
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm font-medium tracking-wide">{location}</span>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-white">
-                {formattedPrice}
-              </div>
+          </div>
+          <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-2">
+            <span className="text-xs uppercase tracking-widest text-white/60">Desde</span>
+            <div className="text-lg font-bold text-white">
+              {formattedPrice}
             </div>
           </div>
         </div>

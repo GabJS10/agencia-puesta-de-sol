@@ -19,7 +19,7 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
   };
 
   return (
-    <div className="relative w-full h-[70vh] overflow-hidden bg-black">
+    <div className="relative w-full h-[85vh] overflow-hidden bg-background">
       {/* Background Image Carousel */}
       <AnimatePresence mode="popLayout">
         <motion.div
@@ -27,7 +27,7 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 1.2 }}
           className="absolute inset-0"
         >
           {/* We use unoptimized for the placeholder to work if domain not configured in next.config */}
@@ -38,36 +38,36 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
               alt={slides[currentIndex].title}
               fill
               priority
-              className="object-cover opacity-90"
-              unoptimized={slides[currentIndex].image.startsWith("http")}
+              className="object-cover"
             />
-            {/* Helper gradient for bottom text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+            {/* Helper gradient for bottom text readability - Minimalist adjustment */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent dark:from-background dark:via-background/40 dark:to-transparent opacity-40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/60 to-transparent opacity-20 dark:from-background/60 dark:to-transparent" />
           </div>
         </motion.div>
       </AnimatePresence>
 
       {/* Main Content Container */}
-      <div className="relative z-10 w-full h-full flex flex-col justify-end pb-16 px-6 md:px-12 max-w-[1920px] mx-auto">
+      <div className="relative z-10 w-full h-full flex flex-col justify-end pb-24 px-6 md:px-12 max-w-7xl mx-auto">
         {/* Navigation Arrows (Sides - Vertically Centered) */}
         <button
           onClick={prevSlide}
-          className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center text-white/70 hover:text-white transition-colors z-50 hover:bg-white/10 rounded-full"
+          className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-all duration-300 z-50 hover:bg-surface/20 rounded-full"
         >
-          <ArrowLeft className="hidden md:block w-4 h-4 md:w-6 md:h-6 stroke-1" />
+          <ArrowLeft className="hidden md:block w-6 h-6 stroke-1" />
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center text-white/70 hover:text-white transition-colors z-50 hover:bg-white/10 rounded-full"
+          className="absolute right-6 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-all duration-300 z-50 hover:bg-surface/20 rounded-full"
         >
-          <ArrowRight className="w-4 h-4 md:w-6 md:h-6 stroke-1" />
+          <ArrowRight className="w-6 h-6 stroke-1" />
         </button>
 
         {/* Bottom UI Elements */}
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mt-auto pl-4 md:pl-10 pr-4 md:pr-10 gap-6 md:gap-0">
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mt-auto gap-8 md:gap-0">
           {/* Bottom Left: Title & Description */}
-          <div className="flex flex-col gap-4 max-w-xl min-h-[150px] justify-end">
+          <div className="flex flex-col gap-6 max-w-2xl min-h-[150px] justify-end">
             <AnimatePresence mode="wait">
               <motion.div
                 key={slides[currentIndex].id}
@@ -76,10 +76,11 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-lg md:text-3xl font-bold text-white tracking-wide uppercase font-serif-variation text-left">
+                <h2 className="text-4xl md:text-6xl font-bold text-foreground tracking-tight leading-tight">
                   {slides[currentIndex].title}
                 </h2>
-                <p className="text-white/80 text-sm md:text-lg font-light tracking-wide mt-2 text-left">
+                <div className="w-12 h-0.5 bg-primary mt-6 mb-4" />
+                <p className="text-foreground/90 text-lg md:text-xl font-light leading-relaxed max-w-lg">
                   {slides[currentIndex].description}
                 </p>
               </motion.div>
@@ -91,13 +92,14 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-2 self-start md:self-auto"
+            className="mb-4 self-start md:self-auto"
           >
             <Link
               href={slides[currentIndex].url}
-              className="group relative px-8 py-2 text-sm font-medium overflow-hidden rounded-lg border border-white text-white hover:text-black hover:bg-white transition-all duration-300 inline-block whitespace-nowrap"
+              className="group relative px-8 py-3 text-sm font-semibold tracking-wider uppercase rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 inline-flex items-center gap-2"
             >
-              SABER MAS
+              Saber Más
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </motion.div>
         </div>
