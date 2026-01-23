@@ -5,38 +5,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { HeroTour } from "@/types/HeroTours";
 
-// Mock Data
-const slides = [
-  {
-    id: 1,
-    title: "MONTAÑAS MÁGICAS",
-    description:
-      "Descubre la serenidad de las cumbres más altas y los paisajes que te dejarán sin aliento.",
-    image: "/hero-bg.png", // Existing image
-    href: "/montañas-magicas",
-  },
-  {
-    id: 2,
-    title: "PLAYAS DORADAS",
-    description:
-      "Relájate en arenas cálidas y aguas cristalinas donde el sol nunca deja de brillar.",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Placeholder
-    href: "/playas-doradas",
-  },
-  {
-    id: 3,
-    title: "BOSQUES ENCANTADOS",
-    description:
-      "Adéntrate en la naturaleza más pura y conecta con el entorno en una experiencia única.",
-    image:
-      "https://images.unsplash.com/photo-1470770841072-f978cf9d4ff1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Placeholder
-    href: "/bosques-encantados",
-  },
-];
-
-export function Hero() {
+export function Hero({ slides }: { slides: HeroTour[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
@@ -63,7 +34,7 @@ export function Hero() {
           {/* For local file /hero-bg.png it works fine. Ideally we configure domains, but unoptimized is safer for placeholders now. */}
           <div className="absolute inset-0">
             <Image
-              src={slides[currentIndex].image}
+              src={`${slides[currentIndex].image}`}
               alt={slides[currentIndex].title}
               fill
               priority
@@ -123,7 +94,7 @@ export function Hero() {
             className="mb-2 self-start md:self-auto"
           >
             <Link
-              href={slides[currentIndex].href}
+              href={slides[currentIndex].url}
               className="group relative px-8 py-2 text-sm font-medium overflow-hidden rounded-lg border border-white text-white hover:text-black hover:bg-white transition-all duration-300 inline-block whitespace-nowrap"
             >
               SABER MAS

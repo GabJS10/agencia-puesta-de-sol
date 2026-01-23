@@ -4,43 +4,9 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DestinationCard } from "./DestinationCard";
 import { Button } from "@/components/ui/button";
+import { HomeTour } from "@/types/HomeTours";
 
-const DESTINATIONS = [
-  {
-    id: 1,
-    title: "Cabo de la Vela",
-    location: "Uribia, La Guajira",
-    price: "450,000",
-    image:
-      "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?authuser=0&auto=format&fit=crop&q=80&w=1000", // Placeholder
-  },
-  {
-    id: 2,
-    title: "Punta Gallinas",
-    location: "Uribia, La Guajira",
-    price: "650,000",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1000", // Placeholder
-  },
-  {
-    id: 3,
-    title: "Palomino",
-    location: "Dibulla, La Guajira",
-    price: "350,000",
-    image:
-      "https://images.unsplash.com/photo-1544551763-46a42a462691?auto=format&fit=crop&q=80&w=1000", // Placeholder
-  },
-  {
-    id: 4,
-    title: "Manaure",
-    location: "Manaure, La Guajira",
-    price: "300,000",
-    image:
-      "https://images.unsplash.com/photo-1589553416260-f586c8f1514f?auto=format&fit=crop&q=80&w=1000", // Placeholder
-  },
-];
-
-export function Destinations() {
+export function Destinations({ tours }: { tours: HomeTour[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -88,9 +54,16 @@ export function Destinations() {
           className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {DESTINATIONS.map((destination) => (
+          {tours.map((destination) => (
             <div key={destination.id} className="snap-center">
-              <DestinationCard {...destination} className="w-75 md:w-100" />
+              <DestinationCard
+                image={destination.image}
+                location={destination.location}
+                title={destination.title}
+                url={destination.url}
+                price={String(destination.price)}
+                className="w-75 md:w-100"
+              />
             </div>
           ))}
         </div>

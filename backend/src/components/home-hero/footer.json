@@ -1,0 +1,48 @@
+{
+  "collectionName": "components_home_hero_footers",
+  "info": {
+    "displayName": "Footer",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "phrase": {
+      "type": "text",
+      "maxLength": 100,
+      "required": true
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 30,
+      "required": true
+    },
+    "number": {
+      "type": "string",
+      "maxLength": 10,
+      "regex": "^\\d{10}$"
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "AboutFooter": {
+      "type": "text",
+      "maxLength": 150,
+      "required": true
+    },
+    "location": {
+      "type": "string",
+      "maxLength": 50,
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

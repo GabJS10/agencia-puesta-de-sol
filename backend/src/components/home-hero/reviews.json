@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_home_hero_reviews",
+  "info": {
+    "displayName": "reviews",
+    "icon": "emotionHappy"
+  },
+  "options": {},
+  "attributes": {
+    "description": {
+      "type": "text",
+      "maxLength": 125,
+      "required": true
+    },
+    "rating": {
+      "type": "decimal",
+      "required": true,
+      "min": 1,
+      "max": 5
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 25,
+      "required": true
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

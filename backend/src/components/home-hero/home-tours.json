@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_home_hero_home_tours",
+  "info": {
+    "displayName": "HomeTours",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "maxLength": 25,
+      "required": true
+    },
+    "price": {
+      "type": "float",
+      "required": true
+    },
+    "location": {
+      "type": "string",
+      "maxLength": 20,
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

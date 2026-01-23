@@ -3,18 +3,18 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 interface ReviewCardProps {
-  quote: string;
+  description: string;
   rating: number;
-  author: string;
-  avatar: string; // URL string for avatar
+  name: string;
+  photo: string; // URL string for avatar
   className?: string;
 }
 
 export function ReviewCard({
-  quote,
+  description,
   rating,
-  author,
-  avatar,
+  name,
+  photo,
   className,
 }: ReviewCardProps) {
   return (
@@ -25,9 +25,9 @@ export function ReviewCard({
       )}
     >
       <div>
-        <Quote className="h-10 w-10 text-blue-200 mb-6 fill-current opacity-50" />
+        <Quote className="h-10 w-10 text-slate-800 mb-6 fill-current opacity-50" />
         <p className="text-gray-700 font-medium leading-relaxed mb-6">
-          &quot;{quote}&quot;
+          &quot;{description}&quot;
         </p>
       </div>
 
@@ -49,10 +49,10 @@ export function ReviewCard({
 
         <div className="flex items-center gap-3">
           <div className="relative h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-            <Image src={avatar} alt={author} fill className="object-cover" />
+            <Image src={photo} alt={name} fill className="object-cover" />
           </div>
           <div>
-            <div className="font-bold text-gray-900">{author}</div>
+            <div className="font-bold text-gray-900">{name}</div>
           </div>
         </div>
       </div>

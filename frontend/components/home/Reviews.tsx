@@ -3,51 +3,9 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReviewCard } from "./ReviewCard";
+import { Review } from "@/types/Reviews";
 
-const REVIEWS = [
-  {
-    id: 1,
-    quote:
-      "Traveling with them is truly amazing. Amazing destinations, friendly service, and unforgettable moments.",
-    rating: 2.5,
-    author: "María González",
-    role: "Viajera",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
-  },
-  {
-    id: 2,
-    quote:
-      "Careful itinerary, expert local guides, and highly responsive customer service. My adventure was not only fun but also stress-free.",
-    rating: 4.9,
-    author: "Carlos Rodríguez",
-    role: "Aventurero",
-    avatar:
-      "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=150",
-  },
-  {
-    id: 3,
-    quote:
-      "The perfect family vacation! The right destination for all family members, warm service, and flexible plans.",
-    rating: 4.9,
-    author: "Ana Martínez",
-    role: "Madre de familia",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150",
-  },
-  {
-    id: 4,
-    quote:
-      "Our family vacation with family was wonderful. The well-organized itinerary, and friendly local guides made our experience unforgettable.",
-    rating: 4.9,
-    author: "Juan Pérez",
-    role: "Turista",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150",
-  },
-];
-
-export function Reviews() {
+export function Reviews({ reviews }: { reviews: Review[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -100,8 +58,8 @@ export function Reviews() {
           className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {REVIEWS.map((review) => (
-            <div key={review.id} className="snap-center h-full">
+          {reviews.map((review, index) => (
+            <div key={index} className="snap-center h-full">
               <ReviewCard
                 {...review}
                 className="w-80 md:w-96 min-h-75 shadow-lg border border-gray-100"

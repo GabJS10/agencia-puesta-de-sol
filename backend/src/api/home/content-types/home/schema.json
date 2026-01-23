@@ -34,6 +34,50 @@
       },
       "component": "estadistica.estadistica",
       "repeatable": true
+    },
+    "HeroTours": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "home-hero.home-hero",
+      "repeatable": true,
+      "required": true
+    },
+    "HomeTours": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "home-hero.home-tours",
+      "repeatable": true,
+      "required": true
+    },
+    "HomeReviews": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "home-hero.reviews",
+      "repeatable": true,
+      "required": true
+    },
+    "Footer": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "home-hero.footer",
+      "repeatable": false,
+      "required": true
     }
   }
 }
