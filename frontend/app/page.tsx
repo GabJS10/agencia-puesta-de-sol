@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/home/Hero";
 import { About } from "@/components/home/About";
 import { Destinations } from "@/components/home/Destinations";
@@ -6,7 +5,6 @@ import { Location } from "@/components/home/Location";
 import { Reviews } from "@/components/home/Reviews";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { QuoteSection } from "@/components/home/QuoteSection";
-import { Footer } from "@/components/layout/Footer";
 import { STRAPI_HOST } from "@/lib/strapi";
 //api call
 import { getHome } from "@/lib/get-home";
@@ -51,10 +49,6 @@ export default async function Home() {
   const footer: {
     phrase: string;
     author: string;
-    number: string;
-    email: string;
-    AboutFooter: string;
-    location: string;
     image: {
       url: string;
     };
@@ -62,7 +56,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen relative overflow-hidden">
-      <Navbar />
       <Hero slides={HeroTours} />
       <About stats={home.estadistica} description={home.sobreNosotros} />
       <ScrollReveal>
@@ -76,12 +69,6 @@ export default async function Home() {
         phrase={footer.phrase}
         author={footer.author}
         image={`${STRAPI_HOST}${footer.image.url}`}
-      />
-      <Footer
-        number={footer.number}
-        email={footer.email}
-        location={footer.location}
-        AboutFooter={footer.AboutFooter}
       />
     </main>
   );
