@@ -14,6 +14,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Puesta del Sol",
   description: "Travel Agency",
+  icons: {
+    icon: "/favicon.jpg",
+  },
   formatDetection: {
     telephone: false,
   },
@@ -49,4 +52,3 @@ export default async function RootLayout({
     </html>
   );
 }
-

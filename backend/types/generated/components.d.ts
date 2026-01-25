@@ -129,6 +129,21 @@ export interface HomeHeroReviews extends Struct.ComponentSchema {
   };
 }
 
+export interface PlanesTags extends Struct.ComponentSchema {
+  collectionName: 'components_planes_tags';
+  info: {
+    displayName: 'Tags';
+    icon: 'bulletList';
+  };
+  attributes: {
+    element: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 30;
+      }>;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -199,6 +214,7 @@ declare module '@strapi/strapi' {
       'home-hero.home-hero': HomeHeroHomeHero;
       'home-hero.home-tours': HomeHeroHomeTours;
       'home-hero.reviews': HomeHeroReviews;
+      'planes.tags': PlanesTags;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

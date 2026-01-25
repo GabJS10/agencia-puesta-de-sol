@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_planes_tags",
+  "info": {
+    "displayName": "Tags",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "element": {
+      "type": "string",
+      "maxLength": 30,
+      "required": true
+    }
+  },
+  "config": {}
+}

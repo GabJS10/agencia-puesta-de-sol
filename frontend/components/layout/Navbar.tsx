@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Globe } from "lucide-react";
@@ -46,9 +47,13 @@ export function Navbar() {
             isScrolled ? "text-foreground" : "text-white",
           )}
         >
-          <div className="w-6 h-6 rounded-full border border-primary flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-          </div>
+          <Image
+            src="/favicon.jpg"
+            alt="Puesta del Sol"
+            width={40}
+            height={40}
+            className="rounded-full w-10 h-10 object-cover"
+          />
           <span className="tracking-tight">Puesta del Sol</span>
         </div>
 
