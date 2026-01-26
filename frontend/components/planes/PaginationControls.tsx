@@ -31,7 +31,7 @@ export function PaginationControls({
             "bg-primary text-primary-foreground shadow-md font-bold",
           )}
         >
-          1
+          {page}
         </button>
       </div>
     );

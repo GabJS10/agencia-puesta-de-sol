@@ -667,6 +667,91 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiPlanLocationPlanLocation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'plan_locations';
+  info: {
+    displayName: 'PlanLocation';
+    pluralName: 'plan-locations';
+    singularName: 'plan-location';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::plan-location.plan-location'
+    >;
+    location: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPlanTypePlanType extends Struct.CollectionTypeSchema {
+  collectionName: 'plan_types';
+  info: {
+    displayName: 'PlanType';
+    pluralName: 'plan-types';
+    singularName: 'plan-type';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::plan-type.plan-type'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 30;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPlanPlan extends Struct.CollectionTypeSchema {
   collectionName: 'planes';
   info: {
@@ -732,6 +817,14 @@ export interface ApiPlanPlan extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    plan_location: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::plan-location.plan-location'
+    >;
+    plan_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::plan-type.plan-type'
+    >;
     price: Schema.Attribute.Float &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -1325,6 +1418,8 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::global.global': ApiGlobalGlobal;
       'api::home.home': ApiHomeHome;
+      'api::plan-location.plan-location': ApiPlanLocationPlanLocation;
+      'api::plan-type.plan-type': ApiPlanTypePlanType;
       'api::plan.plan': ApiPlanPlan;
       'api::social-media.social-media': ApiSocialMediaSocialMedia;
       'plugin::content-releases.release': PluginContentReleasesRelease;

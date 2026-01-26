@@ -126,6 +126,16 @@
       },
       "required": true,
       "unique": true
+    },
+    "plan_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::plan-type.plan-type"
+    },
+    "plan_location": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::plan-location.plan-location"
     }
   }
 }

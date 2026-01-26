@@ -2,6 +2,8 @@ import { PlanesHero } from "@/components/planes/PlanesHero";
 import { FilterSidebar } from "@/components/planes/FilterSidebar";
 import { DestinationCard } from "@/components/home/DestinationCard";
 import { getPlanes } from "@/lib/get-planes";
+import { getPlanLocations } from "@/lib/get-plan-locations";
+import { getPlanTypes } from "@/lib/get-plan-types";
 import { STRAPI_HOST } from "@/lib/strapi";
 import { Plane } from "@/types/Planes";
 import { PaginationControls } from "@/components/planes/PaginationControls";
@@ -19,7 +21,7 @@ export default async function PlanesPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  
+
   const page =
     typeof resolvedSearchParams.page === "string"
       ? parseInt(resolvedSearchParams.page)
@@ -29,21 +31,59 @@ export default async function PlanesPage({
       ? resolvedSearchParams.search.toLowerCase()
       : "";
   const sort =
-    typeof resolvedSearchParams.sort === "string" ? resolvedSearchParams.sort : "";
+    typeof resolvedSearchParams.sort === "string"
+      ? resolvedSearchParams.sort
+      : "";
 
-  // 1. Obtener datos paginados de Strapi (Solo la página actual)
-  const { data: planes, meta } = await getPlanes(page);
+  // Obtener filtros de la URL (pueden ser string o array)
+  const typeFilter =
+    typeof resolvedSearchParams.type === "string"
+      ? [resolvedSearchParams.type]
+      : Array.isArray(resolvedSearchParams.type)
+        ? resolvedSearchParams.type
+        : [];
+
+  const locationFilter =
+    typeof resolvedSearchParams.location === "string"
+      ? [resolvedSearchParams.location]
+      : Array.isArray(resolvedSearchParams.location)
+        ? resolvedSearchParams.location
+        : [];
+
+  // 1. Obtener datos (Planes, Locations, Types) en paralelo
+  const [planesRes, locations, types] = await Promise.all([
+    getPlanes(page),
+    getPlanLocations(),
+    getPlanTypes(),
+  ]);
+
+  const { data: planes, meta } = planesRes;
 
   // 2. Filtrado Local (Sobre los items recibidos de la API en esta página)
   let displayPlanes = planes;
 
+  // Filtrar por búsqueda (Título)
   if (search) {
     displayPlanes = displayPlanes.filter((plan: Plane) =>
       plan.title.toLowerCase().includes(search)
     );
   }
 
-  // 3. Ordenamiento Local (Sobre los items filtrados)
+  // Filtrar por Tipo (checkboxes)
+  if (typeFilter.length > 0) {
+    displayPlanes = displayPlanes.filter((plan: Plane) =>
+      plan.plan_type && typeFilter.includes(plan.plan_type.type)
+    );
+  }
+
+  // Filtrar por Ubicación (checkboxes)
+  if (locationFilter.length > 0) {
+    displayPlanes = displayPlanes.filter((plan: Plane) =>
+      plan.plan_location && locationFilter.includes(plan.plan_location.location)
+    );
+  }
+
+  // 3. Ordenamiento Local
   if (sort === "price:asc") {
     displayPlanes.sort((a: Plane, b: Plane) => a.price - b.price);
   } else if (sort === "price:desc") {
@@ -58,8 +98,8 @@ export default async function PlanesPage({
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-12">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar */}
-          <FilterSidebar />
+          {/* Sidebar con filtros dinámicos */}
+          <FilterSidebar locations={locations} types={types} />
 
           {/* Main Content */}
           <div className="flex-1">
@@ -87,7 +127,8 @@ export default async function PlanesPage({
               ))}
               {displayPlanes.length === 0 && (
                 <div className="col-span-full text-center py-12 text-muted-foreground">
-                  No se encontraron planes que coincidan con tu búsqueda en esta página.
+                  No se encontraron planes que coincidan con tus filtros en esta
+                  página.
                 </div>
               )}
             </div>

@@ -8,6 +8,14 @@ export interface Tag {
   element: string;
 }
 
+export interface PlanLocation {
+  location: string;
+}
+
+export interface PlanType {
+  type: string;
+}
+
 export interface Plane {
   id: number;
   documentId: string;
@@ -22,4 +30,6 @@ export interface Plane {
   photo: Image;
   gallery: Image[];
   tags: Tag[];
+  plan_location: PlanLocation;
+  plan_type: PlanType;
 }

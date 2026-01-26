@@ -4,6 +4,8 @@ export async function getPlanes(page: number = 1) {
   const queryParams = new URLSearchParams({
     "populate[photo]": "true",
     "populate[gallery]": "true",
+    "populate[plan_location]": "true",
+    "populate[plan_type]": "true",
     "populate[tags]": "true",
     "pagination[page]": page.toString(),
     "pagination[pageSize]": "9",
