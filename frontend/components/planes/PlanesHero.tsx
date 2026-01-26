@@ -1,5 +1,5 @@
-import { Search } from "lucide-react";
 import Image from "next/image";
+import { SearchInput } from "@/components/planes/SearchInput";
 
 export function PlanesHero() {
   return (
@@ -31,16 +31,7 @@ export function PlanesHero() {
         </div>
 
         {/* Right: Search Bar - Clean & Modern - Aligned with text bottom */}
-        <div className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-full flex items-center shadow-2xl md:mb-2">
-          <div className="pl-4 pr-2 text-white/70">
-            <Search className="w-5 h-5" />
-          </div>
-          <input
-            type="text"
-            placeholder="Buscar experiencia..."
-            className="flex-1 bg-transparent border-none text-white placeholder:text-white/60 focus:outline-none px-2 py-2 text-base font-light"
-          />
-        </div>
+        <SearchInput />
       </div>
     </div>
   );

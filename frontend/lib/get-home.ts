@@ -4,7 +4,6 @@ export async function getHome() {
   const data = await query(
     "home?populate[HeroTours][populate]=image&populate[HomeTours][populate]=image&populate[HomeReviews][populate]=photo&populate[Footer][populate]=image&populate[estadistica][populate]=*",
   );
-  console.log(data.data);
 
   return data.data;
 }

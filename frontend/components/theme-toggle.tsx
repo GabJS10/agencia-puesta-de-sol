@@ -13,14 +13,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return (
-      <button
-        className="p-2 rounded-full bg-surface hover:bg-surface-hover text-foreground transition-colors"
-        aria-label="Toggle theme"
-      >
-        <div className="w-5 h-5" />
-      </button>
-    );
+    return null;
   }
 
   return (
