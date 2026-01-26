@@ -21,7 +21,7 @@ export function SearchInput() {
     }
     params.set("page", "1"); // Reset to page 1 on search
 
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}#planes`, { scroll: false });
   };
 
   return (

@@ -16,7 +16,7 @@ export function SortSelect() {
     } else {
       params.delete("sort");
     }
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}#planes`, { scroll: false });
   };
 
   return (

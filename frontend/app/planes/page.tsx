@@ -65,21 +65,24 @@ export default async function PlanesPage({
   // Filtrar por búsqueda (Título)
   if (search) {
     displayPlanes = displayPlanes.filter((plan: Plane) =>
-      plan.title.toLowerCase().includes(search)
+      plan.title.toLowerCase().includes(search),
     );
   }
 
   // Filtrar por Tipo (checkboxes)
   if (typeFilter.length > 0) {
-    displayPlanes = displayPlanes.filter((plan: Plane) =>
-      plan.plan_type && typeFilter.includes(plan.plan_type.type)
+    displayPlanes = displayPlanes.filter(
+      (plan: Plane) =>
+        plan.plan_type && typeFilter.includes(plan.plan_type.type),
     );
   }
 
   // Filtrar por Ubicación (checkboxes)
   if (locationFilter.length > 0) {
-    displayPlanes = displayPlanes.filter((plan: Plane) =>
-      plan.plan_location && locationFilter.includes(plan.plan_location.location)
+    displayPlanes = displayPlanes.filter(
+      (plan: Plane) =>
+        plan.plan_location &&
+        locationFilter.includes(plan.plan_location.location),
     );
   }
 
@@ -102,8 +105,9 @@ export default async function PlanesPage({
           <FilterSidebar locations={locations} types={types} />
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1" id="planes">
             {/* Header Controls */}
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <p className="text-muted font-medium">
                 Mostrando {displayPlanes.length} de {meta.pagination.total}{" "}

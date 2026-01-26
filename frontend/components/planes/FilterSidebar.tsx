@@ -25,8 +25,6 @@ function FilterSection({ title, options, paramName }: FilterSectionProps) {
     const values = new Set(currentValues);
 
     if (values.has(value)) {
-      console.log(`Deleting value: ${value}`, values);
-      console.log(params);
       values.delete(value);
       params.delete(paramName);
       values.forEach((v) => params.append(paramName, v));
@@ -37,7 +35,7 @@ function FilterSection({ title, options, paramName }: FilterSectionProps) {
     // Reset page to 1 on filter change
     params.set("page", "1");
 
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}#planes`, { scroll: false });
   };
 
   return (

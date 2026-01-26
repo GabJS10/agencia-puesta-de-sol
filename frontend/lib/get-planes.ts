@@ -11,7 +11,9 @@ export async function getPlanes(page: number = 1) {
     "pagination[pageSize]": "9",
   });
 
-  const res = await query(`planes?${queryParams.toString()}`);
+  const res = await query(`planes?${queryParams.toString()}`, {
+    next: { revalidate: 60 },
+  });
 
   return res;
 }
