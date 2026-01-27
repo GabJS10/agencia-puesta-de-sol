@@ -52,48 +52,18 @@ export default async function PlanesPage({
 
   // 1. Obtener datos (Planes, Locations, Types) en paralelo
   const [planesRes, locations, types] = await Promise.all([
-    getPlanes(page),
+    getPlanes({
+      page,
+      search,
+      sort,
+      types: typeFilter,
+      locations: locationFilter,
+    }),
     getPlanLocations(),
     getPlanTypes(),
   ]);
 
-  const { data: planes, meta } = planesRes;
-
-  // 2. Filtrado Local (Sobre los items recibidos de la API en esta página)
-  let displayPlanes = planes;
-
-  // Filtrar por búsqueda (Título)
-  if (search) {
-    displayPlanes = displayPlanes.filter((plan: Plane) =>
-      plan.title.toLowerCase().includes(search),
-    );
-  }
-
-  // Filtrar por Tipo (checkboxes)
-  if (typeFilter.length > 0) {
-    displayPlanes = displayPlanes.filter(
-      (plan: Plane) =>
-        plan.plan_type && typeFilter.includes(plan.plan_type.type),
-    );
-  }
-
-  // Filtrar por Ubicación (checkboxes)
-  if (locationFilter.length > 0) {
-    displayPlanes = displayPlanes.filter(
-      (plan: Plane) =>
-        plan.plan_location &&
-        locationFilter.includes(plan.plan_location.location),
-    );
-  }
-
-  // 3. Ordenamiento Local
-  if (sort === "price:asc") {
-    displayPlanes.sort((a: Plane, b: Plane) => a.price - b.price);
-  } else if (sort === "price:desc") {
-    displayPlanes.sort((a: Plane, b: Plane) => b.price - a.price);
-  } else if (sort === "createdAt:desc") {
-    displayPlanes.sort((a: Plane, b: Plane) => b.id - a.id);
-  }
+  const { data: displayPlanes, meta } = planesRes;
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
