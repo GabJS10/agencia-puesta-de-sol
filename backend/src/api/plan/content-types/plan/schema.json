@@ -44,6 +44,26 @@
       },
       "required": true
     },
+    "url": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true,
+      "unique": true
+    },
+    "plan_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::plan-type.plan-type"
+    },
+    "plan_location": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::plan-location.plan-location"
+    },
     "recommendations": {
       "type": "blocks",
       "pluginOptions": {
@@ -116,26 +136,6 @@
       "allowedTypes": [
         "images"
       ]
-    },
-    "url": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "required": true,
-      "unique": true
-    },
-    "plan_type": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::plan-type.plan-type"
-    },
-    "plan_location": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::plan-location.plan-location"
     }
   }
 }

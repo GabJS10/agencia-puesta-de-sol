@@ -22,10 +22,10 @@ export interface Plane {
   title: string;
   location: string;
   price: number;
-  description: string;
-  recommendations: string;
-  includes: string;
-  itinerary: string | null;
+  description: any;
+  recommendations: any;
+  includes: any;
+  itinerary: any;
   url: string;
   photo: Image;
   gallery: Image[];
