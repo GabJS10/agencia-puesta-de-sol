@@ -667,6 +667,35 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiPhonePhone extends Struct.SingleTypeSchema {
+  collectionName: 'phones';
+  info: {
+    displayName: 'Phone';
+    pluralName: 'phones';
+    singularName: 'phone';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::phone.phone'> &
+      Schema.Attribute.Private;
+    number: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 10;
+        minLength: 10;
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPlanLocationPlanLocation
   extends Struct.CollectionTypeSchema {
   collectionName: 'plan_locations';
@@ -1418,6 +1447,7 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::global.global': ApiGlobalGlobal;
       'api::home.home': ApiHomeHome;
+      'api::phone.phone': ApiPhonePhone;
       'api::plan-location.plan-location': ApiPlanLocationPlanLocation;
       'api::plan-type.plan-type': ApiPlanTypePlanType;
       'api::plan.plan': ApiPlanPlan;

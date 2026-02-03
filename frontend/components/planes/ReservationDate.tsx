@@ -32,7 +32,6 @@ export function ReservationDate() {
 
   const handleDateSelect = (newDate: Date | undefined) => {
     setDate(newDate);
-    // Don't close immediately to allow user to see selection or change mind
   };
 
   const handleConfirm = () => {

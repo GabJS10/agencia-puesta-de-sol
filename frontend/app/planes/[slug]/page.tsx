@@ -1,20 +1,13 @@
 import { STRAPI_HOST } from "@/lib/strapi";
 import { getPlanBySlug } from "@/lib/get-plan-by-slug";
+import { getPhone } from "@/lib/get-phone";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, CheckCircle2, ShieldCheck } from "lucide-react";
 import { PlanGallery } from "@/components/planes/PlanGallery";
 import { PlanTabs } from "@/components/planes/PlanTabs";
-import { ReservationDate } from "@/components/planes/ReservationDate";
-
-// Helper to format price
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(price);
-};
+import { ReservationForm } from "@/components/planes/ReservationForm";
+import { formatPrice } from "@/helpers/formatPrice";
 
 export default async function PlanPage({
   params,
@@ -22,7 +15,7 @@ export default async function PlanPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const plan = await getPlanBySlug(slug);
+  const [plan, phone] = await Promise.all([getPlanBySlug(slug), getPhone()]);
 
   if (!plan) {
     notFound();
@@ -117,15 +110,13 @@ export default async function PlanPage({
               </div>
 
               {/* CTA Actions */}
-              <div className="mt-auto space-y-4">
-                <ReservationDate />
-                <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg shadow-sm cursor-pointer">
-                  Reservar Ahora
-                </button>
-
-                <p className="text-xs text-center text-muted-foreground mt-2">
-                  * Precios sujetos a cambios según temporada
-                </p>
+              <div className="mt-auto">
+                <ReservationForm
+                  planTitle={plan.title}
+                  phoneNumber={phone}
+                  price={plan.price}
+                  type={plan.plan_type.type}
+                />
               </div>
             </div>
           </div>
