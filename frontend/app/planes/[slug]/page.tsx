@@ -1,13 +1,16 @@
 import { STRAPI_HOST } from "@/lib/strapi";
 import { getPlanBySlug } from "@/lib/get-plan-by-slug";
 import { getPhone } from "@/lib/get-phone";
+import { getPlanes } from "@/lib/get-planes";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, CheckCircle2, ShieldCheck } from "lucide-react";
 import { PlanGallery } from "@/components/planes/PlanGallery";
 import { PlanTabs } from "@/components/planes/PlanTabs";
 import { ReservationForm } from "@/components/planes/ReservationForm";
+import { RelatedPlanes } from "@/components/planes/RelatedPlanes";
 import { formatPrice } from "@/helpers/formatPrice";
+import { Plane } from "@/types/Planes";
 
 export default async function PlanPage({
   params,
@@ -15,11 +18,28 @@ export default async function PlanPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [plan, phone] = await Promise.all([getPlanBySlug(slug), getPhone()]);
+  const [plan, phone, planesRes] = await Promise.all([
+    getPlanBySlug(slug),
+    getPhone(),
+    getPlanes({ page: 1 }),
+  ]);
 
   if (!plan) {
     notFound();
   }
+
+  // Format related planes
+  const relatedPlanes = planesRes.data
+    .filter((p: Plane) => p.url !== slug)
+    .slice(0, 5)
+    .map((p: Plane) => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      location: p.plan_location?.location || "Guajira",
+      image: (STRAPI_HOST || "http://localhost:1337") + (p.photo?.url || ""),
+      url: `/planes/${p.url}`,
+    }));
 
   // Prepare tabs data
   const tabsItems = [
@@ -123,9 +143,12 @@ export default async function PlanPage({
         </div>
 
         {/* Bottom Section: Tabs */}
-        <div className="max-w-4xl">
+        <div className="max-w-4xl mb-20">
           <PlanTabs items={tabsItems} />
         </div>
+
+        {/* Related Planes Section */}
+        <RelatedPlanes planes={relatedPlanes} />
       </div>
     </main>
   );
