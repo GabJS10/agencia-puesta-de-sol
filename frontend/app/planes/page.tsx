@@ -4,7 +4,7 @@ import { DestinationCard } from "@/components/home/DestinationCard";
 import { getPlanes } from "@/lib/get-planes";
 import { getPlanLocations } from "@/lib/get-plan-locations";
 import { getPlanTypes } from "@/lib/get-plan-types";
-import { STRAPI_HOST } from "@/lib/strapi";
+import { resolveMedia } from "@/lib/media-url";
 import { Plane } from "@/types/Planes";
 import { PaginationControls } from "@/components/planes/PaginationControls";
 import { SortSelect } from "@/components/planes/SortSelect";
@@ -92,7 +92,7 @@ export default async function PlanesPage({
               {displayPlanes.map((plan: Plane) => (
                 <DestinationCard
                   key={plan.id}
-                  image={`${STRAPI_HOST}${plan.photo.url}`}
+                  image={resolveMedia(plan.photo.url)}
                   title={plan.title}
                   location={plan.location}
                   price={plan.price.toString()}

@@ -1,4 +1,5 @@
 import { STRAPI_HOST } from "@/lib/strapi";
+import { resolveMedia } from "@/lib/media-url";
 import { getPlanBySlug } from "@/lib/get-plan-by-slug";
 import { getPhone } from "@/lib/get-phone";
 import { getPlanes } from "@/lib/get-planes";
@@ -37,7 +38,7 @@ export default async function PlanPage({
       title: p.title,
       price: p.price,
       location: p.plan_location?.location || "Guajira",
-      image: (STRAPI_HOST || "http://localhost:1337") + (p.photo?.url || ""),
+      image: resolveMedia(p.photo?.url),
       url: `/planes/${p.url}`,
     }));
 

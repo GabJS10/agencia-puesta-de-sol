@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { resolveMedia } from "@/lib/media-url";
 import { Image as ImageType } from "@/types/Planes";
 
 interface PlanGalleryProps {
@@ -26,7 +27,7 @@ export function PlanGallery({ mainImage, gallery, baseUrl }: PlanGalleryProps) {
       {/* Main Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-muted border border-border cursor-pointer">
         <Image
-          src={`${baseUrl}${selectedImage}`}
+          src={resolveMedia(selectedImage, baseUrl)}
           alt="Vista del plan"
           fill
           className="object-cover transition-all duration-500 hover:scale-105"
@@ -49,7 +50,7 @@ export function PlanGallery({ mainImage, gallery, baseUrl }: PlanGalleryProps) {
               )}
             >
               <Image
-                src={`${baseUrl}${img.url}`}
+                src={resolveMedia(img.url, baseUrl)}
                 alt={img.name || `Vista ${idx + 1}`}
                 fill
                 className="object-cover"

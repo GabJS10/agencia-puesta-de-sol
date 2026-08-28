@@ -5,7 +5,7 @@ import { Location } from "@/components/home/Location";
 import { Reviews } from "@/components/home/Reviews";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { QuoteSection } from "@/components/home/QuoteSection";
-import { STRAPI_HOST } from "@/lib/strapi";
+import { resolveMedia } from "@/lib/media-url";
 //api call
 import { getHome } from "@/lib/get-home";
 //types call
@@ -21,7 +21,7 @@ export default async function Home() {
       id: tour.id,
       title: tour.title,
       description: tour.description,
-      image: `${STRAPI_HOST}${tour.image.url}`,
+      image: resolveMedia(tour.image.url),
       url: tour.url,
     };
   });
@@ -32,7 +32,7 @@ export default async function Home() {
       title: tour.title,
       price: tour.price,
       location: tour.location,
-      image: `${STRAPI_HOST}${tour.image.url}`,
+      image: resolveMedia(tour.image.url),
       url: tour.url,
     };
   });
@@ -41,7 +41,7 @@ export default async function Home() {
     return {
       description: review.description,
       rating: review.rating,
-      photo: `${STRAPI_HOST}${review.photo.url}`,
+      photo: resolveMedia(review.photo.url),
       name: review.name,
     };
   });
@@ -68,7 +68,7 @@ export default async function Home() {
       <QuoteSection
         phrase={footer.phrase}
         author={footer.author}
-        image={`${STRAPI_HOST}${footer.image.url}`}
+        image={resolveMedia(footer.image.url)}
       />
     </main>
   );
