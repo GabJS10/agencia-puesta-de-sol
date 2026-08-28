@@ -17,7 +17,7 @@
 | 0 | Cuentas (Railway + Cloudinary) | ✅ Hecho |
 | 1 | Código backend (Cloudinary, CSP, CORS) | ✅ Hecho |
 | 2 | Código frontend (media-url, next.config) | ✅ Hecho |
-| A | Commit + push a GitHub | ⏳ En curso |
+| A | Commit + push a GitHub | ✅ Hecho |
 | B | Servicio backend en Railway | ⬜ Pendiente |
 | C | Postgres en Railway | ⬜ Pendiente |
 | D | Variables del backend | ⬜ Pendiente |
@@ -71,7 +71,14 @@ el Node 26 de Homebrew (`brew unlink node`) porque rompía la compilación de `b
 
 ---
 
-## PASO A — Commit + push (⏳ En curso, 2026-08-28)
+## PASO A — Commit + push (✅ 2026-08-28)
+
+**Hecho:** commit `094a898` en rama **main** → push a `origin` (github.com/GabJS10/agencia-puesta-de-sol).
+Incluye solo los archivos del despliegue (código backend/frontend + docs). Los `.env` **no** están
+trackeados (el token no está en el repo). Quedaron fuera del commit cambios de tooling no relacionados
+(`.claude/`, `.agents/`, `skills-lock.json`, borrados en `.opencode/`, `.gitignore`).
+
+### Config previa (referencia)
 
 **Secretos generados** (`openssl rand -base64 16`) para las env vars de Railway — guardados por el usuario:
 `APP_KEYS` (2 valores), `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, `ENCRYPTION_KEY`.
