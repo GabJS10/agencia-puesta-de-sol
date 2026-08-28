@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReviewCard } from "./ReviewCard";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Review } from "@/types/Reviews";
 
 export function Reviews({ reviews }: { reviews: Review[] }) {
@@ -26,10 +27,8 @@ export function Reviews({ reviews }: { reviews: Review[] }) {
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-8">
           <div className="text-left max-w-2xl">
-            <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 block">
-              Testimonios
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+            <Eyebrow className="mb-4">Testimonios</Eyebrow>
+            <h2 className="font-display text-3xl md:text-5xl font-semibold mb-4 leading-[1.08]">
               ¡Únete a cientos de clientes satisfechos!
             </h2>
             <p className="text-muted text-lg">
@@ -49,7 +48,7 @@ export function Reviews({ reviews }: { reviews: Review[] }) {
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full bg-primary border-primary hover:bg-primary/80 text-white shadow-[0_0_15px_var(--color-brand-glow)] transition-all duration-300 w-12 h-12"
+              className="rounded-full bg-primary border-primary hover:bg-primary/80 text-primary-foreground shadow-sm transition-all duration-300 w-12 h-12"
               onClick={() => scroll("right")}
             >
               <ChevronRight className="h-6 w-6" />

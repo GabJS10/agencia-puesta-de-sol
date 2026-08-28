@@ -25,11 +25,11 @@ export function QuoteSection({ author, phrase, image }: Props) {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center text-foreground max-w-5xl">
-        <div className="w-16 h-1 bg-primary mx-auto mb-8 rounded-full"></div>
-        <blockquote className="text-2xl md:text-5xl font-bold leading-tight mb-8 font-serif tracking-tight">
+        <div className="brand-rule w-16 mx-auto mb-8"></div>
+        <blockquote className="font-display text-2xl md:text-5xl font-medium leading-[1.15] mb-8 tracking-tight">
           &quot;{phrase}&quot;
         </blockquote>
-        <cite className="block text-xl md:text-2xl text-primary font-medium not-italic tracking-wide uppercase">
+        <cite className="block text-xl md:text-2xl text-sol font-medium not-italic tracking-wide uppercase">
           — {author}
         </cite>
       </div>

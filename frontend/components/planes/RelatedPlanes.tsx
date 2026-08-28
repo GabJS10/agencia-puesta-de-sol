@@ -32,7 +32,7 @@ export function RelatedPlanes({ planes }: RelatedPlanesProps) {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-6">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+            <h2 className="font-display text-3xl md:text-4xl font-semibold mb-2 leading-[1.1]">
               También te podría interesar
             </h2>
             <p className="text-muted-foreground">

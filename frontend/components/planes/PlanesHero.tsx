@@ -20,9 +20,9 @@ export function PlanesHero() {
       <div className="relative z-10 w-full max-w-7xl px-6 flex flex-col md:flex-row items-start md:items-end justify-end md:justify-between gap-6 md:gap-12 pb-12 md:pb-16 h-full">
         {/* Left: Minimalist Text */}
         <div className="text-left flex flex-col gap-4 max-w-xl md:mb-4 w-full md:w-auto">
-          <h1 className="text-4xl md:text-7xl font-extralight text-white tracking-wide leading-tight">
+          <h1 className="font-display text-5xl md:text-7xl font-light text-white tracking-tight leading-[1.02]">
             Descubre <br />
-            <span className="font-medium">tu destino</span>
+            <span className="font-semibold text-atardecer">tu destino</span>
           </h1>
           <p className="text-white/80 text-lg font-light tracking-wide max-w-sm">
             Explora experiencias únicas diseñadas para conectar con la

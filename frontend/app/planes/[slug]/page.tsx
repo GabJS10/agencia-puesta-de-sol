@@ -98,7 +98,7 @@ export default async function PlanPage({
                 ))}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
+              <h1 className="font-display text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-[1.1]">
                 {plan.title}
               </h1>
 

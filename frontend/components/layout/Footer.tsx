@@ -21,7 +21,7 @@ export async function Footer({ number, email, AboutFooter, location }: Props) {
               <div className="w-6 h-6 rounded-full border border-primary flex items-center justify-center">
                 <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
               </div>
-              <h2 className="text-3xl font-bold tracking-tight">
+              <h2 className="font-display text-3xl font-semibold tracking-tight">
                 Puesta del Sol
               </h2>
             </div>
@@ -112,7 +112,7 @@ export async function Footer({ number, email, AboutFooter, location }: Props) {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-foreground/5 text-xs text-muted font-light">
           <p>© 2026 Puesta del Sol. Todos los derechos reservados.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
+          <div className="flex gap-6 mt-4 md:mt-0 hidden">
             <Link
               href="https://gabjs10.netlify.app/"
               className="hover:text-primary transition-colors"

@@ -54,7 +54,7 @@ export function Navbar() {
             height={40}
             className="rounded-full w-10 h-10 object-cover"
           />
-          <span className="tracking-tight">Puesta del Sol</span>
+          <span className="font-display tracking-tight">Puesta del Sol</span>
         </div>
 
         {/* Desktop Navigation */}

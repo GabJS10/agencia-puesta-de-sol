@@ -5,86 +5,110 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Light Theme - Clean Horizon */
+  /* ===== Puesta del Sol — "Atardecer del desierto" (light) ===== */
 
-  /* Base */
-  --color-canvas: #ffffff;
-  --color-canvas-subtle: #f9fafb; /* Gray 50 */
+  /* Paleta cruda (acentos que funcionan en claro y oscuro) */
+  --arena: #f4ead6; /* arena ocre */
+  --arena-2: #e9d9bc; /* arena tostada */
+  --barro: #b85c38; /* terracota */
+  --sol: #f5a538; /* marca (naranja atardecer) */
+  --brasa: #d6455f; /* magenta-coral del atardecer */
+  --mar: #159a8c; /* turquesa Caribe */
+  --noche: #171026; /* índigo profundo */
 
-  /* Surface */
-  --color-surface: #ffffff;
-  --color-surface-hover: #f3f4f6; /* Gray 100 */
+  /* Clean Horizon (semánticos usados por los componentes) */
+  --color-canvas: #f4ead6;
+  --color-canvas-subtle: #efe3cc;
+  --color-surface: #fbf5e9;
+  --color-surface-hover: #f1e6ce;
+  --color-ink: #2a2018; /* café casi negro, cálido */
+  --color-ink-muted: #7a6a55; /* taupe */
+  --color-brand: #f5a538;
+  --color-brand-foreground: #2a1a0a; /* espresso: legible sobre el sol */
+  --color-border: #e1cfa9; /* borde arena */
 
-  /* Text */
-  --color-ink: #030712; /* Gray 950 - Sharp, high contrast */
-  --color-ink-muted: #6b7280; /* Gray 500 */
-
-  /* Brand - Focused, not glowing */
-  --color-brand: #F5A538; /* Custom Orange */
-  --color-brand-foreground: #ffffff;
-
-  /* Accents */
-  --color-border: #e5e7eb; /* Gray 200 */
-
-  /* System */
-  --radius-card: 12px;
-  --radius-button: 6px;
-  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sistema shadcn (retintado cálido) */
+  --radius-card: 14px;
+  --radius-button: 8px;
+  --shadow-subtle: 0 1px 2px 0 rgb(74 45 20 / 0.06);
+  --radius: 0.75rem;
+  --background: #f4ead6;
+  --foreground: #2a2018;
+  --card: #fbf5e9;
+  --card-foreground: #2a2018;
+  --popover: #fbf5e9;
+  --popover-foreground: #2a2018;
+  --primary: #f5a538;
+  --primary-foreground: #2a1a0a;
+  --secondary: #e9d9bc;
+  --secondary-foreground: #2a2018;
+  --muted: #efe3cc;
+  --muted-foreground: #7a6a55;
+  --accent: #e9d9bc;
+  --accent-foreground: #2a2018;
+  --destructive: #d6455f;
+  --border: #e1cfa9;
+  --input: #e1cfa9;
+  --ring: #f5a538;
+  --chart-1: #f5a538;
+  --chart-2: #159a8c;
+  --chart-3: #b85c38;
+  --chart-4: #d6455f;
+  --chart-5: #e9b949;
+  --sidebar: #fbf5e9;
+  --sidebar-foreground: #2a2018;
+  --sidebar-primary: #f5a538;
+  --sidebar-primary-foreground: #2a1a0a;
+  --sidebar-accent: #e9d9bc;
+  --sidebar-accent-foreground: #2a2018;
+  --sidebar-border: #e1cfa9;
+  --sidebar-ring: #f5a538;
 }
 
 .dark {
-  /* Dark Theme - Deep Horizon */
+  /* ===== "Atardecer del desierto" (dark / noche) ===== */
 
-  /* Base */
-  --color-canvas: #09090b; /* Zinc 950 */
-  --color-canvas-subtle: #18181b; /* Zinc 900 */
+  --color-canvas: #171026;
+  --color-canvas-subtle: #211a33;
+  --color-surface: #211a33;
+  --color-surface-hover: #2c2440;
+  --color-ink: #f4ead6; /* texto arena */
+  --color-ink-muted: #b9a88c; /* arena apagada */
+  --color-brand: #f5a538;
+  --color-brand-foreground: #2a1a0a;
+  --color-border: #332a47;
 
-  /* Surface */
-  --color-surface: #18181b; 
-  --color-surface-hover: #27272a; /* Zinc 800 */
-
-  /* Text */
-  --color-ink: #fafafa; /* Zinc 50 */
-  --color-ink-muted: #a1a1aa; /* Zinc 400 */
-
-  /* Brand */
-  --color-brand: #F5A538; /* Custom Orange */
-  --color-brand-foreground: #ffffff;
-
-  /* Accents */
-  --color-border: #27272a; /* Zinc 800 */ --background: oklch(0.145 0 0); --foreground: oklch(0.985 0 0); --card: oklch(0.205 0 0); --card-foreground: oklch(0.985 0 0); --popover: oklch(0.205 0 0); --popover-foreground: oklch(0.985 0 0); --primary: oklch(0.922 0 0); --primary-foreground: oklch(0.205 0 0); --secondary: oklch(0.269 0 0); --secondary-foreground: oklch(0.985 0 0); --muted: oklch(0.269 0 0); --muted-foreground: oklch(0.708 0 0); --accent: oklch(0.269 0 0); --accent-foreground: oklch(0.985 0 0); --destructive: oklch(0.704 0.191 22.216); --border: oklch(1 0 0 / 10%); --input: oklch(1 0 0 / 15%); --ring: oklch(0.556 0 0); --chart-1: oklch(0.488 0.243 264.376); --chart-2: oklch(0.696 0.17 162.48); --chart-3: oklch(0.769 0.188 70.08); --chart-4: oklch(0.627 0.265 303.9); --chart-5: oklch(0.645 0.246 16.439); --sidebar: oklch(0.205 0 0); --sidebar-foreground: oklch(0.985 0 0); --sidebar-primary: oklch(0.488 0.243 264.376); --sidebar-primary-foreground: oklch(0.985 0 0); --sidebar-accent: oklch(0.269 0 0); --sidebar-accent-foreground: oklch(0.985 0 0); --sidebar-border: oklch(1 0 0 / 10%); --sidebar-ring: oklch(0.556 0 0);
+  --background: #171026;
+  --foreground: #f4ead6;
+  --card: #211a33;
+  --card-foreground: #f4ead6;
+  --popover: #211a33;
+  --popover-foreground: #f4ead6;
+  --primary: #f5a538;
+  --primary-foreground: #2a1a0a;
+  --secondary: #2c2440;
+  --secondary-foreground: #f4ead6;
+  --muted: #241d38;
+  --muted-foreground: #b9a88c;
+  --accent: #2c2440;
+  --accent-foreground: #f4ead6;
+  --destructive: #e86a80;
+  --border: #332a47;
+  --input: #3a3050;
+  --ring: #f5a538;
+  --chart-1: #f5a538;
+  --chart-2: #2bbfae;
+  --chart-3: #d67a4f;
+  --chart-4: #e86a80;
+  --chart-5: #e9b949;
+  --sidebar: #211a33;
+  --sidebar-foreground: #f4ead6;
+  --sidebar-primary: #f5a538;
+  --sidebar-primary-foreground: #2a1a0a;
+  --sidebar-accent: #2c2440;
+  --sidebar-accent-foreground: #f4ead6;
+  --sidebar-border: #332a47;
+  --sidebar-ring: #f5a538;
 }
 
 @theme inline {
@@ -102,7 +126,18 @@
 
   --color-border: var(--color-border);
 
+  /* Paleta de acento expuesta como utilidades (bg-sol, text-mar, border-barro, …) */
+  --color-arena: var(--arena);
+  --color-arena-2: var(--arena-2);
+  --color-barro: var(--barro);
+  --color-sol: var(--sol);
+  --color-brasa: var(--brasa);
+  --color-mar: var(--mar);
+  --color-noche: var(--noche);
+
+  /* Fuentes */
   --font-sans: var(--font-outfit);
+  --font-display: var(--font-fraunces);
 
   --radius-lg: var(--radius-card);
   --radius-md: var(--radius-button);
@@ -110,61 +145,34 @@
   --shadow-sm: var(--shadow-subtle);
 
   --color-sidebar-ring: var(--sidebar-ring);
-
   --color-sidebar-border: var(--sidebar-border);
-
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-
   --color-sidebar-accent: var(--sidebar-accent);
-
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-
   --color-sidebar-primary: var(--sidebar-primary);
-
   --color-sidebar-foreground: var(--sidebar-foreground);
-
   --color-sidebar: var(--sidebar);
-
   --color-chart-5: var(--chart-5);
-
   --color-chart-4: var(--chart-4);
-
   --color-chart-3: var(--chart-3);
-
   --color-chart-2: var(--chart-2);
-
   --color-chart-1: var(--chart-1);
-
   --color-ring: var(--ring);
-
   --color-input: var(--input);
-
   --color-destructive: var(--destructive);
-
   --color-accent-foreground: var(--accent-foreground);
-
   --color-accent: var(--accent);
-
   --color-secondary-foreground: var(--secondary-foreground);
-
   --color-secondary: var(--secondary);
-
   --color-popover-foreground: var(--popover-foreground);
-
   --color-popover: var(--popover);
-
   --color-card-foreground: var(--card-foreground);
-
   --color-card: var(--card);
 
   --radius-sm: calc(var(--radius) - 4px);
-
   --radius-xl: calc(var(--radius) + 4px);
-
   --radius-2xl: calc(var(--radius) + 8px);
-
   --radius-3xl: calc(var(--radius) + 12px);
-
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
@@ -178,22 +186,47 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar refinement - Minimalist */
-::-webkit-scrollbar {
-  width: 6px;
+/* ===== Firma de marca ===== */
+
+/* Fuente display para titulares */
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
 }
 
+/* Degradado atardecer: arena → sol → brasa */
+.gradient-atardecer {
+  background-image: linear-gradient(90deg, var(--arena-2), var(--sol), var(--brasa));
+}
+
+/* Regla de marca (línea fina con el degradado) */
+.brand-rule {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background-image: linear-gradient(90deg, var(--sol), var(--brasa), var(--mar));
+}
+
+/* Texto con degradado de atardecer */
+.text-atardecer {
+  background-image: linear-gradient(100deg, var(--sol), var(--brasa));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 8px;
+}
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
-  border-radius: 3px;
+  border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted);
+  background: var(--sol);
 }
 
 @layer base {

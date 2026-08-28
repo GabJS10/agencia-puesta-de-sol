@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DestinationCard } from "./DestinationCard";
 import { Button } from "@/components/ui/button";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { HomeTour } from "@/types/HomeTours";
 
 export function Destinations({ tours }: { tours: HomeTour[] }) {
@@ -27,10 +28,8 @@ export function Destinations({ tours }: { tours: HomeTour[] }) {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 md:mb-16 gap-6">
           <div>
-             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 block">
-              Explora
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold max-w-xl leading-tight">
+            <Eyebrow className="mb-4">Explora</Eyebrow>
+            <h2 className="font-display text-3xl md:text-5xl font-semibold max-w-xl leading-[1.08]">
               Descubre las maravillas de la Guajira
             </h2>
           </div>
@@ -47,7 +46,7 @@ export function Destinations({ tours }: { tours: HomeTour[] }) {
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full bg-primary border-primary hover:bg-primary/80 hover:border-primary text-white shadow-[0_0_15px_var(--color-brand-glow)] transition-all duration-300 w-12 h-12"
+              className="rounded-full bg-primary border-primary hover:bg-primary/80 hover:border-primary text-primary-foreground shadow-sm transition-all duration-300 w-12 h-12"
               onClick={() => scroll("right")}
             >
               <ChevronRight className="h-5 w-5" />

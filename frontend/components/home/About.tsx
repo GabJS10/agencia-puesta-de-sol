@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 
 interface Props {
   description: string;
@@ -20,10 +21,8 @@ export function About({ description, stats }: Props) {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-primary text-sm font-bold tracking-widest uppercase mb-6 block">
-            Sobre Nosotros
-          </span>
-          <p className="text-lg md:text-xl lg:text-2xl font-light text-foreground leading-relaxed max-w-480">
+          <Eyebrow className="mb-6">Sobre Nosotros</Eyebrow>
+          <p className="font-display text-2xl md:text-3xl lg:text-[2rem] font-normal text-foreground leading-snug max-w-480">
             {description}{" "}
           </p>
         </motion.div>
@@ -38,7 +37,7 @@ export function About({ description, stats }: Props) {
         >
           {stats.map((stat, index) => (
             <div key={index} className="flex flex-col gap-2">
-              <span className="text-3xl md:text-4xl font-bold text-foreground">
+              <span className="font-display text-4xl md:text-5xl font-semibold text-atardecer">
                 {stat.value}
               </span>
               <span className="text-muted text-sm tracking-wide uppercase">

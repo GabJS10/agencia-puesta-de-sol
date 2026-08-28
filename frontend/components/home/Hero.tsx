@@ -76,10 +76,10 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-4xl md:text-6xl font-bold text-foreground tracking-tight leading-tight">
+                <h2 className="font-display text-4xl md:text-6xl font-semibold text-foreground tracking-tight leading-[1.05]">
                   {slides[currentIndex].title}
                 </h2>
-                <div className="w-12 h-0.5 bg-primary mt-6 mb-4" />
+                <div className="brand-rule w-16 mt-6 mb-4" />
                 <p className="text-foreground/90 text-lg md:text-xl font-light leading-relaxed max-w-lg">
                   {slides[currentIndex].description}
                 </p>

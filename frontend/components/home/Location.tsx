@@ -1,13 +1,13 @@
+import { Eyebrow } from "@/components/ui/Eyebrow";
+
 export function Location() {
   return (
     <section className="py-24 bg-background px-4 md:px-20 text-foreground relative">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row gap-8 mb-8 md:items-end">
           <div className="flex-1">
-             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 block">
-              Ubicación
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-left mb-4 leading-tight">
+            <Eyebrow className="mb-4">Ubicación</Eyebrow>
+            <h2 className="font-display text-3xl md:text-5xl font-semibold text-left mb-4 leading-[1.08]">
               Donde nos encontramos
             </h2>
             <p className="text-muted text-lg max-w-2xl text-left font-light">

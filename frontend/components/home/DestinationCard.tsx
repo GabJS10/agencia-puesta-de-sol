@@ -45,7 +45,7 @@ export function DestinationCard({
         {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-2">
           <div className="space-y-1">
-            <h3 className="text-xl font-bold text-white leading-tight group-hover:text-primary transition-colors">{title}</h3>
+            <h3 className="font-display text-2xl font-semibold text-white leading-tight transition-colors group-hover:text-sol">{title}</h3>
             <div className="flex items-center gap-2 text-white/70">
               <MapPin className="h-4 w-4" />
               <span className="text-sm font-medium tracking-wide">{location}</span>

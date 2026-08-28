@@ -5,6 +5,7 @@ import { Location } from "@/components/home/Location";
 import { Reviews } from "@/components/home/Reviews";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { QuoteSection } from "@/components/home/QuoteSection";
+import { KanasBand } from "@/components/ui/KanasBand";
 import { resolveMedia } from "@/lib/media-url";
 //api call
 import { getHome } from "@/lib/get-home";
@@ -58,12 +59,14 @@ export default async function Home() {
     <main className="min-h-screen relative overflow-hidden">
       <Hero slides={HeroTours} />
       <About stats={home.estadistica} description={home.sobreNosotros} />
+      <KanasBand height={14} className="opacity-70" />
       <ScrollReveal>
         <Destinations tours={HomeTours} />
       </ScrollReveal>
       <ScrollReveal>
         <Reviews reviews={HomeReviews} />
       </ScrollReveal>
+      <KanasBand height={14} className="opacity-70" />
       <Location />
       <QuoteSection
         phrase={footer.phrase}
