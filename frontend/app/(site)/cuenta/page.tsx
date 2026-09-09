@@ -39,7 +39,13 @@ export default async function CuentaPage() {
             </h1>
             <p className="mt-1 text-muted-foreground">{user.email}</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/cuenta/perfil"
+              className="inline-flex items-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              Editar datos
+            </Link>
             {user.role === "ADMIN" && (
               <Link
                 href="/admin"

@@ -54,15 +54,112 @@ docker run -d --name pds-postgres -e POSTGRES_PASSWORD=postgres \
 ## Fase 1 — Modelo de datos + seed
 
 ### Modelo (`prisma/schema.prisma`)
-- `User`: `id`, `email` @unique, `passwordHash`, `name`, `phone?`, `role` (`CLIENT|ADMIN`, def CLIENT), timestamps.
-- `PlanType`: `id`, `type` @unique.  `PlanLocation`: `id`, `location` @unique.
-- `Plan`: `id`, `title`, `slug` @unique (se expondrá como `url`), `price`, `location`,
-  `description`/`itinerary?`/`includes`/`recommendations` (**Markdown**, `itinerary` opcional),
-  `photoUrl`, `galleryUrls String[]`, `tags String[]`, `published`, `planTypeId?`, `planLocationId?`, timestamps.
-- `PlanRequest`: `id`, `planId?`, `userId?` (ambos `onDelete: SetNull`), `name`, `email`, `phone`,
-  `travelDate`, `guests`, `message?`, `status` (`PENDING|CONTACTED|CONFIRMED|CANCELLED`), `createdAt`.
 
-Migración inicial: `prisma/migrations/20260909200326_init/` (aplicada al Postgres local).
+El esquema es intencionalmente pequeño: **usuarios/auth**, el **catálogo de planes** (con dos
+taxonomías) y las **solicitudes** de plan. Provider `postgresql`; cliente `prisma-client-js`.
+
+#### Diagrama entidad-relación
+
+```mermaid
+erDiagram
+    User ||--o{ PlanRequest : "realiza (userId, opcional)"
+    Plan ||--o{ PlanRequest : "solicitado en (planId, opcional)"
+    PlanType ||--o{ Plan : "clasifica (planTypeId, opcional)"
+    PlanLocation ||--o{ Plan : "ubica (planLocationId, opcional)"
+
+    User {
+        int id PK
+        string email UK
+        string passwordHash
+        string name
+        string phone "nullable"
+        Role role "CLIENT | ADMIN (def CLIENT)"
+        datetime createdAt
+        datetime updatedAt
+    }
+    PlanType {
+        int id PK
+        string type UK
+    }
+    PlanLocation {
+        int id PK
+        string location UK
+    }
+    Plan {
+        int id PK
+        string title
+        string slug UK "expuesto como url"
+        float price
+        string location "texto libre"
+        string description "Markdown"
+        string itinerary "Markdown, nullable"
+        string includes "Markdown"
+        string recommendations "Markdown"
+        string photoUrl
+        string_array galleryUrls "text[]"
+        string_array tags "text[]"
+        bool published "def true"
+        int planTypeId FK "nullable"
+        int planLocationId FK "nullable"
+        datetime createdAt
+        datetime updatedAt
+    }
+    PlanRequest {
+        int id PK
+        int planId FK "nullable, onDelete SetNull"
+        int userId FK "nullable, onDelete SetNull"
+        string name
+        string email
+        string phone
+        datetime travelDate
+        int guests
+        string message "nullable"
+        RequestStatus status "PENDING|CONTACTED|CONFIRMED|CANCELLED (def PENDING)"
+        datetime createdAt
+    }
+```
+
+#### Enums
+- `Role`: `CLIENT` | `ADMIN`.
+- `RequestStatus`: `PENDING` | `CONTACTED` | `CONFIRMED` | `CANCELLED`.
+
+#### Tablas (columnas y reglas)
+
+**User** — cuentas (clientes y administradores).
+- `id` PK autoincrement · `email` **único** (login) · `passwordHash` (bcrypt) · `name` ·
+  `phone?` · `role` (def `CLIENT`) · `createdAt`/`updatedAt`.
+- Relación: `1—N` con `PlanRequest` (un usuario puede tener muchas solicitudes).
+
+**PlanType** — taxonomía "tipo de plan" (p.ej. Aventura, Playa). `type` **único**. `1—N` con `Plan`.
+
+**PlanLocation** — taxonomía "ubicación/categoría". `location` **único**. `1—N` con `Plan`.
+
+**Plan** — el catálogo (núcleo del sitio).
+- `slug` **único** → el frontend lo expone como `url` y enruta `/planes/[slug]`.
+- Textos enriquecidos en **Markdown**: `description`, `includes`, `recommendations` (requeridos) e
+  `itinerary` (opcional).
+- Media: `photoUrl` (portada) y `galleryUrls` como **array de texto** (`text[]`, URLs de Cloudinary/
+  Unsplash, absolutas). `tags` también `text[]` (evita una tabla aparte).
+- `published` controla la visibilidad pública (las lecturas del sitio filtran `published = true`).
+- FKs **opcionales** `planTypeId`/`planLocationId` → borrar un tipo/ubicación deja el plan sin esa
+  categoría (en el admin se desvincula antes de borrar).
+
+**PlanRequest** — solicitud de un plan (reemplaza el antiguo "WhatsApp").
+- **Abierta**: `userId?` es nullable (un invitado puede solicitar). Si hay sesión, se liga a la cuenta.
+- `planId?` también nullable; ambas FKs con **`onDelete: SetNull`** para no perder la solicitud si se
+  borra el plan o el usuario.
+- Datos de contacto propios (`name`, `email`, `phone`) + `travelDate`, `guests`, `message?`.
+- `status` gestionado desde el admin (flujo Pendiente → Contactado → Confirmado / Cancelado).
+
+#### Notas de diseño
+- Los arrays escalares (`galleryUrls`, `tags`) usan el tipo `text[]` nativo de Postgres — simple y
+  suficiente para el alcance; si más adelante se necesita orden/relación por imagen, se migrarían a
+  tablas propias.
+- Todas las relaciones plan↔taxonomía y solicitud↔(plan/usuario) son **opcionales** a propósito, para
+  que borrar catálogo/usuarios nunca rompa integridad ni elimine solicitudes en cascada.
+
+Migración inicial: `prisma/migrations/20260909200326_init/` (aplicada al Postgres local; en producción
+se aplicó en la Fase 6).
 
 ### Seed (`prisma/seed.ts`, idempotente)
 - 1 admin (upsert por email, password hasheada con bcrypt, rol ADMIN).
