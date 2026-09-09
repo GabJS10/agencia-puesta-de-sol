@@ -22,11 +22,11 @@ export interface Plane {
   title: string;
   location: string;
   price: number;
-  description: any;
-  recommendations: any;
-  includes: any;
-  itinerary: any;
-  url: string;
+  description: string; // Markdown
+  recommendations: string; // Markdown
+  includes: string; // Markdown
+  itinerary: string; // Markdown
+  url: string; // slug
   photo: Image;
   gallery: Image[];
   tags: Tag[];

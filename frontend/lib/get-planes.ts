@@ -1,4 +1,6 @@
-import { query } from "@/lib/strapi";
+import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/db";
+import { planInclude, toPlane } from "@/lib/plan-map";
 
 interface GetPlanesParams {
   page?: number;
@@ -8,6 +10,24 @@ interface GetPlanesParams {
   locations?: string[];
 }
 
+const PAGE_SIZE = 9;
+
+// Traduce el `sort` estilo Strapi ("campo:dir") a orderBy de Prisma.
+function parseSort(sort: string): Prisma.PlanOrderByWithRelationInput {
+  const [field, dir] = sort.split(":");
+  const direction: Prisma.SortOrder = dir === "asc" ? "asc" : "desc";
+  switch (field) {
+    case "price":
+      return { price: direction };
+    case "title":
+      return { title: direction };
+    case "createdAt":
+      return { createdAt: direction };
+    default:
+      return { createdAt: "desc" };
+  }
+}
+
 export async function getPlanes({
   page = 1,
   search = "",
@@ -15,51 +35,40 @@ export async function getPlanes({
   types = [],
   locations = [],
 }: GetPlanesParams) {
-  console.log("getPlanes", { page, search, sort, types, locations });
-  console.log("De nuevo aca");
-  const queryParams = new URLSearchParams({
-    "populate[photo]": "true",
-    "populate[gallery]": "true",
-    "populate[plan_location]": "true",
-    "populate[plan_type]": "true",
-    "populate[tags]": "true",
-    "pagination[page]": page.toString(),
-    "pagination[pageSize]": "9",
-  });
+  const where: Prisma.PlanWhereInput = { published: true };
 
-  // 1. Search Filter (Title contains)
   if (search) {
-    queryParams.append("filters[title][$containsi]", search);
+    where.title = { contains: search, mode: "insensitive" };
   }
-
-  // 2. Type Filter (IN array)
   if (types.length > 0) {
-    types.forEach((type, index) => {
-      queryParams.append(`filters[plan_type][type][$in][${index}]`, type);
-    });
+    where.planType = { type: { in: types } };
   }
-
-  // 3. Location Filter (IN array)
   if (locations.length > 0) {
-    locations.forEach((location, index) => {
-      queryParams.append(
-        `filters[plan_location][location][$in][${index}]`,
-        location,
-      );
-    });
+    where.planLocation = { location: { in: locations } };
   }
 
-  // 4. Sort
-  if (sort) {
-    queryParams.append("sort", sort);
-  } else {
-    // Default sort if none provided
-    queryParams.append("sort", "createdAt:desc");
-  }
+  const orderBy = sort ? parseSort(sort) : { createdAt: "desc" as const };
 
-  const res = await query(`planes?${queryParams.toString()}`, {
-    next: { revalidate: 60 },
-  });
+  const [total, rows] = await Promise.all([
+    prisma.plan.count({ where }),
+    prisma.plan.findMany({
+      where,
+      include: planInclude,
+      orderBy,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+  ]);
 
-  return res;
+  return {
+    data: rows.map(toPlane),
+    meta: {
+      pagination: {
+        page,
+        pageSize: PAGE_SIZE,
+        pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+        total,
+      },
+    },
+  };
 }

@@ -1,6 +1,6 @@
-import { query } from "@/lib/strapi";
+import { SOCIAL } from "@/content/site";
 
+// Contenido fijo (antes single type SocialMedia de Strapi). Ver content/site.ts.
 export async function getSocial() {
-  const data = await query("social-media");
-  return data.data;
+  return SOCIAL;
 }

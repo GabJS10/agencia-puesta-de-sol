@@ -1,10 +1,6 @@
-import { query } from "@/lib/strapi";
+import { HOME } from "@/content/home";
 
+// Contenido fijo (antes single type Home de Strapi). Ver content/home.ts.
 export async function getHome() {
-  const data = await query(
-    "home?populate[HeroTours][populate]=image&populate[HomeTours][populate]=image&populate[HomeReviews][populate]=photo&populate[Footer][populate]=image&populate[estadistica][populate]=*",
-    { next: { revalidate: 3600 } }, // Cache for 1 hour
-  );
-
-  return data.data;
+  return HOME;
 }

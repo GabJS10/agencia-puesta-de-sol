@@ -1,7 +1,5 @@
-import { STRAPI_HOST } from "@/lib/strapi";
 import { resolveMedia } from "@/lib/media-url";
 import { getPlanBySlug } from "@/lib/get-plan-by-slug";
-import { getPhone } from "@/lib/get-phone";
 import { getPlanes } from "@/lib/get-planes";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -13,15 +11,17 @@ import { RelatedPlanes } from "@/components/planes/RelatedPlanes";
 import { formatPrice } from "@/helpers/formatPrice";
 import { Plane } from "@/types/Planes";
 
+// Consulta la BD: renderizar en cada request (el build no alcanza el Postgres interno).
+export const dynamic = "force-dynamic";
+
 export default async function PlanPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [plan, phone, planesRes] = await Promise.all([
+  const [plan, planesRes] = await Promise.all([
     getPlanBySlug(slug),
-    getPhone(),
     getPlanes({ page: 1 }),
   ]);
 
@@ -77,7 +77,7 @@ export default async function PlanPage({
             <PlanGallery
               mainImage={plan.photo}
               gallery={plan.gallery}
-              baseUrl={STRAPI_HOST || "http://localhost:1337"}
+              baseUrl=""
             />
           </div>
 
@@ -133,8 +133,8 @@ export default async function PlanPage({
               {/* CTA Actions */}
               <div className="mt-auto">
                 <ReservationForm
+                  planId={plan.id}
                   planTitle={plan.title}
-                  phoneNumber={phone}
                   price={plan.price}
                   type={plan.plan_type.type}
                 />

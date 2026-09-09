@@ -1,6 +1,9 @@
-import { query } from "@/lib/strapi";
+import { prisma } from "@/lib/db";
 
+// Devuelve [{ location }] como antes (para poblar los filtros).
 export async function getPlanLocations() {
-  const data = await query("plan-locations", { next: { revalidate: 3600 } });
-  return data.data;
+  return prisma.planLocation.findMany({
+    select: { location: true },
+    orderBy: { location: "asc" },
+  });
 }

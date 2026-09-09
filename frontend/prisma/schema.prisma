@@ -1,0 +1,86 @@
+// Backend propio de "Puesta del Sol" — reemplazo de Strapi.
+// Fase 1: modelo mínimo (usuarios/auth, planes, solicitudes).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  CONTACTED
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role          @default(CLIENT)
+  requests     PlanRequest[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model PlanType {
+  id    Int    @id @default(autoincrement())
+  type  String @unique
+  plans Plan[]
+}
+
+model PlanLocation {
+  id       Int    @id @default(autoincrement())
+  location String @unique
+  plans    Plan[]
+}
+
+model Plan {
+  id              Int           @id @default(autoincrement())
+  title           String
+  slug            String        @unique // expuesto al frontend como `url`
+  price           Float
+  location        String
+  description     String // Markdown
+  itinerary       String? // Markdown
+  includes        String // Markdown
+  recommendations String // Markdown
+  photoUrl        String
+  galleryUrls     String[]
+  tags            String[]
+  published       Boolean       @default(true)
+  planType        PlanType?     @relation(fields: [planTypeId], references: [id])
+  planTypeId      Int?
+  planLocation    PlanLocation? @relation(fields: [planLocationId], references: [id])
+  planLocationId  Int?
+  requests        PlanRequest[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model PlanRequest {
+  id         Int           @id @default(autoincrement())
+  plan       Plan?         @relation(fields: [planId], references: [id], onDelete: SetNull)
+  planId     Int?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId     Int?
+  name       String
+  email      String
+  phone      String
+  travelDate DateTime
+  guests     Int
+  message    String?
+  status     RequestStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+}

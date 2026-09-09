@@ -1,17 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
-import {
-  BlocksRenderer,
-  type BlocksContent,
-} from "@strapi/blocks-react-renderer";
 
 interface TabItem {
   id: string;
   label: string;
-  content: BlocksContent | null;
+  content: string | null;
 }
 
 interface PlanTabsProps {
@@ -20,7 +17,7 @@ interface PlanTabsProps {
 
 export function PlanTabs({ items }: PlanTabsProps) {
   // Filter out tabs with no content
-  const validItems = items.filter((item) => item.content);
+  const validItems = items.filter((item) => item.content && item.content.trim());
 
   const [activeTab, setActiveTab] = useState(validItems[0]?.id);
 
@@ -58,34 +55,11 @@ export function PlanTabs({ items }: PlanTabsProps) {
           return (
             <div
               key={item.id}
-              className="prose prose-slate dark:prose-invert max-w-none prose-headings:!text-foreground prose-p:!text-foreground prose-li:!text-foreground prose-strong:!text-foreground dark:prose-headings:!text-foreground dark:prose-p:!text-foreground dark:prose-li:!text-foreground dark:prose-strong:!text-foreground"
+              className="prose prose-slate dark:prose-invert max-w-none prose-headings:!text-foreground prose-p:!text-foreground prose-li:!text-foreground prose-strong:!text-foreground"
             >
-              <BlocksRenderer
-                content={item.content!}
-                blocks={{
-                  paragraph: ({ children }) => (
-                    <p className="!text-foreground mb-4">
-                      {children}
-                    </p>
-                  ),
-                  heading: ({ children, level }) => {
-                    const Tag = `h${level}` as React.ElementType;
-                    return (
-                      <Tag className="!text-foreground font-semibold my-4">
-                        {children}
-                      </Tag>
-                    );
-                  },
-                  list: ({ children, format }) => {
-                    const Tag = (format === "ordered" ? "ol" : "ul") as React.ElementType;
-                    return (
-                      <Tag className="!text-foreground list-inside my-4">
-                        {children}
-                      </Tag>
-                    );
-                  },
-                }}
-              />
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {item.content!}
+              </ReactMarkdown>
             </div>
           );
         })}

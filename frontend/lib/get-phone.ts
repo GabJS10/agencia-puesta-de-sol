@@ -1,11 +1,6 @@
-import { query } from "@/lib/strapi";
+import { PHONE } from "@/content/site";
 
-export async function getPhone() {
-  const res = await query("phone");
-  // Strapi Single Type usually returns { data: { id: ..., attributes: { ... } } }
-  // or if using a transformer/plugin, it might be flatter.
-  // We'll access the phone property safely.
-
-  const phone = res?.data?.number || res?.data?.attributes?.number;
-  return phone as string;
+// Contenido fijo (antes single type Phone de Strapi). Ver content/site.ts.
+export async function getPhone(): Promise<string> {
+  return PHONE;
 }

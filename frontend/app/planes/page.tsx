@@ -15,6 +15,9 @@ export const metadata = {
     "Descubre nuestros planes turísticos en La Guajira y alrededores.",
 };
 
+// Consulta la BD: renderizar en cada request (el build no alcanza el Postgres interno).
+export const dynamic = "force-dynamic";
+
 export default async function PlanesPage({
   searchParams,
 }: {

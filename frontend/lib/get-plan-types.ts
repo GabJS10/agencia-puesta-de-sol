@@ -1,6 +1,9 @@
-import { query } from "@/lib/strapi";
+import { prisma } from "@/lib/db";
 
+// Devuelve [{ type }] como antes (para poblar los filtros).
 export async function getPlanTypes() {
-  const data = await query("plan-types", { next: { revalidate: 3600 } });
-  return data.data;
+  return prisma.planType.findMany({
+    select: { type: true },
+    orderBy: { type: "asc" },
+  });
 }

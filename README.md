@@ -1,80 +1,50 @@
 # Puesta del Sol Web
 
-Welcome to the **Puesta del Sol Web** project! This repository contains both the frontend application and the backend CMS for the Puesta del Sol website.
+Sitio web de la agencia de turismo **Puesta del Sol** (La Guajira, Colombia). Aplicación
+**Next.js** única con backend propio integrado (API + Postgres vía Prisma) — reemplaza al antiguo
+CMS Strapi.
 
-## 🏗 Project Structure
+## 🏗 Estructura
 
-The project is divided into two main directories:
+- `/frontend` — La aplicación completa: web pública + API (Route Handlers) + acceso a datos (Prisma).
+  - `app/` — páginas y API (`app/api/*`).
+  - `prisma/` — esquema y migraciones (`schema.prisma`, `migrations/`, `seed.ts`).
+  - `lib/` — Prisma client (`db.ts`), auth/sesión (`auth.ts`, `session.ts`), lecturas (`get-*.ts`),
+    Cloudinary (`cloudinary.ts`).
+  - `content/` — contenido fijo de Home/Redes/Teléfono/Galería.
+  - `components/`, `proxy.ts` (protección de rutas).
 
-- `/frontend` - The user-facing web application built with Next.js.
-- `/backend` - The content management system (CMS) and API built with Strapi.
+## 💻 Stack
 
----
+- **Framework:** Next.js 16 (App Router) + React 19 + TypeScript
+- **Estilos:** Tailwind CSS v4 + Radix UI + Framer Motion
+- **Base de datos:** PostgreSQL + [Prisma](https://www.prisma.io/) ORM
+- **Auth:** credenciales propias (bcrypt + JWT en cookie httpOnly, `jose`)
+- **Imágenes:** Cloudinary
+- **Gestor de paquetes:** pnpm
 
-## 💻 Frontend
+## 🚀 Arranque (desarrollo)
 
-The frontend is a modern web application designed for high performance and excellent user experience.
+```bash
+cd frontend
+pnpm install
 
-### Tech Stack
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **UI Library:** [React](https://react.dev/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Components:** [Radix UI](https://www.radix-ui.com/)
-- **Animations:** [Framer Motion](https://motion.dev/)
-- **Language:** TypeScript
-- **Package Manager:** pnpm
+# Postgres local (Docker)
+docker run -d --name pds-postgres -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=puestadelsol -p 5433:5432 postgres:16
 
-### Getting Started
+# Variables: crear frontend/.env con DATABASE_URL, JWT_SECRET, CLOUDINARY_*, ADMIN_EMAIL/PASSWORD
+pnpm exec prisma migrate dev   # crea el esquema
+pnpm db:seed                   # admin + datos de ejemplo
+pnpm dev                       # http://localhost:3000
+```
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-3. Run the development server:
-   ```bash
-   pnpm dev
-   ```
-   The frontend will be available at `http://localhost:3000`.
+El panel de administración está en `/admin` (requiere un usuario con rol `ADMIN`).
 
----
+## 🚀 Despliegue
 
-## ⚙️ Backend
+Un solo servicio Next.js + un Postgres gestionado (Railway). Ver `DESPLIEGUE.md`.
 
-The backend serves as a headless CMS, providing the data and content for the frontend application.
+## 📄 Licencia
 
-### Tech Stack
-- **Framework:** [Strapi](https://strapi.io/)
-- **Database:** SQLite (Default for development)
-- **Language:** TypeScript
-- **Package Manager:** pnpm
-
-### Getting Started
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-3. Run the development server in watch mode:
-   ```bash
-   pnpm dev
-   ```
-   The Strapi admin panel will be available at `http://localhost:1337/admin`.
-
----
-
-## 🚀 Deployment
-
-- The **Frontend** can be easily deployed on [Vercel](https://vercel.com/) or any Node.js hosting.
-- The **Backend** (Strapi) requires a Node.js environment and a persistent database (e.g., PostgreSQL in production).
-
-## 📄 License
-
-This project is private.
+Proyecto privado.

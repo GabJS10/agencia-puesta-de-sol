@@ -5,12 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Globe } from "lucide-react";
+import { Globe, User } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 
+type SessionUser = { name: string; role: "CLIENT" | "ADMIN" };
+
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -21,6 +24,20 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Estado de sesión (para alternar Ingresar / Mi cuenta). Se recarga al navegar.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (active) setUser(d.user ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
 
   const navLinks = [
     { name: "INICIO", href: "/" },
@@ -89,6 +106,22 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
+
+          {/* Sesión: Ingresar / Mi cuenta */}
+          <Link
+            href={user ? "/cuenta" : "/ingresar"}
+            className={cn(
+              "flex items-center gap-2 rounded-full border px-4 py-2 text-xs transition-all backdrop-blur-sm hover:border-primary/50 hover:bg-primary/10",
+              isScrolled
+                ? "border-foreground/10 text-foreground"
+                : "border-white/10 text-white",
+            )}
+          >
+            <User className="h-3 w-3 text-primary" />
+            <span className="tracking-wider">
+              {user ? "MI CUENTA" : "INGRESAR"}
+            </span>
+          </Link>
 
           {/* Language Selector */}
           <button

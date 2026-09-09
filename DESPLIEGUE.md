@@ -1,83 +1,51 @@
-# Plan de despliegue — Puesta del Sol Web (Railway)
+# Despliegue — Puesta del Sol Web (Railway)
 
-> Combo elegido: **Railway** (monorepo: frontend + Strapi + Postgres en un mismo proyecto) + **Cloudinary** (imágenes).
-> Se ejecuta por pasos. Marca cada casilla `[x]` al completarla. Bitácora detallada en `specs/despliegue-registro.md`.
+> **Un solo servicio** Next.js (`frontend`) + **Postgres** gestionado, en Railway. Cloudinary para
+> imágenes. Reemplaza el esquema anterior de dos servicios (frontend + Strapi).
 
-## Contexto
+## Arquitectura en producción
 
-Monorepo con **frontend Next.js** y **backend Strapi 5** (en local: SQLite + imágenes en disco).
-Se despliega **todo en un lugar** con Railway: dos servicios desde el mismo repo (root `frontend` y
-root `backend`) + un Postgres gestionado. Las imágenes van a **Cloudinary**. Costo: ~$5/mes (crédito
-de prueba inicial). Resultado: sitio público + Strapi + Postgres + Cloudinary, con datos persistentes.
+- Proyecto Railway: `responsible-happiness`.
+- Servicio **frontend** (root `/frontend`, builder RAILPACK, deploy desde GitHub `main`):
+  - Build: `pnpm install && pnpm build` (`pnpm build` = `prisma generate && next build`).
+  - Start: `pnpm start` (`next start`). **Las migraciones NO corren en el arranque** (Prisma es
+    devDependency y RAILPACK puede podarla en runtime); se aplican fuera de banda (ver abajo).
+  - Dominio: `frontend-production-0f36.up.railway.app`.
+- Servicio **Postgres** (volumen persistente). La app lo usa vía `DATABASE_URL` (red privada interna).
 
----
+## Variables (servicio frontend, env production)
 
-## FASE 0 — Cuentas ✅
-Neon, Cloudinary, Render y Vercel ya existían. Para este plan solo se usan **Railway** (nuevo) y **Cloudinary**.
+- `DATABASE_URL=${{Postgres.DATABASE_URL}}`, `DATABASE_SSL=false`
+- `JWT_SECRET` (secreto propio de sesión)
+- `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD` (solo los consume el seed)
+- `PORT` lo inyecta Railway.
 
-## FASE 1 — Código backend ✅
-- `backend/config/plugins.ts` → provider Cloudinary.
-- `backend/config/middlewares.ts` → CSP permite `res.cloudinary.com` + CORS con `FRONTEND_URL`.
-- Instalado `@strapi/provider-upload-cloudinary`.
-- `config/database.ts` ya soportaba Postgres vía `DATABASE_URL` (sin cambios).
+## Migraciones y seed en producción
 
-## FASE 2 — Código frontend ✅
-- `frontend/lib/media-url.ts` (`resolveMedia`), usado en `app/page.tsx`, `app/planes/page.tsx`,
-  `app/planes/[slug]/page.tsx`, `components/planes/PlanGallery.tsx`.
-- `next.config.ts` → `res.cloudinary.com` añadido.
-- Verificado con `npx tsc --noEmit` (exit 0).
+El `DATABASE_URL` interno (`postgres.railway.internal`) solo resuelve dentro de Railway. Para migrar/
+seed desde local se usa un **proxy TCP temporal** del Postgres:
 
----
+1. Crear proxy TCP (puerto 5432) sobre el servicio Postgres → da un endpoint público `host:puerto`.
+2. `DATABASE_URL="postgresql://postgres:<pwd>@<host>:<puerto>/railway" pnpm exec prisma migrate deploy`
+3. `DATABASE_URL=... ADMIN_EMAIL=... ADMIN_PASSWORD=... pnpm exec tsx prisma/seed.ts`
+4. **Borrar el proxy TCP** al terminar (no dejar el Postgres expuesto públicamente).
 
-## PASO A — Subir código a GitHub
-- [ ] Commit + push de los cambios (Railway despliega desde GitHub).
-- Rama: a definir (`main` directa o `deploy-setup`).
+> El seed es idempotente (upsert), así que puede re-ejecutarse sin duplicar.
 
-## PASO B — Servicio BACKEND en Railway
-- [ ] New Project → Deploy from GitHub repo → `puestadelsol-web`.
-- [ ] En el servicio: **Settings → Root Directory = `backend`**.
-- [ ] Si no autodetecta: Build `pnpm install && pnpm build`, Start `pnpm start`.
-- [ ] Variable `NIXPACKS_NODE_VERSION=22`.
+## Flujo de despliegue
 
-## PASO C — Postgres
-- [ ] En el proyecto: New → Database → **PostgreSQL**.
+1. `git push` a `main` → Railway reconstruye y despliega el servicio frontend.
+2. Verificar que el deployment quede en **SUCCESS**.
+3. Verificar el sitio público (home, `/planes` desde Postgres, login admin en `/admin`).
 
-## PASO D — Variables del BACKEND
-- [ ] Secretos (ya generados): `APP_KEYS` (2 valores), `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`,
-  `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, `ENCRYPTION_KEY`.
-- [ ] `DATABASE_CLIENT=postgres`
-- [ ] `DATABASE_URL=${{Postgres.DATABASE_URL}}` (referencia al servicio Postgres)
-- [ ] `DATABASE_SSL=false`
-- [ ] `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`
-- [ ] `HOST=0.0.0.0`, `NODE_ENV=production` (NO fijar `PORT`, lo inyecta Railway)
-- [ ] Settings → Networking → **Generate Domain** → anotar URL del backend.
+## Verificación
 
-## PASO E — Admin + API token
-- [ ] Abrir `/admin`, crear usuario admin.
-- [ ] Settings → API Tokens → crear token **read-only** → copiarlo.
+- `GET /` y `/planes` cargan desde Postgres; imágenes visibles (Cloudinary/Unsplash).
+- `/planes/[slug]` → formulario de solicitud crea un `PlanRequest` (visible en `/admin/solicitudes`).
+- Login admin (`ADMIN_EMAIL`/`ADMIN_PASSWORD`) → `/admin` accesible; CRUD de planes con subida de imagen.
 
-## PASO F — Servicio FRONTEND en Railway
-- [ ] New → GitHub Repo (mismo repo) → **Root Directory = `frontend`**.
-- [ ] Variables: `STRAPI_HOST=https://<backend>.up.railway.app`, `STRAPI_TOKEN=<token del Paso E>`.
-- [ ] Generate Domain → anotar URL del frontend.
+## Historial
 
-## PASO G — CORS
-- [ ] En el backend: `FRONTEND_URL=https://<frontend>.up.railway.app` → redeploy del backend.
-
-## PASO H — Cargar contenido
-- [ ] (a) Reingresar contenido en el admin, o (b) `strapi transfer` desde local. Imágenes → Cloudinary.
-
----
-
-## Verificación final
-- [ ] Admin carga y permite login; subir imagen genera URL `res.cloudinary.com/...`.
-- [ ] `GET /api/planes?populate=photo` con Bearer token devuelve datos.
-- [ ] Home y `/planes` cargan; imágenes visibles (Cloudinary).
-- [ ] Plan → botón "Reservar" abre WhatsApp.
-- [ ] Redeploy del backend → contenido e imágenes persisten.
-
-## Notas
-- Railway no es gratis permanente: crédito inicial, luego ~$5/mes.
-- Postgres de Railway por red privada → sin SSL.
-- Seguridad: usar `STRAPI_TOKEN` nuevo (el de `frontend/.env` está commiteado); rotar el viejo.
-- Enfoque anterior (Render + Neon) descartado.
+- El backend Strapi (`agencia-puesta-de-sol`) y sus tablas en Postgres fueron **retirados** en la
+  migración a backend propio (Fases 0–6, ver `specs/backend-propio-fase-*.md`).

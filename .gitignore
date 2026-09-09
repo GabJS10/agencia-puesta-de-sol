@@ -1,0 +1,15 @@
+# Dependencias
+node_modules/
+
+# Entornos
+.env
+.env.*
+!.env.example
+
+# Builds
+.next/
+dist/
+
+# Sistema
+.DS_Store
+*.log
