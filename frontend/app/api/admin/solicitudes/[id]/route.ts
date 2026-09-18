@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { dayRangeUtc } from "@/lib/date-range";
 
 export const runtime = "nodejs";
 
@@ -24,13 +25,37 @@ export async function PATCH(req: Request, { params }: Ctx) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Estado inválido" }, { status: 400 });
   }
-  try {
-    await prisma.planRequest.update({
-      where: { id: reqId },
-      data: { status: parsed.data.status },
-    });
-  } catch {
+  const current = await prisma.planRequest.findUnique({
+    where: { id: reqId },
+    select: { planId: true, travelDate: true },
+  });
+  if (!current) {
     return NextResponse.json({ error: "No encontrada" }, { status: 404 });
   }
+
+  // Reserva exclusiva por día: evitar dos confirmadas del mismo plan/día.
+  if (parsed.data.status === "CONFIRMED" && current.planId) {
+    const { gte, lt } = dayRangeUtc(current.travelDate);
+    const conflict = await prisma.planRequest.findFirst({
+      where: {
+        id: { not: reqId },
+        planId: current.planId,
+        status: "CONFIRMED",
+        travelDate: { gte, lt },
+      },
+      select: { id: true },
+    });
+    if (conflict) {
+      return NextResponse.json(
+        { error: "Ya hay una reserva confirmada para ese plan en esa fecha" },
+        { status: 409 },
+      );
+    }
+  }
+
+  await prisma.planRequest.update({
+    where: { id: reqId },
+    data: { status: parsed.data.status },
+  });
   return NextResponse.json({ ok: true });
 }

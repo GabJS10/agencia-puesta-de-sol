@@ -1,6 +1,7 @@
 import { resolveMedia } from "@/lib/media-url";
 import { getPlanBySlug } from "@/lib/get-plan-by-slug";
 import { getPlanes } from "@/lib/get-planes";
+import { getUnavailableDates } from "@/lib/get-plan-availability";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, CheckCircle2, ShieldCheck } from "lucide-react";
@@ -28,6 +29,8 @@ export default async function PlanPage({
   if (!plan) {
     notFound();
   }
+
+  const unavailableDates = await getUnavailableDates(plan.id);
 
   // Format related planes
   const relatedPlanes = planesRes.data
@@ -137,6 +140,7 @@ export default async function PlanPage({
                   planTitle={plan.title}
                   price={plan.price}
                   type={plan.plan_type.type}
+                  unavailableDates={unavailableDates}
                 />
               </div>
             </div>

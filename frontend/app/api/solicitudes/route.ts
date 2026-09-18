@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { dayRangeUtc, startOfDayUtc } from "@/lib/date-range";
 
 export const runtime = "nodejs";
 
@@ -28,6 +29,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Fecha inválida" }, { status: 400 });
   }
 
+  // Disponibilidad exclusiva por día: una reserva CONFIRMED ocupa el día.
+  if (planId) {
+    const { gte, lt } = dayRangeUtc(date);
+    const taken = await prisma.planRequest.findFirst({
+      where: { planId, status: "CONFIRMED", travelDate: { gte, lt } },
+      select: { id: true },
+    });
+    if (taken) {
+      return NextResponse.json(
+        { error: "Esa fecha ya no está disponible para este plan" },
+        { status: 409 },
+      );
+    }
+  }
+
   // Solicitud abierta: si hay sesión, se liga a la cuenta.
   const session = await getSession();
 
@@ -38,7 +54,7 @@ export async function POST(req: Request) {
       name,
       email,
       phone,
-      travelDate: date,
+      travelDate: startOfDayUtc(date),
       guests,
       message: message || null,
     },

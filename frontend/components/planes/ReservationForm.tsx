@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { toDayKey } from "@/lib/date-range";
 import { Calendar } from "@/components/ui/calendar";
 
 interface ReservationFormProps {
@@ -20,9 +21,17 @@ interface ReservationFormProps {
   planTitle: string;
   type: string;
   price: number;
+  unavailableDates?: string[];
 }
 
-export function ReservationForm({ planId }: ReservationFormProps) {
+export function ReservationForm({
+  planId,
+  unavailableDates = [],
+}: ReservationFormProps) {
+  const unavailable = React.useMemo(
+    () => new Set(unavailableDates),
+    [unavailableDates],
+  );
   const [date, setDate] = React.useState<Date | undefined>();
   const [guests, setGuests] = React.useState<number>(1);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
@@ -168,11 +177,24 @@ export function ReservationForm({ planId }: ReservationFormProps) {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                disabled={(d) => d < new Date()}
+                disabled={(d) =>
+                  d < new Date() || unavailable.has(toDayKey(d))
+                }
+                modifiers={{
+                  unavailable: (d) => unavailable.has(toDayKey(d)),
+                }}
+                modifiersClassNames={{
+                  unavailable: "line-through opacity-40",
+                }}
                 locale={es}
                 className="p-3"
               />
             </div>
+            {unavailable.size > 0 && (
+              <p className="border-t border-border px-3 pt-2 text-xs text-muted-foreground">
+                Las fechas tachadas ya están reservadas.
+              </p>
+            )}
             <div className="flex justify-end gap-3 border-t border-border p-3">
               <button type="button" onClick={() => setDate(undefined)} className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground">
                 Borrar
