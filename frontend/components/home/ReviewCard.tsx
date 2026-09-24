@@ -1,4 +1,4 @@
-import { Quote, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -10,6 +10,8 @@ interface ReviewCardProps {
   className?: string;
 }
 
+// Tarjeta de testimonio para la banda índigo del home: colores fijos oscuros
+// (no dependen del tema) para mantener el contraste del mockup.
 export function ReviewCard({
   description,
   rating,
@@ -20,42 +22,33 @@ export function ReviewCard({
   return (
     <div
       className={cn(
-        "bg-surface rounded-2xl p-8 border border-border flex flex-col justify-between h-full transition-all hover:border-primary/50",
+        "flex h-full flex-col rounded-2xl border border-[#332a47] bg-[#211a33] p-6",
         className,
       )}
     >
-      <div>
-        <Quote className="h-8 w-8 text-primary/30 mb-6 fill-current" />
-        <p className="text-foreground/80 font-light leading-relaxed mb-6 italic">
-          &quot;{description}&quot;
-        </p>
+      <div className="mb-3 flex items-center gap-1">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={cn(
+              "h-4 w-4",
+              i < Math.floor(rating)
+                ? "fill-primary text-primary"
+                : "fill-[#3a3050] text-[#3a3050]",
+            )}
+          />
+        ))}
       </div>
 
-      <div>
-        <div className="flex gap-1 mb-4">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={cn(
-                "h-4 w-4",
-                i < Math.floor(rating)
-                  ? "text-primary fill-primary"
-                  : "text-muted/20 fill-muted/20",
-              )}
-            />
-          ))}
-          <span className="ml-2 text-sm font-bold text-foreground">{rating}</span>
-        </div>
+      <p className="mb-5 flex-1 text-[15px] leading-relaxed text-[#e9d9bc]">
+        &ldquo;{description}&rdquo;
+      </p>
 
-        <div className="flex items-center gap-3 pt-4 border-t border-border">
-          <div className="relative h-10 w-10 rounded-full overflow-hidden bg-surface-hover">
-            <Image src={photo} alt={name} fill className="object-cover" />
-          </div>
-          <div>
-            <div className="font-semibold text-foreground text-sm">{name}</div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Viajero verificado</div>
-          </div>
+      <div className="flex items-center gap-3">
+        <div className="relative h-10 w-10 overflow-hidden rounded-full">
+          <Image src={photo} alt={name} fill className="object-cover" />
         </div>
+        <span className="text-sm font-bold text-arena">{name}</span>
       </div>
     </div>
   );

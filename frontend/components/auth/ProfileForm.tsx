@@ -65,7 +65,7 @@ export function ProfileForm({ initial }: ProfileFormProps) {
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-600">
+        <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-600 dark:text-green-400">
           <CheckCircle2 className="h-4 w-4" />
           Datos actualizados.
         </div>

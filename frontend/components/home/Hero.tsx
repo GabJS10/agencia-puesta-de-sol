@@ -1,109 +1,125 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroTour } from "@/types/HeroTours";
 
 export function Hero({ slides }: { slides: HeroTour[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+  // Fondo que se alterna solo; el copy de marca permanece fijo y centrado.
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const id = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(id);
+  }, [slides.length]);
 
   return (
-    <div className="relative w-full h-[85vh] overflow-hidden bg-background">
-      {/* Background Image Carousel */}
+    <section className="relative w-full h-[90vh] min-h-[600px] overflow-hidden bg-noche">
+      {/* Fondo: imágenes que se alternan */}
       <AnimatePresence mode="popLayout">
         <motion.div
           key={slides[currentIndex].id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
+          transition={{ duration: 1.4, ease: "easeOut" }}
           className="absolute inset-0"
         >
-          {/* We use unoptimized for the placeholder to work if domain not configured in next.config */}
-          {/* For local file /hero-bg.png it works fine. Ideally we configure domains, but unoptimized is safer for placeholders now. */}
-          <div className="absolute inset-0">
-            <Image
-              src={`${slides[currentIndex].image}`}
-              alt={slides[currentIndex].title}
-              fill
-              priority
-              className="object-cover"
-            />
-            {/* Helper gradient for bottom text readability - Minimalist adjustment */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent dark:from-background dark:via-background/40 dark:to-transparent opacity-40" />
-            <div className="absolute inset-0 bg-gradient-to-r from-background/60 to-transparent opacity-20 dark:from-background/60 dark:to-transparent" />
-          </div>
+          <Image
+            src={slides[currentIndex].image}
+            alt={slides[currentIndex].title}
+            fill
+            priority
+            className="object-cover"
+          />
         </motion.div>
       </AnimatePresence>
 
-      {/* Main Content Container */}
-      <div className="relative z-10 w-full h-full flex flex-col justify-end pb-24 px-6 md:px-12 max-w-7xl mx-auto">
-        {/* Navigation Arrows (Sides - Vertically Centered) */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-all duration-300 z-50 hover:bg-surface/20 rounded-full"
+      {/* Degradado atardecer: noche → barro → noche para legibilidad */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(180deg, rgba(23,16,38,0.55) 0%, rgba(184,92,56,0.28) 45%, rgba(23,16,38,0.72) 100%)",
+        }}
+      />
+
+      {/* Contenido centrado */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-[#fbf5e9]">
+        <motion.span
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-6 inline-block rounded-full border border-[#f4ead6]/50 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
         >
-          <ArrowLeft className="hidden md:block w-6 h-6 stroke-1" />
-        </button>
+          La Guajira · Colombia
+        </motion.span>
 
-        <button
-          onClick={nextSlide}
-          className="absolute right-6 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-all duration-300 z-50 hover:bg-surface/20 rounded-full"
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.05 }}
+          className="font-display max-w-[820px] text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl"
         >
-          <ArrowRight className="w-6 h-6 stroke-1" />
-        </button>
+          Donde el desierto abraza el Caribe
+        </motion.h1>
 
-        {/* Bottom UI Elements */}
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mt-auto gap-8 md:gap-0">
-          {/* Bottom Left: Title & Description */}
-          <div className="flex flex-col gap-6 max-w-2xl min-h-[150px] justify-end">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={slides[currentIndex].id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="font-display text-4xl md:text-6xl font-semibold text-foreground tracking-tight leading-[1.05]">
-                  {slides[currentIndex].title}
-                </h2>
-                <div className="brand-rule w-16 mt-6 mb-4" />
-                <p className="text-foreground/90 text-lg md:text-xl font-light leading-relaxed max-w-lg">
-                  {slides[currentIndex].description}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="mt-6 max-w-xl text-lg font-light leading-relaxed text-[#efe3cc] md:text-xl"
+        >
+          Viajes auténticos por el rincón más al norte de Suramérica, de la mano
+          de guías Wayúu.
+        </motion.p>
 
-          {/* Bottom Right: CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-4 self-start md:self-auto"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className="mt-9 flex flex-wrap items-center justify-center gap-4"
+        >
+          <Link
+            href="/planes"
+            className="group inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-lg shadow-black/20 transition-all hover:bg-primary/90"
           >
-            <Link
-              href={slides[currentIndex].url}
-              className="group relative px-8 py-3 text-sm font-semibold tracking-wider uppercase rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 inline-flex items-center gap-2"
-            >
-              Saber Más
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
-        </div>
+            Ver planes
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+          <Link
+            href="/nosotros"
+            className="inline-flex items-center rounded-md border border-[#f4ead6]/55 bg-white/10 px-8 py-3.5 text-base font-bold text-[#fbf5e9] backdrop-blur-sm transition-all hover:bg-white/20"
+          >
+            Cómo viajamos
+          </Link>
+        </motion.div>
+
+        {/* Indicadores del carrusel de fondo */}
+        {slides.length > 1 && (
+          <div className="absolute bottom-8 flex gap-2">
+            {slides.map((slide, i) => (
+              <button
+                key={slide.id}
+                aria-label={`Ver ${slide.title}`}
+                onClick={() => setCurrentIndex(i)}
+                className={
+                  "h-1.5 rounded-full transition-all " +
+                  (i === currentIndex
+                    ? "w-8 bg-primary"
+                    : "w-1.5 bg-white/50 hover:bg-white/80")
+                }
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }

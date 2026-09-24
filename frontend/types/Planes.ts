@@ -16,6 +16,9 @@ export interface PlanType {
   type: string;
 }
 
+export type AvailabilityMode = "EXCLUSIVE" | "CAPACITY";
+export type BookingMode = "SINGLE_DAY" | "DATE_RANGE";
+
 export interface Plane {
   id: number;
   documentId: string;
@@ -32,4 +35,9 @@ export interface Plane {
   tags: Tag[];
   plan_location: PlanLocation;
   plan_type: PlanType;
+  // Disponibilidad
+  availabilityMode: AvailabilityMode;
+  capacity: number | null;
+  bookingMode: BookingMode;
+  bookingsOpen: boolean;
 }

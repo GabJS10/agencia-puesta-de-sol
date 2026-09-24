@@ -4,12 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 
-interface Taxonomy {
-  id: number;
-  type?: string;
-  location?: string;
-}
-
 export interface PlanFormData {
   id?: number;
   title: string;
@@ -24,6 +18,10 @@ export interface PlanFormData {
   galleryUrls: string[];
   tags: string[];
   published: boolean;
+  availabilityMode: "EXCLUSIVE" | "CAPACITY";
+  capacity: number | null;
+  bookingMode: "SINGLE_DAY" | "DATE_RANGE";
+  bookingsOpen: boolean;
   planTypeId: number | null;
   planLocationId: number | null;
 }
@@ -60,6 +58,10 @@ export function PlanForm({ types, locations, initial }: PlanFormProps) {
       galleryUrls: [],
       tags: [],
       published: true,
+      availabilityMode: "EXCLUSIVE",
+      capacity: null,
+      bookingMode: "SINGLE_DAY",
+      bookingsOpen: true,
       planTypeId: null,
       planLocationId: null,
     },
@@ -216,6 +218,61 @@ export function PlanForm({ types, locations, initial }: PlanFormProps) {
           <textarea rows={5} className={area} value={form[k]} onChange={(e) => set(k, e.target.value)} />
         </div>
       ))}
+
+      {/* Disponibilidad */}
+      <fieldset className="space-y-4 rounded-lg border border-border p-4">
+        <legend className="px-2 text-sm font-semibold">Disponibilidad</legend>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium">Modo de ocupación</label>
+            <select
+              className={field}
+              value={form.availabilityMode}
+              onChange={(e) =>
+                set("availabilityMode", e.target.value as PlanFormData["availabilityMode"])
+              }
+            >
+              <option value="EXCLUSIVE">Exclusivo (un grupo por día)</option>
+              <option value="CAPACITY">Aforo (cupo de personas por día)</option>
+            </select>
+          </div>
+          {form.availabilityMode === "CAPACITY" && (
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Cupo por día (personas)</label>
+              <input
+                type="number"
+                min={1}
+                className={field}
+                value={form.capacity ?? ""}
+                onChange={(e) =>
+                  set("capacity", e.target.value ? Number(e.target.value) : null)
+                }
+              />
+            </div>
+          )}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium">Reserva por</label>
+            <select
+              className={field}
+              value={form.bookingMode}
+              onChange={(e) =>
+                set("bookingMode", e.target.value as PlanFormData["bookingMode"])
+              }
+            >
+              <option value="SINGLE_DAY">Día único</option>
+              <option value="DATE_RANGE">Rango de fechas</option>
+            </select>
+          </div>
+        </div>
+        <label className="flex items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            checked={form.bookingsOpen}
+            onChange={(e) => set("bookingsOpen", e.target.checked)}
+          />
+          Reservas abiertas (desmarcar = “agotado”, sin despublicar)
+        </label>
+      </fieldset>
 
       <label className="flex items-center gap-2 text-sm font-medium">
         <input type="checkbox" checked={form.published} onChange={(e) => set("published", e.target.checked)} />

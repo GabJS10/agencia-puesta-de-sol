@@ -10,7 +10,7 @@ export function Location() {
             <h2 className="font-display text-3xl md:text-5xl font-semibold text-left mb-4 leading-[1.08]">
               Donde nos encontramos
             </h2>
-            <p className="text-muted text-lg max-w-2xl text-left font-light">
+            <p className="text-muted-foreground text-lg max-w-2xl text-left font-light">
               Puesta de Sol se encuentra en el corazón de Riohacha, La Guajira. 
               Un punto de partida estratégico para tu aventura.
             </p>

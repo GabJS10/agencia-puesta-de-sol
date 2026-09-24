@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { getSocial } from "@/lib/get-social";
+
 interface Props {
   number: string;
   email: string;
@@ -12,114 +13,116 @@ export async function Footer({ number, email, AboutFooter, location }: Props) {
   const social = await getSocial();
 
   return (
-    <footer className="bg-background text-foreground py-16 px-6 md:px-20 border-t border-border relative overflow-hidden">
-      <div className="container mx-auto relative z-10">
-        {/* Top Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-full border border-primary flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-              </div>
-              <h2 className="font-display text-3xl font-semibold tracking-tight">
+    <footer className="border-t border-border bg-background px-6 py-14 text-foreground md:px-20">
+      <div className="mx-auto max-w-7xl">
+        {/* Top */}
+        <div className="flex flex-col justify-between gap-12 md:flex-row md:gap-16">
+          {/* Left: brand */}
+          <div className="max-w-sm">
+            <div className="flex items-center gap-3">
+              <span
+                className="h-8 w-8 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle at 50% 35%, #f5a538, #d6455f)",
+                }}
+                aria-hidden="true"
+              />
+              <span className="font-display text-2xl font-semibold">
                 Puesta del Sol
-              </h2>
+              </span>
             </div>
-            <p className="text-muted text-sm tracking-wide">
-              Agencia de Viajes y Turismo
-            </p>
-          </div>
-          <div className="text-left md:text-right">
-            <p className="text-2xl font-bold text-primary">+57 {number}</p>
-            <p className="text-muted tracking-wide">{email}</p>
-          </div>
-        </div>
 
-        {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent mb-16" />
-
-        {/* Middle Section - Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          {/* About Us */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 text-foreground">Nosotros</h3>
-            <p className="text-muted leading-relaxed text-sm font-light">
+            <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
               {AboutFooter}
             </p>
-          </div>
 
-          {/* Open Hours */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 text-foreground">Horario</h3>
-            <ul className="space-y-3 text-muted text-sm font-light">
-              <li className="flex justify-between border-b border-foreground/5 pb-2">
-                <span>Lunes:</span>
-                <span className="text-foreground">8am - 6pm</span>
-              </li>
-              <li className="flex justify-between border-b border-foreground/5 pb-2">
-                <span>Martes - Viernes:</span>
-                <span className="text-foreground">9am - 6pm</span>
-              </li>
-              <li className="flex justify-between border-b border-foreground/5 pb-2">
-                <span>Sábado:</span>
-                <span className="text-foreground">9am - 4pm</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Address */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 text-foreground">
-              Ubicación
-            </h3>
-            <p className="text-muted text-sm mb-2 leading-relaxed">
-              {location}
-            </p>
-          </div>
-
-          {/* Follow Us */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 text-foreground">Síguenos</h3>
-            <div className="flex gap-4">
+            <div className="mt-6 flex gap-3">
               <Link
                 href={social.facebook}
                 target="_blank"
-                className="w-10 h-10 rounded-full border border-foreground/10 flex items-center justify-center hover:bg-foreground/10 hover:border-primary hover:text-primary transition-all duration-300 group"
+                aria-label="Facebook"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border transition-colors hover:border-primary hover:text-primary"
               >
-                <Facebook className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Facebook size={18} />
               </Link>
               <Link
                 href={social.instagram}
                 target="_blank"
-                className="w-10 h-10 rounded-full border border-foreground/10 flex items-center justify-center hover:bg-foreground/10 hover:border-primary hover:text-primary transition-all duration-300 group"
+                aria-label="Instagram"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border transition-colors hover:border-primary hover:text-primary"
               >
-                <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Instagram size={18} />
               </Link>
               <Link
                 href={social.whatsapp}
                 target="_blank"
-                className="w-10 h-10 rounded-full border border-foreground/10 flex items-center justify-center hover:bg-foreground/10 hover:border-primary hover:text-primary transition-all duration-300 group"
+                aria-label="WhatsApp"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border transition-colors hover:border-primary hover:text-primary"
               >
-                <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <MessageCircle size={18} />
               </Link>
             </div>
-            <p className="text-muted text-xs mt-6 font-light">
-              Síguenos en las redes sociales para novedades y ofertas.
-            </p>
+          </div>
+
+          {/* Right: columns */}
+          <div className="flex flex-col gap-10 sm:flex-row sm:gap-16">
+            {/* Explorar */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Explorar
+              </h3>
+              <nav className="mt-4 flex flex-col gap-3 text-sm">
+                <Link href="/planes" className="transition-colors hover:text-primary">
+                  Planes
+                </Link>
+                <Link href="/nosotros" className="transition-colors hover:text-primary">
+                  Nosotros
+                </Link>
+                <Link href="/galeria" className="transition-colors hover:text-primary">
+                  Galería
+                </Link>
+                <Link
+                  href="/contactanos"
+                  className="transition-colors hover:text-primary"
+                >
+                  Contacto
+                </Link>
+              </nav>
+            </div>
+
+            {/* Horario */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Horario
+              </h3>
+              <div className="mt-4 flex flex-col gap-3 text-sm">
+                <span>Lunes · 8am – 6pm</span>
+                <span>Mar – Vie · 9am – 6pm</span>
+                <span>Sábado · 9am – 4pm</span>
+              </div>
+            </div>
+
+            {/* Contacto */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Contacto
+              </h3>
+              <div className="mt-4 flex flex-col gap-3 text-sm">
+                <span className="font-bold text-barro">+57 {number}</span>
+                <span>{email}</span>
+                <span>{location}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-foreground/5 text-xs text-muted font-light">
+        {/* Bottom bar */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row">
           <p>© 2026 Puesta del Sol. Todos los derechos reservados.</p>
-          <div className="flex gap-6 mt-4 md:mt-0 hidden">
-            <Link
-              href="https://gabjs10.netlify.app/"
-              className="hover:text-primary transition-colors"
-            >
-              Sitio web creado por Gabriel Ballesteros
-            </Link>
-          </div>
+          <p className="font-display text-sm italic">
+            El desierto y el mar no se cuentan, se viven.
+          </p>
         </div>
       </div>
     </footer>

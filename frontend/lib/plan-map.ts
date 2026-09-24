@@ -25,6 +25,10 @@ export function toPlane(p: PlanWithRelations): Plane {
     tags: p.tags.map((element, i) => ({ id: i, element })),
     plan_location: { location: p.planLocation?.location ?? p.location },
     plan_type: { type: p.planType?.type ?? "" },
+    availabilityMode: p.availabilityMode,
+    capacity: p.capacity,
+    bookingMode: p.bookingMode,
+    bookingsOpen: p.bookingsOpen,
   };
 }
 

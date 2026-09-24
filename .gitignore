@@ -13,3 +13,6 @@ dist/
 # Sistema
 .DS_Store
 *.log
+
+# Artefactos de Playwright CLI (snapshots/logs de sesiones de testing)
+.playwright-cli/

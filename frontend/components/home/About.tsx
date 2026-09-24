@@ -40,7 +40,7 @@ export function About({ description, stats }: Props) {
               <span className="font-display text-4xl md:text-5xl font-semibold text-atardecer">
                 {stat.value}
               </span>
-              <span className="text-muted text-sm tracking-wide uppercase">
+              <span className="text-muted-foreground text-sm tracking-wide uppercase">
                 {stat.label}
               </span>
             </div>

@@ -22,6 +22,18 @@ enum RequestStatus {
   CANCELLED
 }
 
+// Cómo se ocupa un plan un día dado.
+enum AvailabilityMode {
+  EXCLUSIVE // una reserva confirmada bloquea el día completo
+  CAPACITY // admite hasta `capacity` personas por día
+}
+
+// Cómo se reserva un plan.
+enum BookingMode {
+  SINGLE_DAY // fecha única
+  DATE_RANGE // rango [inicio, fin)
+}
+
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
@@ -60,6 +72,12 @@ model Plan {
   galleryUrls     String[]
   tags            String[]
   published       Boolean       @default(true)
+  // Disponibilidad
+  availabilityMode AvailabilityMode @default(EXCLUSIVE)
+  capacity         Int? // cupo de personas/día cuando availabilityMode = CAPACITY
+  bookingMode      BookingMode      @default(SINGLE_DAY)
+  bookingsOpen     Boolean          @default(true) // pausar reservas ("agotado") sin despublicar
+  blackouts        PlanBlackout[]
   planType        PlanType?     @relation(fields: [planTypeId], references: [id])
   planTypeId      Int?
   planLocation    PlanLocation? @relation(fields: [planLocationId], references: [id])
@@ -78,9 +96,24 @@ model PlanRequest {
   name       String
   email      String
   phone      String
-  travelDate DateTime
+  travelDate DateTime // inicio del rango (o día único)
+  endDate    DateTime? // fin EXCLUSIVO del rango; null = día único ([travelDate, travelDate+1día))
   guests     Int
   message    String?
   status     RequestStatus @default(PENDING)
   createdAt  DateTime      @default(now())
+
+  @@index([planId, status, travelDate])
+}
+
+model PlanBlackout {
+  id        Int      @id @default(autoincrement())
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  planId    Int
+  startDate DateTime // [startDate, endDate) UTC
+  endDate   DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([planId, startDate])
 }

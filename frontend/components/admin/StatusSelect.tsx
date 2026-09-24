@@ -3,21 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const OPTIONS = [
+type RequestStatus = "PENDING" | "CONTACTED" | "CONFIRMED" | "CANCELLED";
+
+const OPTIONS: { value: RequestStatus; label: string }[] = [
   { value: "PENDING", label: "Pendiente" },
   { value: "CONTACTED", label: "Contactado" },
   { value: "CONFIRMED", label: "Confirmado" },
   { value: "CANCELLED", label: "Cancelado" },
 ];
 
-export function StatusSelect({ id, status }: { id: number; status: string }) {
+export function StatusSelect({ id, status }: { id: number; status: RequestStatus }) {
   const router = useRouter();
   const [value, setValue] = useState(status);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const next = e.target.value;
+    const next = e.target.value as RequestStatus;
     setValue(next);
     setSaving(true);
     setError(null);

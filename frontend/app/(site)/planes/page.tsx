@@ -1,13 +1,12 @@
-import { PlanesHero } from "@/components/planes/PlanesHero";
-import { FilterSidebar } from "@/components/planes/FilterSidebar";
+import Link from "next/link";
 import { DestinationCard } from "@/components/home/DestinationCard";
+import { FilterBar } from "@/components/planes/FilterBar";
+import { PaginationControls } from "@/components/planes/PaginationControls";
 import { getPlanes } from "@/lib/get-planes";
 import { getPlanLocations } from "@/lib/get-plan-locations";
 import { getPlanTypes } from "@/lib/get-plan-types";
 import { resolveMedia } from "@/lib/media-url";
 import { Plane } from "@/types/Planes";
-import { PaginationControls } from "@/components/planes/PaginationControls";
-import { SortSelect } from "@/components/planes/SortSelect";
 
 export const metadata = {
   title: "Planes | Puesta del Sol",
@@ -23,37 +22,25 @@ export default async function PlanesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const resolvedSearchParams = await searchParams;
+  const sp = await searchParams;
 
-  const page =
-    typeof resolvedSearchParams.page === "string"
-      ? parseInt(resolvedSearchParams.page)
-      : 1;
-  const search =
-    typeof resolvedSearchParams.search === "string"
-      ? resolvedSearchParams.search.toLowerCase()
-      : "";
-  const sort =
-    typeof resolvedSearchParams.sort === "string"
-      ? resolvedSearchParams.sort
-      : "";
+  const page = typeof sp.page === "string" ? parseInt(sp.page) : 1;
+  const search = typeof sp.search === "string" ? sp.search.toLowerCase() : "";
+  const sort = typeof sp.sort === "string" ? sp.sort : "";
 
-  // Obtener filtros de la URL (pueden ser string o array)
   const typeFilter =
-    typeof resolvedSearchParams.type === "string"
-      ? [resolvedSearchParams.type]
-      : Array.isArray(resolvedSearchParams.type)
-        ? resolvedSearchParams.type
+    typeof sp.type === "string"
+      ? [sp.type]
+      : Array.isArray(sp.type)
+        ? sp.type
         : [];
-
   const locationFilter =
-    typeof resolvedSearchParams.location === "string"
-      ? [resolvedSearchParams.location]
-      : Array.isArray(resolvedSearchParams.location)
-        ? resolvedSearchParams.location
+    typeof sp.location === "string"
+      ? [sp.location]
+      : Array.isArray(sp.location)
+        ? sp.location
         : [];
 
-  // 1. Obtener datos (Planes, Locations, Types) en paralelo
   const [planesRes, locations, types] = await Promise.all([
     getPlanes({
       page,
@@ -69,29 +56,46 @@ export default async function PlanesPage({
   const { data: displayPlanes, meta } = planesRes;
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <PlanesHero />
+    <main className="flex min-h-screen flex-col bg-background text-foreground">
+      {/* Header */}
+      <section className="px-6 pt-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-2.5 text-sm font-semibold text-muted-foreground">
+            <Link href="/" className="text-barro hover:text-primary">
+              Inicio
+            </Link>{" "}
+            / Planes
+          </div>
+          <h1 className="font-display text-4xl font-semibold md:text-5xl">
+            Todos los planes
+          </h1>
+          <p className="mt-2.5 text-lg text-muted-foreground">
+            {meta.pagination.total} destinos por el desierto y el Caribe guajiro.
+            Filtra y encuentra tu próxima aventura.
+          </p>
+        </div>
+      </section>
 
-      <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-12">
-        <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar con filtros dinámicos */}
-          <FilterSidebar locations={locations} types={types} />
+      {/* Filtros */}
+      <section className="px-6 pt-7" id="planes">
+        <div className="mx-auto max-w-7xl">
+          <FilterBar types={types} locations={locations} />
+        </div>
+      </section>
 
-          {/* Main Content */}
-          <div className="flex-1" id="planes">
-            {/* Header Controls */}
+      {/* Grid */}
+      <section className="flex-1 px-6 pt-7">
+        <div className="mx-auto max-w-7xl">
+          <p className="mb-5 text-sm font-medium text-muted-foreground">
+            Mostrando {displayPlanes.length} de {meta.pagination.total} resultados
+          </p>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-              <p className="text-muted font-medium">
-                Mostrando {displayPlanes.length} de {meta.pagination.total}{" "}
-                resultados
-              </p>
-
-              <SortSelect />
+          {displayPlanes.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card py-16 text-center text-muted-foreground">
+              No se encontraron planes que coincidan con tus filtros.
             </div>
-
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {displayPlanes.map((plan: Plane) => (
                 <DestinationCard
                   key={plan.id}
@@ -100,24 +104,18 @@ export default async function PlanesPage({
                   location={plan.location}
                   price={plan.price.toString()}
                   url={`/planes/${plan.url}`}
+                  badge={plan.plan_type?.type || undefined}
                 />
               ))}
-              {displayPlanes.length === 0 && (
-                <div className="col-span-full text-center py-12 text-muted-foreground">
-                  No se encontraron planes que coincidan con tus filtros en esta
-                  página.
-                </div>
-              )}
             </div>
+          )}
 
-            {/* Pagination */}
-            <PaginationControls
-              page={meta.pagination.page}
-              pageCount={meta.pagination.pageCount}
-            />
-          </div>
+          <PaginationControls
+            page={meta.pagination.page}
+            pageCount={meta.pagination.pageCount}
+          />
         </div>
-      </div>
+      </section>
     </main>
   );
 }

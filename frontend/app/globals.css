@@ -7,6 +7,8 @@
 :root {
   /* ===== Puesta del Sol — "Atardecer del desierto" (light) ===== */
 
+  color-scheme: light;
+
   /* Paleta cruda (acentos que funcionan en claro y oscuro) */
   --arena: #f4ead6; /* arena ocre */
   --arena-2: #e9d9bc; /* arena tostada */
@@ -68,6 +70,8 @@
 .dark {
   /* ===== "Atardecer del desierto" (dark / noche) ===== */
 
+  color-scheme: dark;
+
   --color-canvas: #171026;
   --color-canvas-subtle: #211a33;
   --color-surface: #211a33;
@@ -121,8 +125,8 @@
   --color-primary: var(--color-brand);
   --color-primary-foreground: var(--color-brand-foreground);
 
-  --color-muted: var(--color-ink-muted);
-  --color-muted-foreground: var(--color-ink-muted);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
   --color-border: var(--color-border);
 
@@ -135,9 +139,9 @@
   --color-mar: var(--mar);
   --color-noche: var(--noche);
 
-  /* Fuentes */
-  --font-sans: var(--font-outfit);
-  --font-display: var(--font-fraunces);
+  /* Fuentes — una sola familia para titulares y cuerpo (estilo Avianca) */
+  --font-sans: var(--font-avianca);
+  --font-display: var(--font-avianca);
 
   --radius-lg: var(--radius-card);
   --radius-md: var(--radius-button);
@@ -190,7 +194,7 @@ body {
 
 /* Fuente display para titulares */
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Degradado atardecer: arena → sol → brasa */

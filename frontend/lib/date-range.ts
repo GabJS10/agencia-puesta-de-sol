@@ -21,3 +21,27 @@ export function startOfDayUtc(date: Date): Date {
 export function toDayKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
+
+/** Día siguiente (00:00 UTC) al día de `date`. */
+export function nextDayUtc(date: Date): Date {
+  return dayRangeUtc(date).lt;
+}
+
+/**
+ * Claves "yyyy-MM-dd" (UTC) de cada día del rango medio-abierto [start, end).
+ * Si `end` es null/indefinido, cubre un único día (el de `start`).
+ */
+export function eachDayKey(start: Date, end?: Date | null): string[] {
+  const from = startOfDayUtc(start);
+  const to = end ? startOfDayUtc(end) : nextDayUtc(start);
+  const keys: string[] = [];
+  for (let d = new Date(from); d < to; d.setUTCDate(d.getUTCDate() + 1)) {
+    keys.push(toDayKey(d));
+  }
+  return keys;
+}
+
+/** Fin exclusivo efectivo de una reserva: `endDate` o `travelDate`+1 día. */
+export function effectiveEndUtc(start: Date, end?: Date | null): Date {
+  return end ? startOfDayUtc(end) : nextDayUtc(start);
+}

@@ -1,20 +1,22 @@
-import { prisma } from "@/lib/db";
-import { startOfDayUtc, toDayKey } from "@/lib/date-range";
+import {
+  getPlanAvailability,
+  type AvailabilityResult,
+  type PlanAvailabilityConfig,
+} from "@/lib/availability";
+import { startOfDayUtc } from "@/lib/date-range";
+
+// Ventana que se ofrece en el calendario del formulario de reserva.
+const WINDOW_MONTHS = 12;
 
 /**
- * Días no disponibles para un plan: fechas (de hoy en adelante) con una
- * solicitud CONFIRMED. La reserva es exclusiva por día.
- * Devuelve claves "yyyy-MM-dd" (UTC) sin duplicados.
+ * Disponibilidad de un plan para los próximos `WINDOW_MONTHS` meses, lista para
+ * el calendario del frontend: días bloqueados y (en aforo) cupos por día.
  */
-export async function getUnavailableDates(planId: number): Promise<string[]> {
-  const rows = await prisma.planRequest.findMany({
-    where: {
-      planId,
-      status: "CONFIRMED",
-      travelDate: { gte: startOfDayUtc(new Date()) },
-    },
-    select: { travelDate: true },
-  });
-
-  return Array.from(new Set(rows.map((r) => toDayKey(r.travelDate))));
+export async function getPlanCalendar(
+  plan: PlanAvailabilityConfig,
+): Promise<AvailabilityResult> {
+  const from = startOfDayUtc(new Date());
+  const to = new Date(from);
+  to.setUTCMonth(to.getUTCMonth() + WINDOW_MONTHS);
+  return getPlanAvailability(plan, from, to);
 }

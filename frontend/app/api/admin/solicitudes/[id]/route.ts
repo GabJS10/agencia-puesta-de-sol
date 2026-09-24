@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { dayRangeUtc } from "@/lib/date-range";
+import { checkRangeAvailable, withPlanLock, availabilitySelect } from "@/lib/availability";
 
 export const runtime = "nodejs";
 
@@ -25,37 +25,45 @@ export async function PATCH(req: Request, { params }: Ctx) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Estado inválido" }, { status: 400 });
   }
+  const nextStatus = parsed.data.status;
+
   const current = await prisma.planRequest.findUnique({
     where: { id: reqId },
-    select: { planId: true, travelDate: true },
+    select: { planId: true, travelDate: true, endDate: true, guests: true },
   });
   if (!current) {
     return NextResponse.json({ error: "No encontrada" }, { status: 404 });
   }
 
-  // Reserva exclusiva por día: evitar dos confirmadas del mismo plan/día.
-  if (parsed.data.status === "CONFIRMED" && current.planId) {
-    const { gte, lt } = dayRangeUtc(current.travelDate);
-    const conflict = await prisma.planRequest.findFirst({
-      where: {
-        id: { not: reqId },
-        planId: current.planId,
-        status: "CONFIRMED",
-        travelDate: { gte, lt },
-      },
-      select: { id: true },
+  // Confirmar una reserva ligada a un plan: hazlo bajo lock re-validando cupo/exclusividad.
+  if (nextStatus === "CONFIRMED" && current.planId) {
+    const plan = await prisma.plan.findUnique({
+      where: { id: current.planId },
+      select: availabilitySelect,
     });
-    if (conflict) {
-      return NextResponse.json(
-        { error: "Ya hay una reserva confirmada para ese plan en esa fecha" },
-        { status: 409 },
-      );
+    if (!plan) {
+      return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
     }
+
+    const result = await withPlanLock(current.planId, async (tx) => {
+      const check = await checkRangeAvailable(
+        plan,
+        current.travelDate,
+        current.endDate,
+        current.guests,
+        tx,
+      );
+      if (!check.ok) return { conflict: check.reason };
+      await tx.planRequest.update({ where: { id: reqId }, data: { status: nextStatus } });
+      return { ok: true as const };
+    });
+
+    if ("conflict" in result) {
+      return NextResponse.json({ error: result.conflict }, { status: 409 });
+    }
+    return NextResponse.json({ ok: true });
   }
 
-  await prisma.planRequest.update({
-    where: { id: reqId },
-    data: { status: parsed.data.status },
-  });
+  await prisma.planRequest.update({ where: { id: reqId }, data: { status: nextStatus } });
   return NextResponse.json({ ok: true });
 }

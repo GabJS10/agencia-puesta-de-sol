@@ -36,7 +36,7 @@ export function PlanTabs({ items }: PlanTabsProps) {
                 "pb-4 text-sm font-medium transition-all relative whitespace-nowrap cursor-pointer",
                 activeTab === item.id
                   ? "text-primary font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:text-foreground",
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {item.label}

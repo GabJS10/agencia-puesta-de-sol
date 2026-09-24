@@ -2,12 +2,15 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+
 interface DestinationCardProps {
   image: string;
   title: string;
   location: string;
   price: string;
   url: string;
+  badge?: string;
+  description?: string;
   className?: string;
 }
 
@@ -17,6 +20,8 @@ export function DestinationCard({
   location,
   price,
   url,
+  badge,
+  description,
   className,
 }: DestinationCardProps) {
   const formattedPrice = new Intl.NumberFormat("es-CO", {
@@ -26,39 +31,55 @@ export function DestinationCard({
   }).format(Number(price));
 
   return (
-    <Link href={url}>
-      <div
+    <Link href={url} className="block h-full">
+      <article
         className={cn(
-          "group relative h-80 w-64 md:h-96 md:w-full md:min-w-72 overflow-hidden rounded-2xl bg-surface border border-border transition-all hover:shadow-lg",
+          "group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg",
           className,
         )}
       >
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        {/* Minimalist Overlay - subtle gradient for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity group-hover:opacity-70" />
+        {/* Imagen */}
+        <div className="relative h-48 w-full overflow-hidden">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          {badge && (
+            <span className="absolute left-3 top-3 rounded-full bg-noche/75 px-3 py-1 text-xs font-bold text-arena backdrop-blur-sm">
+              {badge}
+            </span>
+          )}
+        </div>
 
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-2">
-          <div className="space-y-1">
-            <h3 className="font-display text-2xl font-semibold text-white leading-tight transition-colors group-hover:text-sol">{title}</h3>
-            <div className="flex items-center gap-2 text-white/70">
-              <MapPin className="h-4 w-4" />
-              <span className="text-sm font-medium tracking-wide">{location}</span>
-            </div>
+        {/* Cuerpo */}
+        <div className="flex flex-1 flex-col p-5">
+          <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" />
+            <span className="tracking-wide">{location}</span>
           </div>
-          <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-2">
-            <span className="text-xs uppercase tracking-widest text-white/60">Desde</span>
-            <div className="text-lg font-bold text-white">
+
+          <h3 className="font-display text-xl font-semibold leading-tight text-foreground transition-colors group-hover:text-barro">
+            {title}
+          </h3>
+
+          {description && (
+            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+              {description}
+            </p>
+          )}
+
+          <div className="mt-auto flex items-center justify-between pt-4">
+            <span className="text-lg font-extrabold text-foreground">
               {formattedPrice}
-            </div>
+            </span>
+            <span className="text-sm font-bold text-primary transition-transform group-hover:translate-x-0.5">
+              Reservar →
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
