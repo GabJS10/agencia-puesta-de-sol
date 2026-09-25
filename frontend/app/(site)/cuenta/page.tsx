@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { resolveMedia } from "@/lib/media-url";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RequestStatus } from "@prisma/client";
 
@@ -90,12 +91,21 @@ export default async function CuentaPage({
                 Mis solicitudes
               </Link>
               {user.role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  className="mb-1.5 block rounded-lg px-3.5 py-3 text-sm font-semibold text-foreground/80 transition-colors hover:bg-surface-hover"
-                >
-                  Panel admin
-                </Link>
+                <>
+                  <Link
+                    href="/admin"
+                    className="mb-1.5 block rounded-lg px-3.5 py-3 text-sm font-semibold text-foreground/80 transition-colors hover:bg-surface-hover"
+                  >
+                    Panel admin
+                  </Link>
+                  <Link
+                    href="/admin/manual"
+                    className="mb-1.5 flex items-center gap-2 rounded-lg px-3.5 py-3 text-sm font-semibold text-foreground/80 transition-colors hover:bg-surface-hover"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    Manual de usuario
+                  </Link>
+                </>
               )}
               <div className="px-1 pt-1">
                 <LogoutButton />
