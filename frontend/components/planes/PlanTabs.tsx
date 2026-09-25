@@ -49,7 +49,7 @@ export function PlanTabs({ items }: PlanTabsProps) {
       </div>
 
       {/* Tabs Content */}
-      <div className="min-h-[200px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className="min-h-[200px] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
         {validItems.map((item) => {
           if (item.id !== activeTab) return null;
           return (

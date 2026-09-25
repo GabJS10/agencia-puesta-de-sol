@@ -16,3 +16,7 @@ dist/
 
 # Artefactos de Playwright CLI (snapshots/logs de sesiones de testing)
 .playwright-cli/
+
+# Artefactos de herramientas de IA/diseño (cache y config local, no versionar)
+.codex/
+.impeccable/

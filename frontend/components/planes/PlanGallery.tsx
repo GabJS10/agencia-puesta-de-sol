@@ -25,7 +25,7 @@ export function PlanGallery({ mainImage, gallery, baseUrl }: PlanGalleryProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-muted border border-border cursor-pointer">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-muted border border-border">
         <Image
           src={resolveMedia(selectedImage, baseUrl)}
           alt="Vista del plan"

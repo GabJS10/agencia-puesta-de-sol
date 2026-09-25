@@ -66,14 +66,6 @@ export const HOME = {
       image: { url: img("1533105079780-92b9be482077") },
       url: "/planes/riohacha-manaure-cultural",
     },
-    {
-      id: 4,
-      title: "Palomino Río y Mar",
-      price: 320000,
-      location: "La Guajira",
-      image: { url: img("1544551763-46a013bb70d5") },
-      url: "/planes/palomino-rio-y-mar",
-    },
   ],
   HomeReviews: [
     {

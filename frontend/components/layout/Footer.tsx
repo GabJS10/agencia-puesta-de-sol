@@ -13,7 +13,7 @@ export async function Footer({ number, email, AboutFooter, location }: Props) {
   const social = await getSocial();
 
   return (
-    <footer className="border-t border-border bg-background px-6 py-14 text-foreground md:px-20">
+    <footer className="border-t border-border bg-background px-6 py-14 mt-5 text-foreground md:px-20">
       <div className="mx-auto max-w-7xl">
         {/* Top */}
         <div className="flex flex-col justify-between gap-12 md:flex-row md:gap-16">
@@ -73,13 +73,22 @@ export async function Footer({ number, email, AboutFooter, location }: Props) {
                 Explorar
               </h3>
               <nav className="mt-4 flex flex-col gap-3 text-sm">
-                <Link href="/planes" className="transition-colors hover:text-primary">
+                <Link
+                  href="/planes"
+                  className="transition-colors hover:text-primary"
+                >
                   Planes
                 </Link>
-                <Link href="/nosotros" className="transition-colors hover:text-primary">
+                <Link
+                  href="/nosotros"
+                  className="transition-colors hover:text-primary"
+                >
                   Nosotros
                 </Link>
-                <Link href="/galeria" className="transition-colors hover:text-primary">
+                <Link
+                  href="/galeria"
+                  className="transition-colors hover:text-primary"
+                >
                   Galería
                 </Link>
                 <Link

@@ -27,7 +27,9 @@ const STATUS: Record<string, { label: string; className: string }> = {
 const FILTERS: { key: string; label: string; status?: RequestStatus }[] = [
   { key: "", label: "Todas" },
   { key: "PENDING", label: "Pendientes", status: "PENDING" },
+  { key: "CONTACTED", label: "Contactadas", status: "CONTACTED" },
   { key: "CONFIRMED", label: "Confirmadas", status: "CONFIRMED" },
+  { key: "CANCELLED", label: "Canceladas", status: "CANCELLED" },
 ];
 
 export default async function CuentaPage({
@@ -80,14 +82,12 @@ export default async function CuentaPage({
             </div>
 
             <nav className="rounded-2xl border border-border bg-card p-3 shadow-sm">
-              <span className="mb-1.5 block rounded-lg bg-primary px-3.5 py-3 text-sm font-bold text-primary-foreground">
-                Mis solicitudes
-              </span>
               <Link
-                href="/cuenta/perfil"
-                className="mb-1.5 block rounded-lg px-3.5 py-3 text-sm font-semibold text-foreground/80 transition-colors hover:bg-surface-hover"
+                href="/cuenta"
+                aria-current="page"
+                className="mb-1.5 block rounded-lg bg-primary px-3.5 py-3 text-sm font-bold text-primary-foreground"
               >
-                Mi perfil
+                Mis solicitudes
               </Link>
               {user.role === "ADMIN" && (
                 <Link

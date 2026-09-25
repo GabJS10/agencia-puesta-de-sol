@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { ArrowRight, Pause, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,15 +9,18 @@ import { HeroTour } from "@/types/HeroTours";
 
 export function Hero({ slides }: { slides: HeroTour[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
 
-  // Fondo que se alterna solo; el copy de marca permanece fijo y centrado.
+  // Fondo que se alterna solo; se detiene si el usuario pausa o prefiere
+  // menos movimiento (WCAG 2.2.2 / 2.3). El copy de marca permanece fijo.
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (slides.length <= 1 || paused || reduceMotion) return;
     const id = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(id);
-  }, [slides.length]);
+  }, [slides.length, paused, reduceMotion]);
 
   return (
     <section className="relative w-full h-[90vh] min-h-[600px] overflow-hidden bg-noche">
@@ -101,22 +104,40 @@ export function Hero({ slides }: { slides: HeroTour[] }) {
           </Link>
         </motion.div>
 
-        {/* Indicadores del carrusel de fondo */}
+        {/* Indicadores del carrusel de fondo + control de pausa */}
         {slides.length > 1 && (
-          <div className="absolute bottom-8 flex gap-2">
-            {slides.map((slide, i) => (
+          <div className="absolute bottom-8 flex items-center gap-3">
+            <div className="flex gap-2">
+              {slides.map((slide, i) => (
+                <button
+                  key={slide.id}
+                  aria-label={`Ver ${slide.title}`}
+                  aria-current={i === currentIndex ? "true" : undefined}
+                  onClick={() => setCurrentIndex(i)}
+                  className={
+                    "h-1.5 rounded-full transition-all " +
+                    (i === currentIndex
+                      ? "w-8 bg-primary"
+                      : "w-1.5 bg-white/50 hover:bg-white/80")
+                  }
+                />
+              ))}
+            </div>
+            {!reduceMotion && (
               <button
-                key={slide.id}
-                aria-label={`Ver ${slide.title}`}
-                onClick={() => setCurrentIndex(i)}
-                className={
-                  "h-1.5 rounded-full transition-all " +
-                  (i === currentIndex
-                    ? "w-8 bg-primary"
-                    : "w-1.5 bg-white/50 hover:bg-white/80")
-                }
-              />
-            ))}
+                type="button"
+                onClick={() => setPaused((p) => !p)}
+                aria-label={paused ? "Reanudar el carrusel" : "Pausar el carrusel"}
+                aria-pressed={paused}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+              >
+                {paused ? (
+                  <Play className="h-3.5 w-3.5" />
+                ) : (
+                  <Pause className="h-3.5 w-3.5" />
+                )}
+              </button>
+            )}
           </div>
         )}
       </div>

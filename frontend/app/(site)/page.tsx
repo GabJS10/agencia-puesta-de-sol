@@ -5,30 +5,18 @@ import { Reviews } from "@/components/home/Reviews";
 import { resolveMedia } from "@/lib/media-url";
 //api call
 import { getHome } from "@/lib/get-home";
+import { getHomeTours } from "@/lib/get-home-tours";
 //types call
-import { HeroTour, tour } from "@/types/HeroTours";
-import { HomeTour, HTour } from "@/types/HomeTours";
 import { Review, UserReview } from "@/types/Reviews";
 
+// Los planes destacados salen de la BD; el build no alcanza el Postgres interno.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
-  const home = await getHome();
-
-  const HeroTours: HeroTour[] = home.HeroTours.map((tour: tour) => ({
-    id: tour.id,
-    title: tour.title,
-    description: tour.description,
-    image: resolveMedia(tour.image.url),
-    url: tour.url,
-  }));
-
-  const HomeTours: HomeTour[] = home.HomeTours.map((tour: HTour) => ({
-    id: tour.id,
-    title: tour.title,
-    price: tour.price,
-    location: tour.location,
-    image: resolveMedia(tour.image.url),
-    url: tour.url,
-  }));
+  const [home, { heroTours, homeTours }] = await Promise.all([
+    getHome(),
+    getHomeTours(),
+  ]);
 
   const HomeReviews: Review[] = home.HomeReviews.map((review: UserReview) => ({
     description: review.description,
@@ -39,9 +27,9 @@ export default async function Home() {
 
   return (
     <main className="relative min-h-screen overflow-hidden">
-      <Hero slides={HeroTours} />
+      <Hero slides={heroTours} />
       <StatsBar stats={home.estadistica} />
-      <Destinations tours={HomeTours} />
+      <Destinations tours={homeTours} />
       <Reviews reviews={HomeReviews} />
     </main>
   );

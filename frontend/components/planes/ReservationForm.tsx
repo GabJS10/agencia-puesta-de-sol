@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toDayKey } from "@/lib/date-range";
 import { Calendar } from "@/components/ui/calendar";
+import { useSession } from "@/components/session-provider";
 import type { AvailabilityMode, BookingMode } from "@/types/Planes";
 
 interface ReservationFormProps {
@@ -39,6 +40,7 @@ export function ReservationForm({
   unavailableDates = [],
   remainingByDay = null,
 }: ReservationFormProps) {
+  const { user } = useSession();
   const isRange = bookingMode === "DATE_RANGE";
   const unavailable = React.useMemo(
     () => new Set(unavailableDates),
@@ -76,18 +78,13 @@ export function ReservationForm({
     [unavailable, remainingByDay, guests],
   );
 
-  // Prefill si el usuario tiene sesión.
+  // Prefill si el usuario tiene sesión (sin pisar lo que ya haya escrito).
   React.useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.user) {
-          setName((n) => n || d.user.name || "");
-          setEmail((e) => e || d.user.email || "");
-        }
-      })
-      .catch(() => {});
-  }, []);
+    if (user) {
+      setName((n) => n || user.name || "");
+      setEmail((e) => e || user.email || "");
+    }
+  }, [user]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

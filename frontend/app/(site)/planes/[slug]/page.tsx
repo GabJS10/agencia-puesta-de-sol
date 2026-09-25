@@ -4,7 +4,7 @@ import { getPlanes } from "@/lib/get-planes";
 import { getPlanCalendar } from "@/lib/get-plan-availability";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Clock, Star, CheckCircle2, ShieldCheck } from "lucide-react";
+import { MapPin, Clock, CheckCircle2, ShieldCheck, Award } from "lucide-react";
 import { PlanGallery } from "@/components/planes/PlanGallery";
 import { PlanTabs } from "@/components/planes/PlanTabs";
 import { ReservationForm } from "@/components/planes/ReservationForm";
@@ -104,8 +104,8 @@ export default async function PlanPage({
                 Salidas programadas
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Star className="h-4 w-4 fill-primary text-primary" />
-                4.9 · 128 reseñas
+                <ShieldCheck className="h-4 w-4 text-mar" />
+                Guías Wayúu certificados
               </span>
             </div>
           </div>
@@ -164,6 +164,11 @@ export default async function PlanPage({
                   <div className="flex items-center gap-3 text-sm text-foreground/80">
                     <MapPin className="h-4 w-4 text-mar" />
                     Guías locales expertos
+                  </div>
+                  {/* TODO: reemplazar los placeholders con los datos reales de la agencia */}
+                  <div className="flex items-center gap-3 text-sm text-foreground/80">
+                    <Award className="h-4 w-4 text-mar" />
+                    RNT [NÚMERO RNT] · [AÑOS] años operando
                   </div>
                 </div>
               </div>

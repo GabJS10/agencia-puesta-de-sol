@@ -13,8 +13,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Puesta del Sol",
-  description: "Travel Agency",
+  title: "Puesta del Sol | Turismo en La Guajira",
+  description:
+    "Agencia de turismo en La Guajira, Colombia. Tours por el desierto y el Caribe —Cabo de la Vela, Punta Gallinas, Palomino— con guías Wayúu.",
   icons: {
     icon: "/favicon.jpg",
   },
@@ -29,12 +30,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body className={`${manrope.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
+          defaultTheme="system"
+          enableSystem
           disableTransitionOnChange
         >
           {children}
