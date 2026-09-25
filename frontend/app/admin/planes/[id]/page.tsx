@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CalendarClock } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { PlanForm, type PlanFormData } from "@/components/admin/PlanForm";
-import { BlackoutManager } from "@/components/admin/BlackoutManager";
 
 export const dynamic = "force-dynamic";
 
@@ -14,14 +15,10 @@ export default async function EditarPlanPage({
   const planId = Number(id);
   if (Number.isNaN(planId)) notFound();
 
-  const [plan, types, locations, blackouts] = await Promise.all([
+  const [plan, types, locations] = await Promise.all([
     prisma.plan.findUnique({ where: { id: planId } }),
     prisma.planType.findMany({ orderBy: { type: "asc" } }),
     prisma.planLocation.findMany({ orderBy: { location: "asc" } }),
-    prisma.planBlackout.findMany({
-      where: { planId },
-      orderBy: { startDate: "asc" },
-    }),
   ]);
 
   if (!plan) notFound();
@@ -40,29 +37,23 @@ export default async function EditarPlanPage({
     galleryUrls: plan.galleryUrls,
     tags: plan.tags,
     published: plan.published,
-    availabilityMode: plan.availabilityMode,
-    capacity: plan.capacity,
-    bookingMode: plan.bookingMode,
-    bookingsOpen: plan.bookingsOpen,
     planTypeId: plan.planTypeId,
     planLocationId: plan.planLocationId,
   };
 
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="mb-8 font-display text-3xl font-semibold">Editar plan</h1>
-        <PlanForm types={types} locations={locations} initial={initial} />
+    <div>
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="font-display text-3xl font-semibold">Editar plan</h1>
+        <Link
+          href={`/admin/planes/${plan.id}/disponibilidad`}
+          className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+        >
+          <CalendarClock className="h-4 w-4" />
+          Configurar disponibilidad
+        </Link>
       </div>
-      <BlackoutManager
-        planId={plan.id}
-        initial={blackouts.map((b) => ({
-          id: b.id,
-          startDate: b.startDate.toISOString().slice(0, 10),
-          endDate: b.endDate.toISOString().slice(0, 10),
-          reason: b.reason,
-        }))}
-      />
+      <PlanForm types={types} locations={locations} initial={initial} />
     </div>
   );
 }

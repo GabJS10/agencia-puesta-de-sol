@@ -51,10 +51,9 @@ export async function PATCH(req: Request, { params }: Ctx) {
         galleryUrls: d.galleryUrls,
         tags: d.tags,
         published: d.published,
-        availabilityMode: d.availabilityMode,
-        capacity: d.availabilityMode === "CAPACITY" ? (d.capacity ?? null) : null,
-        bookingMode: d.bookingMode,
-        bookingsOpen: d.bookingsOpen,
+        // La disponibilidad NO se toca aquí: se gestiona en su propio endpoint
+        // (PATCH /api/admin/planes/[id]/availability) para no resetearla al
+        // guardar el contenido del plan.
         planTypeId: d.planTypeId ?? null,
         planLocationId: d.planLocationId ?? null,
       },

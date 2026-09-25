@@ -18,16 +18,10 @@ export const planSchema = z.object({
   galleryUrls: z.array(z.string().url()).default([]),
   tags: z.array(z.string().min(1)).default([]),
   published: z.boolean().default(true),
-  // Disponibilidad
-  availabilityMode: z.enum(["EXCLUSIVE", "CAPACITY"]).default("EXCLUSIVE"),
-  capacity: z.number().int().positive().nullable().optional(),
-  bookingMode: z.enum(["SINGLE_DAY", "DATE_RANGE"]).default("SINGLE_DAY"),
-  bookingsOpen: z.boolean().default(true),
   planTypeId: z.number().int().positive().nullable().optional(),
   planLocationId: z.number().int().positive().nullable().optional(),
-}).refine(
-  (d) => d.availabilityMode !== "CAPACITY" || (d.capacity ?? 0) > 0,
-  { message: "El aforo (capacity) es obligatorio y > 0 en modo CAPACITY", path: ["capacity"] },
-);
+});
+// La disponibilidad (modo, aforo, reservas) se gestiona aparte:
+// ver lib/availability-schema.ts y /admin/planes/[id]/disponibilidad.
 
 export type PlanInput = z.infer<typeof planSchema>;

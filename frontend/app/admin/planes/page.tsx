@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { DeleteButton } from "@/components/admin/DeleteButton";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, CalendarClock } from "lucide-react";
 import { formatPrice } from "@/helpers/formatPrice";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +77,13 @@ export default async function AdminPlanesPage() {
                       >
                         <Pencil className="h-4 w-4" />
                         Editar
+                      </Link>
+                      <Link
+                        href={`/admin/planes/${p.id}/disponibilidad`}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-muted"
+                      >
+                        <CalendarClock className="h-4 w-4" />
+                        Disponibilidad
                       </Link>
                       <DeleteButton
                         endpoint={`/api/admin/planes/${p.id}`}

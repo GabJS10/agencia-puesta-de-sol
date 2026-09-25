@@ -38,10 +38,8 @@ export async function POST(req: Request) {
       galleryUrls: d.galleryUrls,
       tags: d.tags,
       published: d.published,
-      availabilityMode: d.availabilityMode,
-      capacity: d.availabilityMode === "CAPACITY" ? (d.capacity ?? null) : null,
-      bookingMode: d.bookingMode,
-      bookingsOpen: d.bookingsOpen,
+      // La disponibilidad usa los @default del schema Prisma; se configura
+      // luego en /admin/planes/[id]/disponibilidad.
       planTypeId: d.planTypeId ?? null,
       planLocationId: d.planLocationId ?? null,
     },
