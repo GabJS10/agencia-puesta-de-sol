@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Globe, User, Menu, X } from "lucide-react";
+import { User, Menu, X } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useSession } from "@/components/session-provider";
@@ -58,6 +58,7 @@ export function Navbar() {
   const transparent = isHome && !isScrolled;
 
   return (
+    <>
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6",
@@ -133,19 +134,6 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Idioma (desktop) */}
-          <button
-            className={cn(
-              "hidden md:flex items-center gap-2 px-4 py-2 rounded-full border text-xs transition-all backdrop-blur-sm hover:border-primary/50 hover:bg-primary/10",
-              transparent
-                ? "border-white/10 text-white"
-                : "border-foreground/10 text-foreground",
-            )}
-          >
-            <span className="tracking-wider">IDIOMA</span>
-            <Globe className="w-3 h-3 text-primary" />
-          </button>
-
           {/* Botón de menú (móvil) */}
           <button
             type="button"
@@ -164,8 +152,12 @@ export function Navbar() {
           </button>
         </div>
       </div>
+    </nav>
 
-      {/* Menú móvil */}
+      {/* Menú móvil — fuera del <nav> a propósito: el nav usa backdrop-filter,
+          que convierte al nav en bloque contenedor de sus descendientes fixed y
+          recortaría este overlay a la altura de la barra. Como hermano del nav
+          se posiciona contra el viewport. */}
       {menuOpen && (
         <div id="mobile-menu" className="fixed inset-0 z-[60] md:hidden">
           <div
@@ -224,17 +216,10 @@ export function Navbar() {
                 <User className="h-4 w-4" />
                 {user ? "Mi cuenta" : "Ingresar"}
               </Link>
-              <button
-                type="button"
-                className="flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface-hover"
-              >
-                <Globe className="h-4 w-4 text-primary" />
-                Idioma
-              </button>
             </div>
           </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }
