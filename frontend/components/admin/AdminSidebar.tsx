@@ -11,6 +11,7 @@ import {
   Inbox,
   Users,
   BookOpen,
+  BarChart3,
   ExternalLink,
   PanelLeftClose,
   PanelLeftOpen,
@@ -24,6 +25,7 @@ const NAV = [
   { href: "/admin/tipos", label: "Tipos", icon: Tags },
   { href: "/admin/ubicaciones", label: "Ubicaciones", icon: MapPin },
   { href: "/admin/solicitudes", label: "Solicitudes", icon: Inbox },
+  { href: "/admin/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/admin/usuarios", label: "Usuarios", icon: Users },
   { href: "/admin/manual", label: "Manual de usuario", icon: BookOpen },
 ];
