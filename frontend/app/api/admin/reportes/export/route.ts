@@ -20,7 +20,9 @@ function toCsv(header: string[], rows: Value[][]): string {
   return "﻿" + [header, ...rows].map((r) => r.map(cell).join(";")).join("\r\n");
 }
 
-const pct = (n: number) => `${Math.round(n * 1000) / 10}%`;
+// Decimales con coma: Excel en español los reconoce como número.
+const decimal = (n: number) => String(Math.round(n * 10) / 10).replace(".", ",");
+const pct = (n: number) => `${decimal(n * 100)}%`;
 const round = (n: number) => Math.round(n);
 
 async function solicitudes(f: ReportFilters): Promise<string> {
@@ -71,7 +73,7 @@ async function resumen(f: ReportFilters): Promise<string> {
       ["Ingreso estimado", round(kpis.revenue)],
       [
         "Primera respuesta promedio (h)",
-        kpis.avgResponseHours === null ? "" : Math.round(kpis.avgResponseHours * 10) / 10,
+        kpis.avgResponseHours === null ? "" : decimal(kpis.avgResponseHours),
       ],
       ["Tasa de rechazo", pct(kpis.rejectedRate)],
       ["Tasa de cancelación", pct(kpis.cancelledRate)],
