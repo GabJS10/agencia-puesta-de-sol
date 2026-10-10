@@ -1,36 +1,32 @@
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { resolveMedia } from "@/lib/media-url";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { RequestStatus } from "@prisma/client";
+import { expireStaleRequests } from "@/lib/request-workflow";
+import {
+  ACTOR_LABEL,
+  STATUS_META,
+  STATUS_ORDER,
+  allowedTransitions,
+  isHolding,
+  type RequestStatus,
+} from "@/lib/request-status";
+import { formatInstant, formatTravelRange } from "@/lib/format-dates";
+import { HoldBadge, StatusBadge } from "@/components/requests/StatusBadge";
+import { CancelRequestButton } from "@/components/cuenta/CancelRequestButton";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Mi cuenta | Puesta del Sol" };
 
-const STATUS: Record<string, { label: string; className: string }> = {
-  PENDING: { label: "Pendiente", className: "bg-sol/15 text-sol" },
-  CONTACTED: { label: "Contactado", className: "bg-mar/15 text-mar" },
-  CONFIRMED: {
-    label: "Confirmado",
-    className: "bg-green-500/15 text-green-600 dark:text-green-400",
-  },
-  CANCELLED: { label: "Cancelado", className: "bg-brasa/15 text-brasa" },
-};
-
 const FILTERS: { key: string; label: string; status?: RequestStatus }[] = [
   { key: "", label: "Todas" },
-  { key: "PENDING", label: "Pendientes", status: "PENDING" },
-  { key: "CONTACTED", label: "Contactadas", status: "CONTACTED" },
-  { key: "CONFIRMED", label: "Confirmadas", status: "CONFIRMED" },
-  { key: "CANCELLED", label: "Canceladas", status: "CANCELLED" },
+  ...STATUS_ORDER.map((s) => ({ key: s, label: STATUS_META[s].plural, status: s })),
 ];
 
 export default async function CuentaPage({
@@ -41,12 +37,17 @@ export default async function CuentaPage({
   const user = await getSession();
   if (!user) redirect("/ingresar?redirect=/cuenta");
 
+  await expireStaleRequests();
+
   const { estado } = await searchParams;
   const active = FILTERS.find((f) => f.key === estado) ?? FILTERS[0];
 
   const requests = await prisma.planRequest.findMany({
     where: { userId: user.id, ...(active.status ? { status: active.status } : {}) },
-    include: { plan: { select: { title: true, slug: true, photoUrl: true } } },
+    include: {
+      plan: { select: { title: true, slug: true, photoUrl: true } },
+      events: { orderBy: { createdAt: "asc" } },
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -148,46 +149,81 @@ export default async function CuentaPage({
             ) : (
               <ul className="flex flex-col gap-3.5">
                 {requests.map((r) => {
-                  const status = STATUS[r.status] ?? STATUS.PENDING;
+                  const meta = STATUS_META[r.status];
+                  const canCancel = allowedTransitions(r.status, "CLIENT").includes("CANCELLED");
                   return (
                     <li
                       key={r.id}
-                      className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm"
+                      className="rounded-2xl border border-border bg-card p-4 shadow-sm"
                     >
-                      {r.plan?.photoUrl && (
-                        <div className="relative h-[72px] w-24 shrink-0 overflow-hidden rounded-xl">
-                          <Image
-                            src={resolveMedia(r.plan.photoUrl)}
-                            alt={r.plan.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-display text-lg font-semibold">
-                          {r.plan ? (
-                            <Link
-                              href={`/planes/${r.plan.slug}`}
-                              className="hover:text-primary"
-                            >
-                              {r.plan.title}
-                            </Link>
-                          ) : (
-                            "Plan no disponible"
+                      <div className="flex items-center gap-4">
+                        {r.plan?.photoUrl && (
+                          <div className="relative h-[72px] w-24 shrink-0 overflow-hidden rounded-xl">
+                            <Image
+                              src={resolveMedia(r.plan.photoUrl)}
+                              alt={r.plan.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-display text-lg font-semibold">
+                            {r.plan ? (
+                              <Link
+                                href={`/planes/${r.plan.slug}`}
+                                className="hover:text-primary"
+                              >
+                                {r.plan.title}
+                              </Link>
+                            ) : (
+                              "Plan no disponible"
+                            )}
+                          </h3>
+                          <div className="mt-0.5 text-sm text-muted-foreground">
+                            📅 {formatTravelRange(r.travelDate, r.endDate)} · 👥{" "}
+                            {r.guests} {r.guests === 1 ? "persona" : "personas"} ·
+                            Solicitado el {formatInstant(r.createdAt, "d MMM yyyy")}
+                          </div>
+                          <p className="mt-1 text-sm text-foreground/80">{meta.description}</p>
+                          {isHolding(r.status, r.holdExpiresAt) && (
+                            <div className="mt-1">
+                              <HoldBadge status={r.status} holdExpiresAt={r.holdExpiresAt} />
+                            </div>
                           )}
-                        </h3>
-                        <div className="mt-0.5 text-sm text-muted-foreground">
-                          📅 {format(r.travelDate, "PP", { locale: es })} · 👥{" "}
-                          {r.guests} {r.guests === 1 ? "persona" : "personas"} ·
-                          Solicitado el {format(r.createdAt, "PP", { locale: es })}
+                        </div>
+                        <div className="flex shrink-0 flex-col items-end gap-2">
+                          <StatusBadge status={r.status} className="py-1.5" />
+                          {canCancel && (
+                            <CancelRequestButton id={r.id} planTitle={r.plan?.title ?? "tu plan"} />
+                          )}
                         </div>
                       </div>
-                      <span
-                        className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-bold ${status.className}`}
-                      >
-                        {status.label}
-                      </span>
+
+                      {r.events.length > 0 && (
+                        <details className="group mt-3 border-t border-border pt-3">
+                          <summary className="cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground">
+                            Historial ({r.events.length})
+                          </summary>
+                          <ol className="mt-3 space-y-2.5 border-l border-border pl-4">
+                            {r.events.map((ev) => (
+                              <li key={ev.id} className="text-sm">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <StatusBadge status={ev.toStatus} className="px-2.5 py-0.5" />
+                                  <span className="text-xs text-muted-foreground">
+                                    {formatInstant(ev.createdAt)} · {ev.actor === "CLIENT" ? "Tú" : ACTOR_LABEL[ev.actor]}
+                                  </span>
+                                </div>
+                                {ev.note && (
+                                  <p className="mt-1 whitespace-pre-line rounded-lg bg-muted/40 px-3 py-2 text-foreground/80">
+                                    {ev.note}
+                                  </p>
+                                )}
+                              </li>
+                            ))}
+                          </ol>
+                        </details>
+                      )}
                     </li>
                   );
                 })}

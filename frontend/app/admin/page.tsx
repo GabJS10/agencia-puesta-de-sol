@@ -1,26 +1,33 @@
 import Link from "next/link";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { prisma } from "@/lib/db";
-import { Package, Inbox, Users, Clock, Plus } from "lucide-react";
+import { Package, Inbox, Users, Clock, Plus, Hourglass, CalendarCheck } from "lucide-react";
+import { expireStaleRequests } from "@/lib/request-workflow";
+import { HOLDING_STATUSES } from "@/lib/request-status";
+import { startOfDayUtc } from "@/lib/date-range";
+import { formatTravelRange } from "@/lib/format-dates";
+import { StatusBadge } from "@/components/requests/StatusBadge";
 
 export const dynamic = "force-dynamic";
 
-const STATUS: Record<string, { label: string; className: string }> = {
-  PENDING: { label: "Pendiente", className: "bg-sol/15 text-sol" },
-  CONTACTED: { label: "Contactado", className: "bg-mar/15 text-mar" },
-  CONFIRMED: {
-    label: "Confirmado",
-    className: "bg-green-500/15 text-green-600 dark:text-green-400",
-  },
-  CANCELLED: { label: "Cancelado", className: "bg-brasa/15 text-brasa" },
-};
-
 export default async function AdminDashboard() {
-  const [plans, requests, pending, users, recent] = await Promise.all([
+  await expireStaleRequests();
+
+  const now = new Date();
+  const in24h = new Date(now.getTime() + 24 * 3600_000);
+  const today = startOfDayUtc(now);
+  const in7d = new Date(today);
+  in7d.setUTCDate(in7d.getUTCDate() + 7);
+
+  const [plans, requests, inProgress, expiringSoon, upcoming, users, recent] = await Promise.all([
     prisma.plan.count(),
     prisma.planRequest.count(),
-    prisma.planRequest.count({ where: { status: "PENDING" } }),
+    prisma.planRequest.count({ where: { status: { in: HOLDING_STATUSES } } }),
+    prisma.planRequest.count({
+      where: { status: { in: HOLDING_STATUSES }, holdExpiresAt: { gt: now, lte: in24h } },
+    }),
+    prisma.planRequest.count({
+      where: { status: "CONFIRMED", travelDate: { gte: today, lt: in7d } },
+    }),
     prisma.user.count(),
     prisma.planRequest.findMany({
       take: 6,
@@ -32,7 +39,9 @@ export default async function AdminDashboard() {
   const cards = [
     { label: "Planes", value: plans, icon: Package, href: "/admin/planes" },
     { label: "Solicitudes", value: requests, icon: Inbox, href: "/admin/solicitudes" },
-    { label: "Pendientes", value: pending, icon: Clock, href: "/admin/solicitudes" },
+    { label: "En proceso", value: inProgress, icon: Clock, href: "/admin/solicitudes?estado=PENDING" },
+    { label: "Apartados por vencer (<24 h)", value: expiringSoon, icon: Hourglass, href: "/admin/solicitudes?estado=PENDING" },
+    { label: "Viajes confirmados · 7 días", value: upcoming, icon: CalendarCheck, href: "/admin/solicitudes?estado=CONFIRMED" },
     { label: "Usuarios", value: users, icon: Users, href: "/admin/usuarios" },
   ];
 
@@ -49,7 +58,7 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map(({ label, value, icon: Icon, href }) => (
           <Link
             key={label}
@@ -97,11 +106,12 @@ export default async function AdminDashboard() {
               </thead>
               <tbody>
                 {recent.map((r) => {
-                  const status = STATUS[r.status] ?? STATUS.PENDING;
                   return (
                     <tr key={r.id} className="border-t border-border/70">
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-foreground">{r.name}</div>
+                        <Link href={`/admin/solicitudes/${r.id}`} className="font-semibold text-foreground hover:text-primary">
+                          {r.name}
+                        </Link>
                         <div className="text-xs text-muted-foreground">{r.email}</div>
                       </td>
                       <td className="px-6 py-4 text-foreground/90">
@@ -117,17 +127,13 @@ export default async function AdminDashboard() {
                         )}
                       </td>
                       <td className="px-6 py-4 text-foreground/90">
-                        {format(r.travelDate, "PP", { locale: es })}
+                        {formatTravelRange(r.travelDate, r.endDate)}
                       </td>
                       <td className="px-6 py-4 text-center text-foreground/90">
                         {r.guests}
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
-                        >
-                          {status.label}
-                        </span>
+                        <StatusBadge status={r.status} />
                       </td>
                     </tr>
                   );

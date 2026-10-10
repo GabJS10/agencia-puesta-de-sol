@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Blackout {
   id: number;
@@ -50,6 +51,7 @@ export function BlackoutManager({
       setStart("");
       setEnd("");
       setReason("");
+      toast.success("Fechas bloqueadas");
       router.refresh();
     } finally {
       setLoading(false);
@@ -57,7 +59,9 @@ export function BlackoutManager({
   }
 
   async function remove(id: number) {
-    await fetch(`/api/admin/planes/${planId}/blackouts/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/planes/${planId}/blackouts/${id}`, { method: "DELETE" });
+    if (res.ok) toast.success("Bloqueo eliminado");
+    else toast.error("No se pudo eliminar el bloqueo");
     router.refresh();
   }
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export interface AvailabilityData {
   availabilityMode: "EXCLUSIVE" | "CAPACITY";
@@ -20,18 +21,15 @@ export function AvailabilityForm({
   const router = useRouter();
   const [form, setForm] = useState<AvailabilityData>(initial);
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState(false);
   const [loading, setLoading] = useState(false);
 
   function set<K extends keyof AvailabilityData>(key: K, val: AvailabilityData[K]) {
     setForm((f) => ({ ...f, [key]: val }));
-    setOk(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setOk(false);
     if (form.availabilityMode === "CAPACITY" && !(form.capacity && form.capacity > 0)) {
       setError("Indica un cupo mayor que 0 para el modo Aforo");
       return;
@@ -48,7 +46,7 @@ export function AvailabilityForm({
         setError(data?.error ?? "No se pudo guardar");
         return;
       }
-      setOk(true);
+      toast.success("Disponibilidad guardada");
       router.refresh();
     } catch {
       setError("Error de conexión");
@@ -72,11 +70,6 @@ export function AvailabilityForm({
       {error && (
         <div className="rounded-lg border border-brasa/30 bg-brasa/10 px-4 py-3 text-sm text-brasa">
           {error}
-        </div>
-      )}
-      {ok && (
-        <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-          Disponibilidad guardada.
         </div>
       )}
 
