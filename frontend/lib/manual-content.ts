@@ -103,6 +103,8 @@ quedan** (en rojo cuando son los últimos). Los días apartados por otra solicit
 aparecen marcados como "puede liberarse". En el listado de planes, cada tarjeta
 indica "Cupo N/día", "Salida privada" o "Reservas cerradas".
 
+![Ficha de un plan por rango: condiciones, próxima fecha y calendario](/manual/cliente-plan.png)
+
 ### Fechas bloqueadas
 
 Bloquea días concretos por mantenimiento, clima o cupo. Indica la fecha de
@@ -129,6 +131,8 @@ Haz clic en el número o en el nombre del cliente para abrir el **detalle**:
 datos de contacto (con acceso directo a correo, teléfono y WhatsApp), valor
 estimado, **disponibilidad de esas fechas** ("hay cupo para confirmarla" o el
 motivo por el que no) y el **historial** de cambios.
+
+![Detalle de una solicitud](/manual/solicitud-detalle.png)
 
 ### Estados
 
@@ -163,6 +167,8 @@ Al elegir una acción puedes escribir un **mensaje para el cliente**. Para
 revisar la disponibilidad: si ya no hay cupo, el cambio no se aplica y se
 muestra el motivo.
 
+![Diálogo para rechazar una solicitud con su motivo](/manual/solicitud-accion.png)
+
 ### Correos automáticos
 
 - Cuando llega una solicitud, el cliente recibe un acuse con el resumen y la
@@ -196,6 +202,8 @@ partir de los estados de las solicitudes.
   contactadas).
 - **Plan más vendido**: el plan con más solicitudes efectivas.
 
+![Métricas principales y pipeline en Reportes](/manual/reportes.png)
+
 ### Pipeline
 
 Debajo está el **pipeline**: una columna por etapa (**Sin contactar**,
@@ -209,6 +217,8 @@ rechazadas, canceladas y vencidas). Cada tarjeta es una solicitud.
   pide el motivo.
 - Haz clic en el nombre para abrir el detalle.
 - El tablero se actualiza solo cada pocos segundos.
+
+![Arrastrando una tarjeta: solo se resaltan las columnas permitidas](/manual/reportes-pipeline.png)
 
 ### Detalle
 
@@ -224,6 +234,8 @@ rechazadas, canceladas y vencidas). Cada tarjeta es una solicitud.
 El botón **Exportar** abre un menú para elegir qué reporte descargar en CSV
 (se abre directamente en Excel). Todos usan los filtros actuales (periodo, base
 de fecha y plan):
+
+![Menú de exportación de reportes](/manual/reportes-exportar.png)
 
 - **Solicitudes (detalle)**: una fila por solicitud.
 - **Resumen de métricas**: solicitudes, clientes contactados, efectivas,
@@ -249,8 +261,12 @@ Cada aviso aparece como una **notificación emergente** en la pantalla (también
 mientras navegas el sitio con tu cuenta de administrador). Haz clic en ella para
 abrir la solicitud; queda marcada como leída.
 
+![Notificación emergente de una nueva solicitud](/manual/notificacion-toast.png)
+
 En **Notificaciones** (menú lateral, con el número de no leídas) ves el
 historial completo:
+
+![Apartado de notificaciones](/manual/notificaciones.png)
 
 - Filtra entre **Todas** y **No leídas**.
 - Haz clic en una notificación para abrir su solicitud.
