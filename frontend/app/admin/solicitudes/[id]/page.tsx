@@ -144,7 +144,7 @@ export default async function SolicitudDetallePage({
             </a>
           </div>
           {r.message && (
-            <blockquote className="mt-4 rounded-xl border-l-4 border-barro bg-muted/40 px-4 py-3 text-sm italic text-foreground/80">
+            <blockquote className="mt-4 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm italic text-foreground/80">
               “{r.message}”
             </blockquote>
           )}

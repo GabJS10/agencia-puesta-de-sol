@@ -107,7 +107,7 @@ ${rows
 }
 
 function noteBlock(label: string, note: string): string {
-  return `<div style="margin-top:16px;border-left:4px solid ${C.barro};background:${C.arena};padding:12px 16px;border-radius:8px">
+  return `<div style="margin-top:16px;border:1px solid ${C.border};background:${C.arena};padding:12px 16px;border-radius:8px">
   <div style="font-size:12px;font-weight:700;color:${C.barro};text-transform:uppercase;letter-spacing:.04em">${esc(label)}</div>
   <div style="margin-top:6px;font-size:14px;line-height:1.6">${nl2br(note)}</div>
 </div>`;
