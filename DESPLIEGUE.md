@@ -19,6 +19,8 @@
 - `JWT_SECRET` (secreto propio de sesión)
 - `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`
 - `ADMIN_EMAIL`, `ADMIN_PASSWORD` (solo los consume el seed)
+- Correo (Brevo; Railway Hobby bloquea SMTP, por eso API HTTP): `BREVO_API_KEY`, `MAIL_FROM_EMAIL`,
+  `MAIL_FROM_NAME`, `ADMIN_NOTIFY_EMAILS`, `APP_URL` (dominio público, para los enlaces de los correos)
 - `PORT` lo inyecta Railway.
 
 ## Migraciones y seed en producción

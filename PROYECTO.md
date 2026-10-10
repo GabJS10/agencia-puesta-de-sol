@@ -20,6 +20,9 @@ Gestor de paquetes: **pnpm**. Todo vive en `frontend/`.
 - Postgres local (Docker): `docker run -d --name pds-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=puestadelsol -p 5433:5432 postgres:16`
 - `cd frontend && pnpm install`
 - `frontend/.env` con: `DATABASE_URL`, `JWT_SECRET`, `CLOUDINARY_NAME/KEY/SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+  y, para correos: `BREVO_API_KEY`, `MAIL_FROM_EMAIL` (remitente verificado en Brevo), `MAIL_FROM_NAME`,
+  `ADMIN_NOTIFY_EMAILS` (destinatarios de avisos, separados por coma), `APP_URL` (base de los enlaces).
+  Sin `BREVO_API_KEY` los correos se imprimen en consola.
 - `pnpm exec prisma migrate dev` → esquema; `pnpm db:seed` → admin + datos de ejemplo
 - `pnpm dev` → `http://localhost:3000`; panel admin en `/admin`
 
@@ -33,8 +36,13 @@ Gestor de paquetes: **pnpm**. Todo vive en `frontend/`.
   `recommendations` (**Markdown**), `photoUrl`, `galleryUrls[]`, `tags[]`, `published`, relaciones
   `planType`/`planLocation`.
 - `PlanType` (`type`), `PlanLocation` (`location`).
-- `PlanRequest`: solicitud de plan — `planId?`, `userId?`, name, email, phone, `travelDate`, `guests`,
-  `message?`, `status` (`PENDING|CONTACTED|CONFIRMED|CANCELLED`).
+- `PlanRequest`: solicitud de plan — `planId?`, `userId?`, name, email, phone, `travelDate`, `endDate?`,
+  `guests`, `message?`, `status` (`PENDING|CONTACTED|CONFIRMED|COMPLETED|REJECTED|CANCELLED|EXPIRED`),
+  `holdExpiresAt?` (Pendiente/Contactado apartan cupo 72 h), `unitPrice?` (precio al solicitar).
+- `PlanRequestEvent`: historial de estados (from → to, nota para el cliente, actor CLIENT/ADMIN/SYSTEM,
+  `emailSentAt`). Reglas de transición en `lib/request-status.ts`; toda transición pasa por
+  `lib/request-workflow.ts` (lock + re-chequeo de cupo al confirmar, vencimiento perezoso).
+- Correos: `lib/notifications.ts` + `lib/email/{brevo,templates}.ts` (Brevo por API HTTP, vía `after()`).
 - Migraciones en `prisma/migrations/`; seed en `prisma/seed.ts` (idempotente).
 
 ### Acceso a datos (`lib/`)
