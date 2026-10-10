@@ -76,9 +76,11 @@ export const ACTOR_LABEL: Record<EventActor, string> = {
 
 // Transiciones permitidas por actor. Los estados ausentes como clave son terminales.
 const TRANSITIONS: Record<EventActor, Partial<Record<RequestStatus, RequestStatus[]>>> = {
+  // Pendientes/contactadas se cierran con "Rechazar"; "Cancelar" queda para
+  // anular una reserva ya confirmada (el cliente cancela las suyas en /cuenta).
   ADMIN: {
-    PENDING: ["CONTACTED", "CONFIRMED", "REJECTED", "CANCELLED"],
-    CONTACTED: ["CONFIRMED", "REJECTED", "CANCELLED"],
+    PENDING: ["CONTACTED", "CONFIRMED", "REJECTED"],
+    CONTACTED: ["CONFIRMED", "REJECTED"],
     CONFIRMED: ["COMPLETED", "CANCELLED"],
     EXPIRED: ["CONFIRMED", "REJECTED"],
   },
@@ -115,7 +117,7 @@ export const ACTION_LABEL: Partial<Record<RequestStatus, string>> = {
   CONFIRMED: "Confirmar",
   COMPLETED: "Marcar completado",
   REJECTED: "Rechazar",
-  CANCELLED: "Cancelar",
+  CANCELLED: "Anular reserva",
 };
 
 /** ¿La solicitud está apartando cupo ahora mismo? */

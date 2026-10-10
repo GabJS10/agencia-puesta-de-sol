@@ -232,9 +232,9 @@ export function statusChangedClient(
             intro: "Tu solicitud quedó cancelada y el cupo fue liberado.",
           }
         : {
-            subject: "Tu solicitud fue cancelada",
-            title: "Tu solicitud fue cancelada",
-            intro: "La agencia canceló tu solicitud y el cupo fue liberado.",
+            subject: "Tu reserva fue anulada",
+            title: "Tu reserva fue anulada",
+            intro: "La agencia anuló tu reserva confirmada y el cupo fue liberado.",
           }
       : (STATUS_COPY[ev.toStatus] ?? {
           subject: `Tu solicitud ahora está ${STATUS_META[ev.toStatus].label}`,
