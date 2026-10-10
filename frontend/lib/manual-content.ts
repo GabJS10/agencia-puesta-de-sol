@@ -75,7 +75,11 @@ dentro de la edición del plan.
 ### Reserva por
 
 - **Día único**: el cliente reserva una sola fecha.
-- **Rango de fechas**: el cliente elige fecha de inicio y fin.
+- **Rango de fechas**: el cliente elige fecha de inicio y fin. Indica además el
+  **mínimo y máximo de días** del plan (contando el día de salida y el de
+  regreso): el calendario del cliente no deja elegir rangos más cortos ni más
+  largos, y la ficha del plan muestra la duración permitida (p. ej. "de 2 a 5
+  días").
 
 ### Reservas abiertas
 
@@ -215,8 +219,19 @@ rechazadas, canceladas y vencidas). Cada tarjeta es una solicitud.
   cancelación y vencimiento), **ocupación confirmada de los próximos 30 días** y
   una tabla por plan.
 
-**Exportar CSV** descarga las solicitudes del periodo filtrado. El archivo se
-abre directamente en Excel.
+### Exportar
+
+El botón **Exportar** abre un menú para elegir qué reporte descargar en CSV
+(se abre directamente en Excel). Todos usan los filtros actuales (periodo, base
+de fecha y plan):
+
+- **Solicitudes (detalle)**: una fila por solicitud.
+- **Resumen de métricas**: solicitudes, clientes contactados, efectivas,
+  efectividad, plan más vendido, ingreso estimado, tasas, etc.
+- **Planes vendidos**: por plan, solicitudes, vendidas, conversión, personas e
+  ingreso.
+- **Pipeline y estados**: cuántas solicitudes hay en cada etapa y estado.
+- **Serie temporal**: solicitudes y efectivas por semana o por mes.
 `.trim(),
   },
   {
