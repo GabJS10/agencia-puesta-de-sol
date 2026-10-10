@@ -55,15 +55,14 @@ export async function getReport(f: ReportFilters) {
       id: true,
       status: true,
       planId: true,
+      email: true,
       guests: true,
       unitPrice: true,
       createdAt: true,
       travelDate: true,
       events: {
-        where: { actor: "ADMIN" },
         orderBy: { createdAt: "asc" },
-        take: 1,
-        select: { createdAt: true },
+        select: { createdAt: true, actor: true, toStatus: true },
       },
     },
   });
@@ -72,11 +71,12 @@ export async function getReport(f: ReportFilters) {
   const total = rows.length;
   const won = rows.filter((r) => WON.includes(r.status));
   const count = (s: RequestStatus) => rows.filter((r) => r.status === s).length;
-  const responded = rows.filter((r) => r.events[0]);
+  const firstAdminEvent = (r: (typeof rows)[number]) => r.events.find((e) => e.actor === "ADMIN");
+  const responded = rows.filter((r) => firstAdminEvent(r));
   const avgResponseHours =
     responded.length > 0
       ? responded.reduce(
-          (acc, r) => acc + (r.events[0].createdAt.getTime() - r.createdAt.getTime()),
+          (acc, r) => acc + (firstAdminEvent(r)!.createdAt.getTime() - r.createdAt.getTime()),
           0,
         ) /
         responded.length /
@@ -84,10 +84,20 @@ export async function getReport(f: ReportFilters) {
       : null;
   const rate = (n: number) => (total ? n / total : 0);
 
+  // "Contactada": su historial pasó por Contactado o Confirmado (confirmar implica contacto).
+  const contacted = rows.filter((r) =>
+    r.events.some((e) => e.toStatus === "CONTACTED" || e.toStatus === "CONFIRMED"),
+  );
+  const contactedClients = new Set(contacted.map((r) => r.email.trim().toLowerCase())).size;
+
   const kpis = {
     total,
+    contactedRequests: contacted.length,
+    contactedClients,
     won: won.length,
     conversion: rate(won.length),
+    /** Efectivas sobre contactadas. */
+    contactedConversion: contacted.length ? won.length / contacted.length : 0,
     guests: won.reduce((acc, r) => acc + r.guests, 0),
     revenue: won.reduce((acc, r) => acc + (r.unitPrice ?? 0) * r.guests, 0),
     inProgress: count("PENDING") + count("CONTACTED"),
@@ -155,9 +165,11 @@ export async function getReport(f: ReportFilters) {
     title: planId ? (title.get(planId) ?? `Plan #${planId}`) : "Sin plan",
     ...v,
     conversion: v.requests ? v.won / v.requests : 0,
-  })).sort((a, b) => b.requests - a.requests);
+  })).sort((a, b) => b.won - a.won || b.requests - a.requests);
 
-  return { kpis, byStatus, series, monthly, perPlan };
+  const topPlan = perPlan.find((p) => p.won > 0 && p.planId !== null) ?? null;
+
+  return { kpis, byStatus, series, monthly, perPlan, topPlan };
 }
 
 const OCCUPANCY_DAYS = 30;
@@ -218,4 +230,49 @@ export async function getReportRows(f: ReportFilters) {
     include: { plan: { select: { title: true } } },
     orderBy: { createdAt: "asc" },
   });
+}
+
+export type PipelineCard = {
+  id: number;
+  name: string;
+  planTitle: string | null;
+  status: RequestStatus;
+  guests: number;
+  travelDate: string; // ISO
+  endDate: string | null; // ISO
+  holdExpiresAt: string | null; // ISO
+  canComplete: boolean;
+};
+
+const PIPELINE_LIMIT = 500;
+
+/** Tarjetas del pipeline con los mismos filtros del reporte. */
+export async function getPipelineCards(f: ReportFilters): Promise<PipelineCard[]> {
+  const today = startOfDayUtc(new Date());
+  const rows = await prisma.planRequest.findMany({
+    where: reportWhere(f),
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      guests: true,
+      travelDate: true,
+      endDate: true,
+      holdExpiresAt: true,
+      plan: { select: { title: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: PIPELINE_LIMIT,
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    planTitle: r.plan?.title ?? null,
+    status: r.status,
+    guests: r.guests,
+    travelDate: r.travelDate.toISOString(),
+    endDate: r.endDate?.toISOString() ?? null,
+    holdExpiresAt: r.holdExpiresAt?.toISOString() ?? null,
+    canComplete: r.travelDate <= today,
+  }));
 }

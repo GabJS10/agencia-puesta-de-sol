@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { expireStaleRequests } from "@/lib/request-workflow";
-import { getReport, getUpcomingOccupancy, parseReportFilters } from "@/lib/reports";
+import { getPipelineCards, getReport, getUpcomingOccupancy, parseReportFilters } from "@/lib/reports";
+import { PipelineBoard } from "@/components/admin/pipeline/PipelineBoard";
 import { STATUS_META } from "@/lib/request-status";
 import { formatPrice } from "@/helpers/formatPrice";
 import { formatTravelDay } from "@/lib/format-dates";
@@ -25,12 +26,13 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
   const sp = await searchParams;
   const filters = parseReportFilters(sp);
 
-  const [report, occupancy, plans] = await Promise.all([
+  const [report, pipeline, occupancy, plans] = await Promise.all([
     getReport(filters),
+    getPipelineCards(filters),
     getUpcomingOccupancy(filters.planId),
     prisma.plan.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }),
   ]);
-  const { kpis, byStatus, series, monthly, perPlan } = report;
+  const { kpis, byStatus, series, monthly, perPlan, topPlan } = report;
 
   const qs = new URLSearchParams({
     desde: toInput(filters.from),
@@ -50,16 +52,29 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
 
   const seriesMax = Math.max(1, ...series.map((s) => s.total));
   const statusMax = Math.max(1, ...byStatus.map((s) => s.count));
-  const topPlans = perPlan.slice(0, 8);
-  const planMax = Math.max(1, ...topPlans.map((p) => p.requests));
+  const soldPlans = perPlan.filter((p) => p.planId !== null).slice(0, 8);
+  const planMax = Math.max(1, ...soldPlans.map((p) => p.requests));
 
   const field =
     "h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary";
 
-  const tiles = [
+  // Métricas principales (las que pide el profesor).
+  const mainTiles = [
     { label: "Solicitudes", value: String(kpis.total), hint: `${kpis.inProgress} en proceso` },
-    { label: "Confirmadas", value: String(kpis.won), hint: "incluye completadas" },
-    { label: "Conversión", value: pct(kpis.conversion), hint: "confirmadas / solicitudes" },
+    {
+      label: "Clientes contactados",
+      value: String(kpis.contactedClients),
+      hint: `${kpis.contactedRequests} solicitudes contactadas`,
+    },
+    { label: "Solicitudes efectivas", value: String(kpis.won), hint: "confirmadas + completadas" },
+    {
+      label: "Efectividad",
+      value: pct(kpis.conversion),
+      hint: `efectivas / solicitudes · ${pct(kpis.contactedConversion)} de las contactadas`,
+    },
+  ];
+
+  const detailTiles = [
     { label: "Personas confirmadas", value: String(kpis.guests), hint: "viajeros" },
     { label: "Ingreso estimado", value: formatPrice(kpis.revenue), hint: "precio × personas" },
     {
@@ -133,14 +148,74 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
         </button>
       </form>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-        {tiles.map((t) => (
-          <div key={t.label} className="rounded-2xl border border-border bg-surface p-5">
-            <p className="text-xs font-medium text-muted-foreground">{t.label}</p>
-            <p className="mt-2 font-display text-2xl font-semibold tabular-nums">{t.value}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{t.hint}</p>
-          </div>
+      {/* Métricas principales */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        {mainTiles.map((t) => (
+          <Tile key={t.label} {...t} />
+        ))}
+        <div className="col-span-2 rounded-2xl border border-primary/40 bg-primary/5 p-5 lg:col-span-1">
+          <p className="text-xs font-medium text-muted-foreground">Plan más vendido</p>
+          {topPlan ? (
+            <>
+              <p className="mt-2 font-display text-lg font-semibold leading-tight">{topPlan.title}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {topPlan.won} {topPlan.won === 1 ? "venta" : "ventas"} · {topPlan.guests} personas
+              </p>
+            </>
+          ) : (
+            <p className="mt-2 text-sm text-muted-foreground">Sin ventas en el periodo</p>
+          )}
+        </div>
+      </div>
+
+      {/* Pipeline */}
+      <section className="space-y-3">
+        <div>
+          <h2 className="font-display text-xl font-semibold">Pipeline de solicitudes</h2>
+          <p className="text-sm text-muted-foreground">
+            Cada columna es una etapa. Arrastra una tarjeta a otra columna para cambiar su estado: solo se
+            resaltan los cambios permitidos y siempre se confirma antes de avisar al cliente.
+          </p>
+        </div>
+        <PipelineBoard cards={pipeline} />
+      </section>
+
+      {/* Planes vendidos */}
+      <section className="rounded-2xl border border-border bg-surface p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-lg font-semibold">Planes vendidos</h2>
+          <Legend wonLabel="Vendidas" />
+        </div>
+        {soldPlans.length === 0 ? (
+          <Empty />
+        ) : (
+          <ul className="space-y-3">
+            {soldPlans.map((p, i) => (
+              <li key={p.planId ?? "none"} title={`${p.title}: ${p.won} vendidas de ${p.requests} solicitudes`}>
+                <div className="mb-1 flex justify-between gap-3 text-sm">
+                  <span className="truncate">
+                    <span className="mr-1.5 tabular-nums text-muted-foreground">{i + 1}.</span>
+                    {p.title}
+                  </span>
+                  <span className="shrink-0 tabular-nums text-muted-foreground">
+                    <strong className="text-foreground">{p.won}</strong> vendidas · {p.requests} solicitudes
+                  </span>
+                </div>
+                <div className="space-y-[2px]">
+                  <div className={cn("h-2 rounded-r-[4px]", C_REQ)} style={{ width: `${(p.requests / planMax) * 100}%` }} />
+                  <div className={cn("h-2 rounded-r-[4px]", C_WON)} style={{ width: `${Math.max(p.won ? 1 : 0, (p.won / planMax) * 100)}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Detalle */}
+      <h2 className="border-t border-border pt-8 font-display text-xl font-semibold">Detalle</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {detailTiles.map((t) => (
+          <Tile key={t.label} {...t} />
         ))}
       </div>
 
@@ -204,61 +279,35 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
           </p>
         </section>
 
-        {/* Top planes */}
+        {/* Ocupación próxima */}
         <section className="rounded-2xl border border-border bg-surface p-5">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-display text-lg font-semibold">Planes más solicitados</h2>
-            <Legend />
-          </div>
-          {topPlans.length === 0 ? (
+          <h2 className="font-display text-lg font-semibold">Ocupación confirmada · próximos 30 días</h2>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Aforo: cupos confirmados sobre cupo × 30 días. Exclusivos: días reservados sobre 30.
+          </p>
+          {occupancy.length === 0 ? (
             <Empty />
           ) : (
-            <ul className="space-y-3">
-              {topPlans.map((p) => (
-                <li key={p.planId ?? "none"} title={`${p.title}: ${p.requests} solicitudes, ${p.won} confirmadas`}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span className="truncate">{p.title}</span>
-                    <span className="shrink-0 tabular-nums text-muted-foreground">
-                      {p.requests} · {p.won}
-                    </span>
+            <ul className="space-y-2.5">
+              {occupancy.map((o) => (
+                <li key={o.id} className="grid grid-cols-[minmax(0,10rem)_1fr_7.5rem] items-center gap-3 text-sm" title={`${o.title}: ${o.used} de ${o.available} ${o.unit}`}>
+                  <Link href={`/admin/planes/${o.id}/disponibilidad`} className="truncate hover:text-primary">
+                    {o.title}
+                  </Link>
+                  <div className="h-3 rounded-r-[4px] bg-muted/40">
+                    <div className={cn("h-3 rounded-r-[4px]", C_WON)} style={{ width: `${Math.min(100, o.ratio * 100)}%` }} />
                   </div>
-                  <div className="space-y-[2px]">
-                    <div className={cn("h-2 rounded-r-[4px]", C_REQ)} style={{ width: `${(p.requests / planMax) * 100}%` }} />
-                    <div className={cn("h-2 rounded-r-[4px]", C_WON)} style={{ width: `${Math.max(p.won ? 1 : 0, (p.won / planMax) * 100)}%` }} />
-                  </div>
+                  <span className="text-right tabular-nums text-muted-foreground">
+                    {pct(o.ratio)} · {o.used}/{o.available} {o.unit}
+                  </span>
                 </li>
               ))}
             </ul>
           )}
         </section>
+
       </div>
 
-      {/* Ocupación próxima */}
-      <section className="rounded-2xl border border-border bg-surface p-5">
-        <h2 className="font-display text-lg font-semibold">Ocupación confirmada · próximos 30 días</h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Aforo: cupos confirmados sobre cupo × 30 días. Exclusivos: días reservados sobre 30.
-        </p>
-        {occupancy.length === 0 ? (
-          <Empty />
-        ) : (
-          <ul className="space-y-2.5">
-            {occupancy.map((o) => (
-              <li key={o.id} className="grid grid-cols-[minmax(0,14rem)_1fr_8rem] items-center gap-3 text-sm" title={`${o.title}: ${o.used} de ${o.available} ${o.unit}`}>
-                <Link href={`/admin/planes/${o.id}/disponibilidad`} className="truncate hover:text-primary">
-                  {o.title}
-                </Link>
-                <div className="h-3 rounded-r-[4px] bg-muted/40">
-                  <div className={cn("h-3 rounded-r-[4px]", C_WON)} style={{ width: `${Math.min(100, o.ratio * 100)}%` }} />
-                </div>
-                <span className="text-right tabular-nums text-muted-foreground">
-                  {pct(o.ratio)} · {o.used}/{o.available} {o.unit}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
 
       {/* Tabla por plan */}
       <section className="overflow-x-auto rounded-2xl border border-border">
@@ -296,14 +345,24 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
   );
 }
 
-function Legend() {
+function Tile({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-5">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="mt-2 font-display text-2xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
+function Legend({ wonLabel = "Confirmadas" }: { wonLabel?: string }) {
   return (
     <div className="flex gap-4 text-xs text-muted-foreground">
       <span className="inline-flex items-center gap-1.5">
         <span className={cn("h-2.5 w-2.5 rounded-sm", C_REQ)} /> Solicitudes
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className={cn("h-2.5 w-2.5 rounded-sm", C_WON)} /> Confirmadas
+        <span className={cn("h-2.5 w-2.5 rounded-sm", C_WON)} /> {wonLabel}
       </span>
     </div>
   );
