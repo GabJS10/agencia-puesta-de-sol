@@ -40,8 +40,8 @@ Sin dependencias de servidor; lo usan también los componentes cliente.
 
 | Desde | Admin | Cliente | Sistema |
 |---|---|---|---|
-| PENDING | CONTACTED, CONFIRMED, REJECTED, CANCELLED | CANCELLED | EXPIRED |
-| CONTACTED | CONFIRMED, REJECTED, CANCELLED | CANCELLED | EXPIRED |
+| PENDING | CONTACTED, CONFIRMED, REJECTED | CANCELLED | EXPIRED |
+| CONTACTED | CONFIRMED, REJECTED | CANCELLED | EXPIRED |
 | CONFIRMED | COMPLETED (solo si el viaje ya empezó), CANCELLED | — | — |
 | EXPIRED | CONFIRMED (rescate, con chequeo de cupo), REJECTED | — | — |
 | COMPLETED / REJECTED / CANCELLED | terminales | — | — |
@@ -49,6 +49,7 @@ Sin dependencias de servidor; lo usan también los componentes cliente.
 - `HOLD_HOURS = 72` y `HOLDING_STATUSES = [PENDING, CONTACTED]`.
 - `isHolding(status, holdExpiresAt)` y `holdUntil()`.
 - `noteRequired`: el admin debe escribir un motivo para REJECTED y CANCELLED.
+- Actualizado en `specs/notificaciones-pipeline.md`: el admin solo cancela ("Anular reserva") reservas CONFIRMED.
 - `STATUS_META` (etiqueta, plural, clase, descripción), `ACTION_LABEL` y `ACTOR_LABEL`. Reemplazan los mapas `STATUS` duplicados.
 
 ## Flujo — `lib/request-workflow.ts` (server-only)

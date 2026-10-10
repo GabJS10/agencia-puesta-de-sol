@@ -135,7 +135,7 @@ motivo por el que no) y el **historial** de cambios.
 | **Confirmado** | Reserva en firme | Sí |
 | **Completado** | El viaje se realizó | — |
 | **Rechazado** | La agencia no puede atenderla | No |
-| **Cancelado** | La anuló el cliente o la agencia | No |
+| **Cancelado** | El cliente la canceló, o la agencia anuló una reserva confirmada | No |
 | **Vencido** | Pasaron las 72 h sin confirmarse | No |
 
 ### Cambiar el estado
@@ -143,13 +143,19 @@ motivo por el que no) y el **historial** de cambios.
 Usa los botones de **Acciones**. Solo aparecen los cambios permitidos desde el
 estado actual:
 
-- **Pendiente / Contactado** → Marcar contactado, Confirmar, Rechazar o Cancelar.
-- **Confirmado** → Marcar completado (desde el día del viaje) o Cancelar.
+- **Pendiente** → Marcar contactado, Confirmar o Rechazar.
+- **Contactado** → Confirmar o Rechazar.
+- **Confirmado** → Marcar completado (desde el día del viaje) o **Anular reserva**
+  (por ejemplo, si el viaje no puede realizarse).
 - **Vencido** → Confirmar (si todavía hay cupo) o Rechazar.
 - **Completado, Rechazado y Cancelado** son estados finales.
 
+Las solicitudes que aún no están confirmadas se cierran con **Rechazar**;
+**Cancelar** es una acción del cliente (desde **Mi cuenta**), y la agencia solo
+puede **anular** reservas ya confirmadas.
+
 Al elegir una acción puedes escribir un **mensaje para el cliente**. Para
-**Rechazar** o **Cancelar** el mensaje es obligatorio. **Confirmar** vuelve a
+**Rechazar** o **Anular reserva** el mensaje es obligatorio. **Confirmar** vuelve a
 revisar la disponibilidad: si ya no hay cupo, el cambio no se aplica y se
 muestra el motivo.
 
@@ -173,18 +179,73 @@ En el historial de cada solicitud se indica si el correo se envió.
     markdown: `
 En **Reportes** ves cómo van las solicitudes en un periodo. Elige **30, 90 o 365
 días** o un rango propio, y si se cuenta por **fecha de solicitud** o por
-**fecha de viaje**. También puedes limitarlo a un plan.
+**fecha de viaje**. También puedes limitarlo a un plan. Todo se calcula solo a
+partir de los estados de las solicitudes.
 
-- **Indicadores**: solicitudes, confirmadas (incluye completadas), conversión,
-  personas confirmadas, ingreso estimado (precio por persona × personas) y
+### Métricas principales
+
+- **Solicitudes**: cuántas llegaron en el periodo.
+- **Clientes contactados**: clientes distintos (por correo) cuyas solicitudes
+  pasaron por *Contactado* o *Confirmado*.
+- **Solicitudes efectivas**: confirmadas más completadas.
+- **Efectividad**: efectivas sobre el total de solicitudes (y sobre las
+  contactadas).
+- **Plan más vendido**: el plan con más solicitudes efectivas.
+
+### Pipeline
+
+Debajo está el **pipeline**: una columna por etapa (**Sin contactar**,
+**Contactados**, **Confirmados**, **Completados** y **Perdidas**, que agrupa
+rechazadas, canceladas y vencidas). Cada tarjeta es una solicitud.
+
+- **Arrastra** una tarjeta a otra columna para cambiar su estado. Al empezar a
+  arrastrar solo se resaltan las columnas permitidas.
+- Al soltar se abre la misma confirmación que en el detalle, con el mensaje para
+  el cliente. Soltar en **Perdidas** rechaza (o anula, si estaba confirmada) y
+  pide el motivo.
+- Haz clic en el nombre para abrir el detalle.
+- El tablero se actualiza solo cada pocos segundos.
+
+### Detalle
+
+- **Planes vendidos**: ranking de planes por ventas, junto a sus solicitudes.
+- Personas confirmadas, **ingreso estimado** (precio por persona × personas) y
   tiempo promedio hasta la primera acción de la agencia.
-- **Solicitudes por semana o mes**, comparadas con las confirmadas.
-- **Por estado**, con las tasas de rechazo, cancelación y vencimiento.
-- **Planes más solicitados** y una tabla por plan con su conversión e ingreso.
-- **Ocupación confirmada de los próximos 30 días** por plan.
+- **Solicitudes por semana o mes**, **por estado** (con tasas de rechazo,
+  cancelación y vencimiento), **ocupación confirmada de los próximos 30 días** y
+  una tabla por plan.
 
 **Exportar CSV** descarga las solicitudes del periodo filtrado. El archivo se
 abre directamente en Excel.
+`.trim(),
+  },
+  {
+    id: "notificaciones",
+    title: "Notificaciones",
+    markdown: `
+El panel te avisa al momento cuando:
+
+- llega una **nueva solicitud**;
+- un cliente **cancela** su solicitud;
+- a una solicitud le quedan **menos de 24 horas** de cupo apartado;
+- una solicitud **vence** porque nadie la confirmó a tiempo.
+
+Cada aviso aparece como una **notificación emergente** en la pantalla (también
+mientras navegas el sitio con tu cuenta de administrador). Haz clic en ella para
+abrir la solicitud; queda marcada como leída.
+
+En **Notificaciones** (menú lateral, con el número de no leídas) ves el
+historial completo:
+
+- Filtra entre **Todas** y **No leídas**.
+- Haz clic en una notificación para abrir su solicitud.
+- Usa los iconos de cada fila para **marcarla como leída o no leída** o
+  **eliminarla**.
+- Selecciona varias con las casillas para marcarlas o eliminarlas juntas, o usa
+  **Marcar todas como leídas** y **Eliminar todas**.
+
+Cada administrador tiene sus propias notificaciones: marcar o borrar las tuyas no
+afecta a las de los demás.
 `.trim(),
   },
   {
