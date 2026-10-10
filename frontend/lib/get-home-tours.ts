@@ -6,7 +6,7 @@ import type { HomeTour } from "@/types/HomeTours";
 import type { Plane } from "@/types/Planes";
 
 const HERO_COUNT = 3;
-const DEST_COUNT = 3;
+const DEST_COUNT = 5;
 
 // Primer fragmento legible de una descripción Markdown, para el hero.
 function snippet(md: string, max = 130): string {
@@ -62,6 +62,7 @@ export async function getHomeTours(): Promise<{
     location: p.plan_location?.location ?? p.location,
     image: resolveMedia(p.photo.url),
     url: `/planes/${p.url}`,
+    type: p.plan_type?.type || undefined,
   }));
 
   return { heroTours, homeTours };

@@ -1,145 +1,96 @@
 "use client";
 
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { ArrowRight, Pause, Play } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { HeroTour } from "@/types/HeroTours";
+import { SunsetScene } from "@/components/ui/SunsetScene";
 
-export function Hero({ slides }: { slides: HeroTour[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+// Cierre rotativo del titular: "Donde el desierto abraza …"
+const WORDS = ["el Caribe", "el cielo", "la noche"];
+
+export function Hero() {
+  const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduceMotion = useReducedMotion();
 
-  // Fondo que se alterna solo; se detiene si el usuario pausa o prefiere
-  // menos movimiento (WCAG 2.2.2 / 2.3). El copy de marca permanece fijo.
+  // La palabra cambia sola; se detiene si el usuario pausa o prefiere menos
+  // movimiento (WCAG 2.2.2 / 2.3).
   useEffect(() => {
-    if (slides.length <= 1 || paused || reduceMotion) return;
-    const id = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    if (paused || reduceMotion) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % WORDS.length), 2800);
     return () => clearInterval(id);
-  }, [slides.length, paused, reduceMotion]);
+  }, [paused, reduceMotion]);
 
   return (
-    <section className="relative w-full h-[90vh] min-h-[600px] overflow-hidden bg-noche">
-      {/* Fondo: imágenes que se alternan */}
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          key={slides[currentIndex].id}
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
-          className="absolute inset-0"
-        >
-          <Image
-            src={slides[currentIndex].image}
-            alt={slides[currentIndex].title}
-            fill
-            priority
-            className="object-cover"
-          />
-        </motion.div>
-      </AnimatePresence>
+    <section className="relative flex min-h-[max(640px,92vh)] flex-col overflow-hidden bg-noche text-[#fbf5e9]">
+      <SunsetScene />
 
-      {/* Degradado atardecer: noche → barro → noche para legibilidad */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, rgba(23,16,38,0.55) 0%, rgba(184,92,56,0.28) 45%, rgba(23,16,38,0.72) 100%)",
-        }}
-      />
-
-      {/* Contenido centrado */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-[#fbf5e9]">
-        <motion.span
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-6 inline-block rounded-full border border-[#f4ead6]/50 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
-        >
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pb-56 pt-36">
+        <span className="anim-rise inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-[#efe3cc]">
+          <span className="h-0.5 w-9 rounded-full bg-sol" />
           La Guajira · Colombia
-        </motion.span>
+        </span>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.05 }}
-          className="font-display max-w-[820px] text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl"
+        <h1
+          className="anim-rise mt-6 max-w-[960px] text-[52px] font-extrabold leading-none tracking-[-0.045em] sm:text-7xl lg:text-[104px]"
+          style={{ animationDelay: "100ms" }}
         >
-          Donde el desierto abraza el Caribe
-        </motion.h1>
+          Donde el desierto
+          <br />
+          abraza{" "}
+          <span className="sr-only">{WORDS[index]}</span>
+          <span aria-hidden="true" className="inline-block h-[1.04em] overflow-hidden align-bottom">
+            <span
+              className="flex flex-col transition-transform duration-700 ease-[cubic-bezier(.7,0,.2,1)]"
+              style={{ transform: `translateY(-${index * 1.04}em)` }}
+            >
+              {WORDS.map((w) => (
+                <span key={w} className="h-[1.04em] leading-[1.04em] text-sol">
+                  {w}
+                </span>
+              ))}
+            </span>
+          </span>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="mt-6 max-w-xl text-lg font-light leading-relaxed text-[#efe3cc] md:text-xl"
+        <p
+          className="anim-rise mt-7 max-w-[520px] text-lg leading-relaxed text-[#efe3cc] md:text-[19px]"
+          style={{ animationDelay: "220ms" }}
         >
           Viajes auténticos por el rincón más al norte de Suramérica, de la mano
           de guías Wayúu.
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-9 flex flex-wrap items-center justify-center gap-4"
+        <div
+          className="anim-rise mt-10 flex flex-wrap items-center gap-3.5"
+          style={{ animationDelay: "340ms" }}
         >
           <Link
             href="/planes"
-            className="group inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-lg shadow-black/20 transition-all hover:bg-primary/90"
+            className="group inline-flex min-h-12 items-center gap-2.5 rounded-full bg-sol px-7 text-base font-bold text-[#2a1a0a] transition-all hover:-translate-y-0.5 hover:gap-3.5 hover:bg-[#f7b456]"
           >
             Ver planes
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="h-[18px] w-[18px]" />
           </Link>
           <Link
             href="/nosotros"
-            className="inline-flex items-center rounded-md border border-[#f4ead6]/55 bg-white/10 px-8 py-3.5 text-base font-bold text-[#fbf5e9] backdrop-blur-sm transition-all hover:bg-white/20"
+            className="inline-flex min-h-12 items-center rounded-full border-[1.5px] border-[#f4ead6]/45 px-7 text-base font-bold text-[#fbf5e9] transition-all hover:-translate-y-0.5 hover:bg-[#f4ead6]/10"
           >
             Cómo viajamos
           </Link>
-        </motion.div>
-
-        {/* Indicadores del carrusel de fondo + control de pausa */}
-        {slides.length > 1 && (
-          <div className="absolute bottom-8 flex items-center gap-3">
-            <div className="flex gap-2">
-              {slides.map((slide, i) => (
-                <button
-                  key={slide.id}
-                  aria-label={`Ver ${slide.title}`}
-                  aria-current={i === currentIndex ? "true" : undefined}
-                  onClick={() => setCurrentIndex(i)}
-                  className={
-                    "h-1.5 rounded-full transition-all " +
-                    (i === currentIndex
-                      ? "w-8 bg-primary"
-                      : "w-1.5 bg-white/50 hover:bg-white/80")
-                  }
-                />
-              ))}
-            </div>
-            {!reduceMotion && (
-              <button
-                type="button"
-                onClick={() => setPaused((p) => !p)}
-                aria-label={paused ? "Reanudar el carrusel" : "Pausar el carrusel"}
-                aria-pressed={paused}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
-              >
-                {paused ? (
-                  <Play className="h-3.5 w-3.5" />
-                ) : (
-                  <Pause className="h-3.5 w-3.5" />
-                )}
-              </button>
-            )}
-          </div>
-        )}
+          {!reduceMotion && (
+            <button
+              type="button"
+              onClick={() => setPaused((p) => !p)}
+              aria-label={paused ? "Reanudar animación del titular" : "Pausar animación del titular"}
+              aria-pressed={paused}
+              className="ml-1 flex h-11 w-11 items-center justify-center rounded-full text-[#efe3cc]/80 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );

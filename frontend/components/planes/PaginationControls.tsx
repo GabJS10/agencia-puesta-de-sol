@@ -80,10 +80,10 @@ export function PaginationControls({ pageCount, page }: PaginationControlsProps)
             aria-label={`Ir a la página ${p}`}
             aria-current={p === page ? "page" : undefined}
             className={cn(
-              "flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold transition-colors",
+              "flex h-11 w-11 items-center justify-center rounded-full text-[15px] font-bold transition-colors",
               p === page
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "border border-border text-foreground hover:bg-surface-hover",
+                ? "bg-sol text-[#2a1a0a] shadow-sm"
+                : "border-[1.5px] border-border text-foreground hover:border-foreground",
             )}
           >
             {p}

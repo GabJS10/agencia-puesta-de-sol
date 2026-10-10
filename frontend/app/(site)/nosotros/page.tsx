@@ -1,3 +1,4 @@
+import { PageHero } from "@/components/ui/PageHero";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -75,30 +76,17 @@ export default async function NosotrosPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-noche px-6 pb-16 pt-36 text-arena">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-sol/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-32 left-1/4 h-80 w-80 rounded-full bg-brasa/15 blur-3xl"
-        />
-        <div className="relative mx-auto max-w-7xl">
-          <Eyebrow className="text-sol">Nosotros</Eyebrow>
-          <h1 className="mt-5 max-w-4xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
-            Hijos del <span className="text-atardecer">desierto</span> y del mar
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg font-light text-arena/70">
+      <PageHero
+        eyebrow="Nosotros"
+        title={<>Hijos del <span className="text-sol">desierto</span> y del mar</>}
+        description={
+          <>
             Somos una agencia guajira. Nacimos para mostrar el rincón más al
             norte de Suramérica como lo sentimos quienes vivimos aquí: crudo,
             luminoso y profundamente hospitalario.
-          </p>
-        </div>
-      </section>
-
-      <KanasBand height={16} className="opacity-90" />
+          </>
+        }
+      />
 
       {/* Historia */}
       <section className="mx-auto max-w-7xl px-6 py-20">

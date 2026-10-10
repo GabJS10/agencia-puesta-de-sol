@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { User, Menu, X } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useSession } from "@/components/session-provider";
+import { LogoMark } from "@/components/ui/Logo";
+
+const DARK_HERO_ROUTES = ["/", "/planes", "/nosotros", "/galeria", "/contactanos"];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -22,6 +24,8 @@ export function Navbar() {
       setIsScrolled(window.scrollY > 50);
     };
 
+    // Si la página carga ya desplazada (recarga, volver atrás), la barra arranca sólida.
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -44,68 +48,61 @@ export function Navbar() {
   }, [menuOpen]);
 
   const navLinks = [
-    { name: "INICIO", href: "/" },
-    { name: "PLANES", href: "/planes" },
-    { name: "NOSOTROS", href: "/nosotros" },
-    { name: "GALERÍA", href: "/galeria" },
-    { name: "CONTÁCTANOS", href: "/contactanos" },
+    { name: "Inicio", href: "/" },
+    { name: "Planes", href: "/planes" },
+    { name: "Nosotros", href: "/nosotros" },
+    { name: "Galería", href: "/galeria" },
+    { name: "Contacto", href: "/contactanos" },
   ];
 
-  // El tratamiento transparente + texto blanco solo es legible sobre el hero
-  // full-bleed del home. En el resto de rutas el tope es claro (bg-background),
-  // así que la barra va sólida desde el primer paint para no quedar invisible.
-  const isHome = pathname === "/";
-  const transparent = isHome && !isScrolled;
+  // Las rutas con encabezado oscuro (hero del home y PageHero) llevan la barra
+  // transparente con texto claro hasta hacer scroll; el resto, sólida desde el
+  // primer paint para no quedar invisible sobre fondo claro.
+  const darkTop = DARK_HERO_ROUTES.includes(pathname);
+  const transparent = darkTop && !isScrolled;
 
   return (
     <>
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6",
+        "fixed top-0 left-0 right-0 z-50 px-6 transition-all duration-300",
         transparent
           ? "bg-transparent py-6"
-          : "bg-background/80 backdrop-blur-md py-4 shadow-lg border-b border-border",
+          : "border-b border-border bg-background/85 py-3.5 shadow-[0_10px_30px_-20px_rgba(42,32,24,0.4)] backdrop-blur-md",
       )}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <div
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6">
+        <Link
+          href="/"
           className={cn(
-            "text-xl font-bold flex items-center gap-2",
-            transparent ? "text-white" : "text-foreground",
+            "flex items-center gap-2.5 text-xl font-extrabold tracking-[-0.02em] transition-colors",
+            transparent ? "text-[#fbf5e9]" : "text-foreground",
           )}
         >
-          <Image
-            src="/favicon.jpg"
-            alt="Puesta del Sol"
-            width={40}
-            height={40}
-            className="rounded-full w-10 h-10 object-cover"
-          />
-          <span className="font-display tracking-tight">Puesta del Sol</span>
-        </div>
+          <LogoMark className="h-12 w-12" />
+          Puesta del Sol
+        </Link>
 
         {/* Desktop Navigation */}
-        <div
-          className={cn(
-            "hidden md:flex items-center gap-1 p-1 rounded-full transition-colors",
-            transparent
-              ? "bg-black/20 backdrop-blur-sm border border-white/10"
-              : "bg-surface/80 border border-border backdrop-blur-md",
-          )}
-        >
+        <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.name}
                 href={link.href}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "text-xs font-medium tracking-wide transition-all px-4 py-1.5 rounded-full",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : transparent
-                      ? "text-white/80 hover:text-white"
+                  "relative py-3 text-[15px] font-semibold transition-colors",
+                  "after:absolute after:inset-x-0 after:bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-sol after:transition-transform after:duration-300 hover:after:scale-x-100",
+                  isActive && "after:scale-x-100",
+                  transparent
+                    ? isActive
+                      ? "text-sol"
+                      : "text-[#efe3cc] hover:text-sol"
+                    : isActive
+                      ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -121,17 +118,10 @@ export function Navbar() {
           {/* Sesión: Ingresar / Mi cuenta (desktop) */}
           <Link
             href={user ? "/cuenta" : "/ingresar"}
-            className={cn(
-              "hidden md:flex items-center gap-2 rounded-full border px-4 py-2 text-xs transition-all backdrop-blur-sm hover:border-primary/50 hover:bg-primary/10",
-              transparent
-                ? "border-white/10 text-white"
-                : "border-foreground/10 text-foreground",
-            )}
+            className="group hidden min-h-11 items-center gap-2 rounded-full bg-sol px-5 text-[15px] font-bold text-[#2a1a0a] transition-all hover:-translate-y-0.5 hover:bg-[#f7b456] md:inline-flex"
           >
-            <User className="h-3 w-3 text-primary" />
-            <span className="tracking-wider">
-              {user ? "MI CUENTA" : "INGRESAR"}
-            </span>
+            <User className="h-4 w-4" />
+            {user ? "Mi cuenta" : "Ingresar"}
           </Link>
 
           {/* Botón de menú (móvil) */}
@@ -172,7 +162,8 @@ export function Navbar() {
             className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-background text-foreground shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-right motion-safe:duration-300"
           >
             <div className="flex items-center justify-between border-b border-border px-6 py-5">
-              <span className="font-display text-lg font-semibold tracking-tight">
+              <span className="flex items-center gap-2.5 text-lg font-extrabold tracking-[-0.02em]">
+                <LogoMark />
                 Puesta del Sol
               </span>
               <button
@@ -188,14 +179,15 @@ export function Navbar() {
 
             <nav className="flex flex-col px-4 py-2">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive =
+                  link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
                     className={cn(
-                      "border-b border-border/60 px-2 py-4 text-base font-semibold tracking-wide transition-colors",
+                      "border-b border-border/60 px-2 py-4 text-xl font-bold tracking-[-0.02em] transition-colors",
                       isActive
                         ? "text-primary"
                         : "text-foreground hover:text-primary",
@@ -211,7 +203,7 @@ export function Navbar() {
               <Link
                 href={user ? "/cuenta" : "/ingresar"}
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
+                className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-sol px-4 text-base font-bold text-[#2a1a0a] transition-colors hover:bg-[#f7b456]"
               >
                 <User className="h-4 w-4" />
                 {user ? "Mi cuenta" : "Ingresar"}

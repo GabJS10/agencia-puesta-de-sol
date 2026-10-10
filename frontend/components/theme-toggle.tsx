@@ -19,13 +19,13 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-full bg-surface hover:bg-surface-hover text-foreground transition-colors cursor-pointer border border-muted/20"
-      aria-label="Toggle theme"
+      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-border/60 bg-surface text-foreground transition-colors hover:bg-surface-hover"
+      aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
     >
       {theme === "dark" ? (
         <Moon className="w-5 h-5 text-primary" />
       ) : (
-        <Sun className="w-5 h-5 text-secondary" />
+        <Sun className="w-5 h-5 text-barro" />
       )}
     </button>
   );

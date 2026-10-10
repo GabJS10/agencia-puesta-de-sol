@@ -1,7 +1,6 @@
+import { PageHero } from "@/components/ui/PageHero";
 import { getGallery } from "@/lib/get-gallery";
 import { GalleryLightbox } from "@/components/gallery/GalleryLightbox";
-import { KanasBand } from "@/components/ui/KanasBand";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Camera } from "lucide-react";
 
 export const metadata = {
@@ -15,29 +14,16 @@ export default async function GaleriaPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* Hero oscuro (deja legible el navbar sobre él) */}
-      <section className="relative overflow-hidden bg-noche px-6 pb-16 pt-36 text-arena">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-brasa/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-32 left-1/3 h-80 w-80 rounded-full bg-sol/15 blur-3xl"
-        />
-        <div className="relative mx-auto max-w-7xl">
-          <Eyebrow className="text-sol">Galería</Eyebrow>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
-            Postales de <span className="text-atardecer">La Guajira</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-lg font-light text-arena/70">
+      <PageHero
+        eyebrow="Galería"
+        title={<>Postales de <span className="text-sol">La Guajira</span></>}
+        description={
+          <>
             Desierto que toca el Caribe, rancherías Wayúu y atardeceres que no
             caben en una foto. Estas son algunas de nuestras aventuras.
-          </p>
-        </div>
-      </section>
-
-      <KanasBand height={16} className="opacity-90" />
+          </>
+        }
+      />
 
       {/* Contenido */}
       <section className="mx-auto max-w-7xl px-6 py-16">

@@ -5,6 +5,8 @@ export interface HomeTour {
   location: string;
   image: string;
   url: string;
+  /** Tipo de plan (Desierto, Playa…); alimenta las pestañas del home. */
+  type?: string;
 }
 
 export interface HTour {

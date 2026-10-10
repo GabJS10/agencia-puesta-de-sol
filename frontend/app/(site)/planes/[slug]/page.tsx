@@ -3,7 +3,6 @@ import { getPlanBySlug } from "@/lib/get-plan-by-slug";
 import { getPlanes } from "@/lib/get-planes";
 import { getPlanCalendar } from "@/lib/get-plan-availability";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { MapPin, Users, CheckCircle2, ShieldCheck, Award } from "lucide-react";
 import { PlanGallery } from "@/components/planes/PlanGallery";
 import { PlanTabs } from "@/components/planes/PlanTabs";
@@ -40,7 +39,7 @@ export default async function PlanPage({
 
   const relatedPlanes = planesRes.data
     .filter((p: Plane) => p.url !== slug)
-    .slice(0, 5)
+    .slice(0, 3)
     .map((p: Plane) => ({
       id: p.id,
       title: p.title,
@@ -61,131 +60,112 @@ export default async function PlanPage({
     },
   ];
 
-  return (
-    <main className="min-h-screen bg-background pb-20 text-foreground">
-      <div className="mx-auto max-w-7xl px-6 pt-28">
-        {/* Breadcrumb */}
-        <nav className="mb-5 text-sm font-semibold text-muted-foreground">
-          <Link href="/" className="text-barro hover:text-primary">
-            Inicio
-          </Link>{" "}
-          /{" "}
-          <Link href="/planes" className="text-barro hover:text-primary">
-            Planes
-          </Link>{" "}
-          / {plan.title}
-        </nav>
+  const pill =
+    "inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-2 text-sm font-bold";
 
-        {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="mb-3 flex flex-wrap gap-2">
-              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-barro">
-                {plan.plan_type.type}
-              </span>
-              {plan.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-secondary-foreground"
-                >
-                  {tag.element}
-                </span>
-              ))}
-            </div>
-            <h1 className="font-display text-4xl font-semibold leading-[1.05] md:text-5xl">
-              {plan.title}
-            </h1>
-            <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <MapPin className="h-4 w-4" />
+  return (
+    <main className="min-h-screen bg-background pb-24 text-foreground">
+      <div className="mx-auto max-w-7xl px-6 pt-24">
+        <PlanGallery
+          mainImage={plan.photo}
+          gallery={plan.gallery}
+          baseUrl=""
+          title={plan.title}
+          typeLabel={plan.plan_type.type || undefined}
+        />
+
+        {/* Body: info + tabs (izq) / reserva (der) */}
+        <div className="mt-12 grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16">
+          <div className="min-w-0">
+            <div className="flex flex-wrap gap-2">
+              <span className={pill}>
+                <MapPin className="h-4 w-4 text-barro" />
                 {plan.plan_location.location}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Users className="h-4 w-4" />
+              <span className={pill}>
+                <Users className="h-4 w-4 text-barro" />
                 {plan.availabilityMode === "CAPACITY"
                   ? `Cupo de ${plan.capacity} personas por día`
                   : "Salida privada"}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-mar" />
+              <span className={pill}>
+                <ShieldCheck className="h-4 w-4 text-barro" />
                 Guías Wayúu certificados
               </span>
+              {plan.plan_type.type && (
+                <span className="inline-flex items-center rounded-full bg-foreground px-3.5 py-2 text-sm font-bold text-background">
+                  {plan.plan_type.type}
+                </span>
+              )}
+              {plan.tags.map((tag) => (
+                <span key={tag.id} className={pill}>
+                  {tag.element}
+                </span>
+              ))}
             </div>
-          </div>
-          <div className="shrink-0 text-left sm:text-right">
-            <div className="text-sm font-semibold text-muted-foreground">desde</div>
-            <div className="font-display text-4xl font-semibold text-barro">
-              {formatPrice(plan.price)}
-            </div>
-            <div className="text-sm text-muted-foreground">por persona</div>
-          </div>
-        </div>
 
-        {/* Body: galería + tabs (izq) / reserva (der) */}
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <PlanGallery mainImage={plan.photo} gallery={plan.gallery} baseUrl="" />
-
-            <div className="mt-12">
+            <div className="mt-10">
               <PlanTabs items={tabsItems} />
             </div>
           </div>
 
           {/* Reserva */}
-          <aside className="lg:col-span-5">
-            <div className="lg:sticky lg:top-24">
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                <h2 className="font-display text-2xl font-semibold">
-                  Solicita este plan
-                </h2>
-                <p className="mb-4 mt-1 text-sm text-muted-foreground">
-                  Elige tu fecha y te confirmamos por correo.
-                </p>
+          <aside className="lg:sticky lg:top-24">
+            <div className="rounded-[26px] bg-card p-7 shadow-[0_30px_60px_-36px_rgba(74,45,20,0.45)]">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <span className="text-sm text-muted-foreground">desde</span>
+                <span className="text-[32px] font-extrabold tracking-[-0.03em]">
+                  {formatPrice(plan.price)}
+                </span>
+                <span className="text-sm text-muted-foreground">por persona</span>
+              </div>
+              <p className="mb-5 mt-1 text-sm text-muted-foreground">
+                Elige tu fecha y te confirmamos por correo.
+              </p>
 
-                <AvailabilitySummary
-                  availabilityMode={plan.availabilityMode}
-                  capacity={plan.capacity}
-                  bookingMode={plan.bookingMode}
-                  bookingsOpen={plan.bookingsOpen}
-                  minDays={plan.minDays}
-                  maxDays={plan.maxDays}
-                  availability={availability}
-                />
+              <AvailabilitySummary
+                availabilityMode={plan.availabilityMode}
+                capacity={plan.capacity}
+                bookingMode={plan.bookingMode}
+                bookingsOpen={plan.bookingsOpen}
+                minDays={plan.minDays}
+                maxDays={plan.maxDays}
+                availability={availability}
+              />
 
-                <ReservationForm
-                  planId={plan.id}
-                  planTitle={plan.title}
-                  price={plan.price}
-                  type={plan.plan_type.type}
-                  availabilityMode={plan.availabilityMode}
-                  capacity={plan.capacity}
-                  bookingMode={plan.bookingMode}
-                  bookingsOpen={plan.bookingsOpen}
-                  minDays={plan.minDays}
-                  maxDays={plan.maxDays}
-                  unavailableDates={availability.unavailableDays}
-                  tentativeDates={availability.tentativeDays}
-                  remainingByDay={availability.remainingByDay}
-                />
+              <ReservationForm
+                planId={plan.id}
+                planTitle={plan.title}
+                price={plan.price}
+                type={plan.plan_type.type}
+                availabilityMode={plan.availabilityMode}
+                capacity={plan.capacity}
+                bookingMode={plan.bookingMode}
+                bookingsOpen={plan.bookingsOpen}
+                minDays={plan.minDays}
+                maxDays={plan.maxDays}
+                unavailableDates={availability.unavailableDays}
+                tentativeDates={availability.tentativeDays}
+                remainingByDay={availability.remainingByDay}
+              />
 
-                <div className="mt-6 space-y-3 border-t border-border pt-5">
-                  <div className="flex items-center gap-3 text-sm text-foreground/80">
-                    <CheckCircle2 className="h-4 w-4 text-mar" />
-                    Sin pagos por adelantado
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-foreground/80">
-                    <ShieldCheck className="h-4 w-4 text-mar" />
-                    Reserva sujeta a confirmación
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-foreground/80">
-                    <MapPin className="h-4 w-4 text-mar" />
-                    Guías locales expertos
-                  </div>
-                  {/* TODO: reemplazar los placeholders con los datos reales de la agencia */}
-                  <div className="flex items-center gap-3 text-sm text-foreground/80">
-                    <Award className="h-4 w-4 text-mar" />
-                    RNT [NÚMERO RNT] · [AÑOS] años operando
-                  </div>
+              <div className="mt-6 space-y-3 border-t border-border pt-5">
+                <div className="flex items-center gap-3 text-sm text-foreground/80">
+                  <CheckCircle2 className="h-4 w-4 text-mar" />
+                  Sin pagos por adelantado
+                </div>
+                <div className="flex items-center gap-3 text-sm text-foreground/80">
+                  <ShieldCheck className="h-4 w-4 text-mar" />
+                  Reserva sujeta a confirmación
+                </div>
+                <div className="flex items-center gap-3 text-sm text-foreground/80">
+                  <MapPin className="h-4 w-4 text-mar" />
+                  Guías locales expertos
+                </div>
+                {/* TODO: reemplazar los placeholders con los datos reales de la agencia */}
+                <div className="flex items-center gap-3 text-sm text-foreground/80">
+                  <Award className="h-4 w-4 text-mar" />
+                  RNT [NÚMERO RNT] · [AÑOS] años operando
                 </div>
               </div>
             </div>
@@ -193,7 +173,7 @@ export default async function PlanPage({
         </div>
 
         {/* Relacionados */}
-        <div className="mt-20">
+        <div className="mt-24">
           <RelatedPlanes planes={relatedPlanes} />
         </div>
       </div>

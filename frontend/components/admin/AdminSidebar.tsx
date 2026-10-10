@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { LogoMark } from "@/components/ui/Logo";
 import { useNotifications } from "@/components/admin/notifications/NotificationsProvider";
 
 const NAV = [
@@ -76,7 +77,7 @@ export function AdminSidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-0 flex h-screen shrink-0 flex-col border-r border-[#332a47] bg-noche p-4 text-arena transition-[width] duration-300",
+        "sticky top-0 flex h-screen shrink-0 flex-col bg-noche p-4 text-arena transition-[width] duration-[450ms] ease-[cubic-bezier(.6,0,.2,1)]",
         collapsed ? "w-[76px]" : "w-64",
       )}
     >
@@ -86,10 +87,10 @@ export function AdminSidebar() {
           collapsed ? "flex-col gap-3" : "gap-3 px-2",
         )}
       >
-        <span className="h-8 w-8 shrink-0 rounded-full bg-[radial-gradient(circle_at_50%_35%,#f5a538,#d6455f)]" />
+        <LogoMark className="h-10 w-10" />
         {!collapsed && (
           <div className="min-w-0">
-            <p className="truncate font-display text-lg font-semibold text-arena">
+            <p className="truncate text-lg font-extrabold tracking-[-0.02em] text-[#fbf5e9]">
               Puesta del Sol
             </p>
             <p className="truncate text-xs text-[#9a8c74]">
@@ -133,15 +134,15 @@ export function AdminSidebar() {
               title={collapsed ? label : undefined}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "relative flex min-h-11 items-center gap-3.5 rounded-xl px-3.5 text-[15px] font-semibold transition-colors",
                 collapsed && "justify-center px-0",
                 active
-                  ? "bg-[#211a33] text-arena"
-                  : "text-[#cdbfa6] hover:bg-[#211a33] hover:text-arena",
+                  ? "bg-[#2c2440] text-[#fbf5e9] before:absolute before:-left-4 before:top-2.5 before:bottom-2.5 before:w-1 before:rounded-r before:bg-sol"
+                  : "text-[#d9ccb3] hover:bg-[#211a33] hover:text-[#fbf5e9]",
               )}
             >
               <span className="relative shrink-0">
-                <Icon className="h-4 w-4" />
+                <Icon className="h-5 w-5" />
                 {href === "/admin/notificaciones" && unread > 0 && collapsed && (
                   <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-brasa" />
                 )}
@@ -149,7 +150,7 @@ export function AdminSidebar() {
               {!collapsed && <span className="truncate">{label}</span>}
               {!collapsed && href === "/admin/notificaciones" && unread > 0 && (
                 <span
-                  className="ml-auto rounded-full bg-brasa px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white"
+                  className="ml-auto inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-brasa px-1.5 text-xs font-extrabold tabular-nums text-white"
                   aria-label={`${unread} sin leer`}
                 >
                   {unread > 99 ? "99+" : unread}

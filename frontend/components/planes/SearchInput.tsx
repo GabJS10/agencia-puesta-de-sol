@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+// Buscador del encabezado de /planes: pastilla clara sobre el hero oscuro.
 export function SearchInput() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,18 +28,27 @@ export function SearchInput() {
   return (
     <form
       onSubmit={handleSearch}
-      className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-full flex items-center shadow-2xl md:mb-2"
+      role="search"
+      className="flex h-[60px] w-full max-w-[560px] items-center gap-3 rounded-full bg-[#fbf5e9] pl-5 pr-2 text-[#2a2018] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.5)] transition-shadow focus-within:shadow-[0_0_0_3px_#f5a538,0_18px_40px_-18px_rgba(0,0,0,0.5)]"
     >
-      <div className="pl-4 pr-2 text-white/70">
-        <Search className="w-5 h-5" />
-      </div>
+      <Search className="h-[22px] w-[22px] shrink-0 text-[#7a6a55]" aria-hidden="true" />
+      <label htmlFor="planes-search" className="sr-only">
+        Buscar planes
+      </label>
       <input
-        type="text"
-        placeholder="Buscar experiencia..."
+        id="planes-search"
+        type="search"
+        placeholder="Busca un destino: Cabo, Taroa, Manaure…"
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        className="flex-1 bg-transparent border-none text-white placeholder:text-white/60 focus:outline-none px-2 py-2 text-base font-light"
+        className="min-w-0 flex-1 bg-transparent text-[17px] font-medium placeholder:text-[#7a6a55] focus:outline-none"
       />
+      <button
+        type="submit"
+        className="min-h-11 shrink-0 rounded-full bg-sol px-5 text-[15px] font-bold text-[#2a1a0a] transition-colors hover:bg-[#f7b456]"
+      >
+        Buscar
+      </button>
     </form>
   );
 }

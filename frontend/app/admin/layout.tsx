@@ -17,7 +17,7 @@ export default async function AdminLayout({
     <NotificationsProvider>
       <div className="flex min-h-screen bg-background text-foreground">
         <AdminSidebar />
-        <main className="flex-1 overflow-x-hidden p-8">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden px-5 py-8 md:px-10">{children}</main>
       </div>
     </NotificationsProvider>
   );

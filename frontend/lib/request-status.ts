@@ -27,45 +27,56 @@ export const STATUS_META: Record<
   PENDING: {
     label: "Pendiente",
     plural: "Pendientes",
-    className: "bg-sol/15 text-sol",
+    className: "bg-[#fde6bf] text-[#6b3d00] dark:bg-sol/20 dark:text-sol",
     description: "Recibimos tu solicitud y tu cupo está apartado mientras la revisamos.",
   },
   CONTACTED: {
     label: "Contactado",
     plural: "Contactadas",
-    className: "bg-mar/15 text-mar",
+    className: "bg-[#d7efec] text-[#0b5e55] dark:bg-mar/20 dark:text-[#5fd3c5]",
     description: "Ya estamos en contacto contigo para concretar los detalles.",
   },
   CONFIRMED: {
     label: "Confirmado",
     plural: "Confirmadas",
-    className: "bg-green-500/15 text-green-600 dark:text-green-400",
+    className: "bg-[#0f7a6f] text-white",
     description: "Tu reserva está confirmada. ¡Nos vemos en el viaje!",
   },
   COMPLETED: {
     label: "Completado",
     plural: "Completadas",
-    className: "bg-noche/10 text-foreground/80 dark:bg-arena/10",
+    className: "bg-[#2a2018] text-[#f4ead6] dark:bg-arena dark:text-[#2a2018]",
     description: "Viaje realizado. Gracias por viajar con nosotros.",
   },
   REJECTED: {
     label: "Rechazado",
     plural: "Rechazadas",
-    className: "bg-brasa/15 text-brasa",
+    className: "bg-[#f8d7dd] text-[#9c1f38] dark:bg-brasa/20 dark:text-[#f08a9c]",
     description: "No pudimos atender esta solicitud. Revisa el motivo en el historial.",
   },
   CANCELLED: {
     label: "Cancelado",
     plural: "Canceladas",
-    className: "bg-brasa/10 text-brasa/80",
+    className: "bg-[#e9d9bc] text-[#5e5040] dark:bg-white/10 dark:text-[#cdbfa6]",
     description: "La solicitud fue cancelada y el cupo quedó liberado.",
   },
   EXPIRED: {
     label: "Vencido",
     plural: "Vencidas",
-    className: "bg-muted text-muted-foreground",
+    className: "bg-[#f3dccf] text-[#8a4326] dark:bg-barro/20 dark:text-[#e69a76]",
     description: "El cupo apartado venció sin confirmarse. Puedes volver a solicitar el plan.",
   },
+};
+
+/** Color sólido de cada estado para gráficos (distintos también en luminosidad). */
+export const STATUS_CHART_COLOR: Record<RequestStatus, string> = {
+  PENDING: "#f5a538",
+  CONTACTED: "#7fcfc5",
+  CONFIRMED: "#0f7a6f",
+  COMPLETED: "#7a6a55",
+  REJECTED: "#d6455f",
+  CANCELLED: "#c9b998",
+  EXPIRED: "#b85c38",
 };
 
 export const ACTOR_LABEL: Record<EventActor, string> = {

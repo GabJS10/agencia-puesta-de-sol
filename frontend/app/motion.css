@@ -1,0 +1,62 @@
+/* ===== Movimiento de marca (rediseño "minimal y dinámico") ===== */
+
+/* Sol que baja y sube despacio en las escenas de atardecer */
+.anim-sun {
+  animation: pds-sink 14s ease-in-out infinite alternate;
+  transform-box: fill-box;
+}
+@keyframes pds-sink {
+  from { transform: translateY(-18px); }
+  to { transform: translateY(34px); }
+}
+
+/* Reflejos del sol sobre el mar */
+.anim-shimmer { animation: pds-shimmer 3.2s ease-in-out infinite; }
+.anim-shimmer:nth-child(2n) { animation-delay: -1.4s; }
+.anim-shimmer:nth-child(3n) { animation-delay: -2.3s; }
+@keyframes pds-shimmer {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.9; }
+}
+
+/* Entrada escalonada (usar con style={{ animationDelay }}) */
+.anim-rise { animation: pds-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes pds-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Banda de destinos en movimiento continuo */
+.anim-marquee { animation: pds-marquee 60s linear infinite; }
+@keyframes pds-marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* Zoom lento de imágenes destacadas */
+.anim-zoom { animation: pds-zoom 18s ease-in-out infinite alternate; }
+@keyframes pds-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+/* Barras de gráficos que crecen al cargar */
+.anim-grow-y {
+  transform-origin: bottom;
+  animation: pds-grow-y 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes pds-grow-y {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* Respeta "reducir movimiento" del sistema (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  .anim-sun,
+  .anim-shimmer,
+  .anim-rise,
+  .anim-marquee,
+  .anim-zoom,
+  .anim-grow-y {
+    animation: none !important;
+  }
+}

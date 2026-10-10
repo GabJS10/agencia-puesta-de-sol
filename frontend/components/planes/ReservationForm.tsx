@@ -282,7 +282,7 @@ export function ReservationForm({
   }
 
   const field =
-    "w-full h-12 rounded-xl border border-border bg-surface px-4 text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20";
+    "w-full h-12 rounded-2xl border border-border bg-background px-4 text-foreground outline-none transition-all focus:border-sol focus:ring-2 focus:ring-sol/30";
   const overCapacity = minRemaining !== null && guests > minRemaining;
   const rangeLen =
     isRange && !choosingEnd && range?.from && range?.to
@@ -347,7 +347,7 @@ export function ReservationForm({
           type="button"
           onClick={() => setIsCalendarOpen(!isCalendarOpen)}
           className={cn(
-            "flex h-12 w-full items-center justify-between rounded-xl border border-border bg-surface px-4 text-left transition-all hover:border-primary/50",
+            "flex h-12 w-full items-center justify-between rounded-2xl border border-border bg-background px-4 text-left transition-all hover:border-primary/50",
             isCalendarOpen && "border-primary ring-2 ring-primary/20",
           )}
         >
@@ -417,7 +417,7 @@ export function ReservationForm({
               >
                 Borrar
               </button>
-              <button type="button" onClick={() => setIsCalendarOpen(false)} className="rounded-lg bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+              <button type="button" onClick={() => setIsCalendarOpen(false)} className="rounded-full bg-sol px-4 py-1.5 text-sm font-bold text-[#2a1a0a] hover:bg-[#f7b456]">
                 Listo
               </button>
             </div>
@@ -428,7 +428,7 @@ export function ReservationForm({
       {/* Personas */}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-foreground">Número de personas</label>
-        <div className="flex h-12 items-center justify-between rounded-xl border border-border bg-surface px-4">
+        <div className="flex h-12 items-center justify-between rounded-2xl border border-border bg-background px-4">
           <span className="flex items-center gap-2 text-sm text-foreground">
             <Users className="h-4 w-4 text-primary" />
             {guests} {guests === 1 ? "persona" : "personas"}
@@ -462,16 +462,16 @@ export function ReservationForm({
       {/* Mensaje */}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-foreground">Mensaje (opcional)</label>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="¿Algo que debamos saber?" />
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-foreground outline-none transition-all focus:border-sol focus:ring-2 focus:ring-sol/30" placeholder="¿Algo que debamos saber?" />
       </div>
 
       <button
         type="submit"
         disabled={!isFormValid || loading}
         className={cn(
-          "flex h-12 w-full items-center justify-center gap-2 rounded-lg text-lg font-semibold shadow-sm transition-colors",
+          "flex min-h-12 w-full items-center justify-center gap-2 rounded-full text-base font-bold transition-all",
           isFormValid && !loading
-            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+            ? "bg-sol text-[#2a1a0a] hover:-translate-y-0.5 hover:bg-[#f7b456]"
             : "cursor-not-allowed bg-muted text-muted-foreground",
         )}
       >

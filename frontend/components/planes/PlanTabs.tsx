@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
@@ -26,44 +27,51 @@ export function PlanTabs({ items }: PlanTabsProps) {
   return (
     <div className="flex flex-col gap-8">
       {/* Tabs Header */}
-      <div className="border-b border-border">
-        <div className="flex gap-8 overflow-x-auto">
-          {validItems.map((item) => (
+      <div role="tablist" className="flex gap-1.5 overflow-x-auto border-b-[1.5px] border-border">
+        {validItems.map((item) => {
+          const active = activeTab === item.id;
+          return (
             <button
               key={item.id}
+              type="button"
+              role="tab"
+              id={`tab-${item.id}`}
+              aria-selected={active}
+              aria-controls={`panel-${item.id}`}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                "pb-4 text-sm font-medium transition-all relative whitespace-nowrap cursor-pointer",
-                activeTab === item.id
-                  ? "text-primary font-semibold"
-                  : "text-muted-foreground hover:text-foreground",
+                "relative min-h-[52px] cursor-pointer whitespace-nowrap px-4 text-base font-bold transition-colors",
+                active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {item.label}
-              {activeTab === item.id && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              {active && (
+                <motion.span
+                  layoutId="plan-tab-underline"
+                  className="absolute inset-x-3 -bottom-[1.5px] h-[3px] rounded-full bg-sol"
+                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                />
               )}
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tabs Content */}
-      <div className="min-h-[200px] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
-        {validItems.map((item) => {
-          if (item.id !== activeTab) return null;
-          return (
-            <div
-              key={item.id}
-              className="prose prose-slate dark:prose-invert max-w-none prose-headings:!text-foreground prose-p:!text-foreground prose-li:!text-foreground prose-strong:!text-foreground"
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {item.content!}
-              </ReactMarkdown>
-            </div>
           );
         })}
       </div>
+
+      {/* Tabs Content */}
+      {validItems.map((item) => {
+        if (item.id !== activeTab) return null;
+        return (
+          <div
+            key={item.id}
+            role="tabpanel"
+            id={`panel-${item.id}`}
+            aria-labelledby={`tab-${item.id}`}
+            className="prose prose-lg prose-slate min-h-[200px] max-w-none dark:prose-invert prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:!text-foreground prose-p:!text-foreground/85 prose-li:!text-foreground/85 prose-li:marker:text-sol prose-strong:!text-foreground motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-500"
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.content!}</ReactMarkdown>
+          </div>
+        );
+      })}
     </div>
   );
 }

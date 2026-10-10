@@ -1,3 +1,4 @@
+import { PageHero } from "@/components/ui/PageHero";
 import Link from "next/link";
 import {
   Phone,
@@ -13,8 +14,6 @@ import { getSocial } from "@/lib/get-social";
 import { getPhone } from "@/lib/get-phone";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { Location } from "@/components/home/Location";
-import { KanasBand } from "@/components/ui/KanasBand";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 
 export const metadata = {
   title: "Contáctanos | Puesta del Sol",
@@ -44,30 +43,16 @@ export default async function ContactanosPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* Hero oscuro */}
-      <section className="relative overflow-hidden bg-noche px-6 pb-16 pt-36 text-arena">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-sol/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-32 right-1/4 h-80 w-80 rounded-full bg-mar/15 blur-3xl"
-        />
-        <div className="relative mx-auto max-w-7xl">
-          <Eyebrow className="text-sol">Contáctanos</Eyebrow>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
-            Hablemos de tu próxima{" "}
-            <span className="text-atardecer">aventura</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-lg font-light text-arena/70">
+      <PageHero
+        eyebrow="Contáctanos"
+        title={<>Hablemos de tu próxima <span className="text-sol">aventura</span></>}
+        description={
+          <>
             Cuéntanos qué sueñas conocer de La Guajira y te armamos el plan.
             Respondemos rápido por WhatsApp.
-          </p>
-        </div>
-      </section>
-
-      <KanasBand height={16} className="opacity-90" />
+          </>
+        }
+      />
 
       {/* Cuerpo */}
       <section className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-16 lg:grid-cols-2">
