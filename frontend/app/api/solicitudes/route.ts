@@ -7,6 +7,7 @@ import { checkRangeAvailable, withPlanLock, availabilitySelect } from "@/lib/ava
 import { createPlanRequest } from "@/lib/request-workflow";
 import { HOLDING_STATUSES } from "@/lib/request-status";
 import { notifyRequestCreated } from "@/lib/notifications";
+import { notifyAdmins } from "@/lib/admin-notifications";
 
 export const runtime = "nodejs";
 
@@ -49,6 +50,7 @@ export async function POST(req: Request) {
       guests,
       message: message || null,
     });
+    await notifyAdmins("REQUEST_CREATED", request.id);
     after(() => notifyRequestCreated(request.id));
     return NextResponse.json({ ok: true, id: request.id }, { status: 201 });
   }
@@ -121,6 +123,7 @@ export async function POST(req: Request) {
   if ("conflict" in result) {
     return NextResponse.json({ error: result.conflict }, { status: 409 });
   }
+  await notifyAdmins("REQUEST_CREATED", result.id);
   after(() => notifyRequestCreated(result.id));
   return NextResponse.json({ ok: true, id: result.id }, { status: 201 });
 }

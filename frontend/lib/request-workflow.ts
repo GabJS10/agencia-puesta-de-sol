@@ -14,6 +14,7 @@ import {
   noteRequired,
 } from "@/lib/request-status";
 import { notifyStatusEvents } from "@/lib/notifications";
+import { notifyAdmins } from "@/lib/admin-notifications";
 
 type Db = typeof prisma | Prisma.TransactionClient;
 
@@ -160,7 +161,10 @@ export async function expireStaleRequests(): Promise<void> {
   const eventIds: number[] = [];
   for (const { id } of stale) {
     const res = await transitionRequest({ id, to: "EXPIRED", actor: "SYSTEM" });
-    if (res.ok) eventIds.push(res.eventId);
+    if (res.ok) {
+      eventIds.push(res.eventId);
+      await notifyAdmins("REQUEST_EXPIRED", id);
+    }
   }
   if (eventIds.length > 0) after(() => notifyStatusEvents(eventIds));
 }

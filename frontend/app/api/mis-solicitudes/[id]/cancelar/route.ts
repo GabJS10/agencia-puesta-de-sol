@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { transitionRequest } from "@/lib/request-workflow";
 import { notifyStatusChanged } from "@/lib/notifications";
+import { notifyAdmins } from "@/lib/admin-notifications";
 
 export const runtime = "nodejs";
 
@@ -37,6 +38,7 @@ export async function POST(req: Request, { params }: Ctx) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
 
+  await notifyAdmins("REQUEST_CANCELLED", reqId);
   after(() => notifyStatusChanged(result.eventId));
   return NextResponse.json({ ok: true });
 }

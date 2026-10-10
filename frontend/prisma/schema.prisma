@@ -55,6 +55,7 @@ model User {
   requestEvents PlanRequestEvent[]
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
+  notifications Notification[]
 }
 
 model PlanType {
@@ -99,24 +100,26 @@ model Plan {
 }
 
 model PlanRequest {
-  id            Int                @id @default(autoincrement())
-  plan          Plan?              @relation(fields: [planId], references: [id], onDelete: SetNull)
-  planId        Int?
-  user          User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId        Int?
-  name          String
-  email         String
-  phone         String
-  travelDate    DateTime // inicio del rango (o día único)
-  endDate       DateTime? // fin EXCLUSIVO del rango; null = día único ([travelDate, travelDate+1día))
-  guests        Int
-  message       String?
-  status        RequestStatus      @default(PENDING)
-  holdExpiresAt DateTime? // hasta cuándo aparta cupo (PENDING/CONTACTED)
-  unitPrice     Float? // precio por persona del plan al solicitar (reportes)
-  events        PlanRequestEvent[]
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @default(now()) @updatedAt
+  id              Int                @id @default(autoincrement())
+  plan            Plan?              @relation(fields: [planId], references: [id], onDelete: SetNull)
+  planId          Int?
+  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId          Int?
+  name            String
+  email           String
+  phone           String
+  travelDate      DateTime // inicio del rango (o día único)
+  endDate         DateTime? // fin EXCLUSIVO del rango; null = día único ([travelDate, travelDate+1día))
+  guests          Int
+  message         String?
+  status          RequestStatus      @default(PENDING)
+  holdExpiresAt   DateTime? // hasta cuándo aparta cupo (PENDING/CONTACTED)
+  expiryWarnedFor DateTime? // holdExpiresAt ya avisado como "por vencer" (evita duplicados)
+  unitPrice       Float? // precio por persona del plan al solicitar (reportes)
+  events          PlanRequestEvent[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @default(now()) @updatedAt
+  notifications   Notification[]
 
   @@index([planId, status, travelDate])
 }
@@ -148,4 +151,28 @@ model PlanBlackout {
   createdAt DateTime @default(now())
 
   @@index([planId, startDate])
+}
+
+enum NotificationType {
+  REQUEST_CREATED // nueva solicitud
+  REQUEST_CANCELLED // el cliente canceló
+  REQUEST_EXPIRED // venció el apartado
+  HOLD_EXPIRING // al apartado le quedan < 24 h
+}
+
+// Notificación in-app para un admin (una fila por destinatario: estado de
+// lectura y borrado independientes).
+model Notification {
+  id        Int              @id @default(autoincrement())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  type      NotificationType
+  request   PlanRequest?     @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  requestId Int?
+  title     String
+  body      String
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt, createdAt])
 }

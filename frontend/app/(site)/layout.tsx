@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SessionProvider } from "@/components/session-provider";
+import { NotificationsProvider } from "@/components/admin/notifications/NotificationsProvider";
 import { getHome } from "@/lib/get-home";
 import { getSession } from "@/lib/auth";
 
@@ -14,8 +15,8 @@ export default async function SiteLayout({
   const [home, user] = await Promise.all([getHome(), getSession()]);
   const footerData = home.Footer;
 
-  return (
-    <SessionProvider initialUser={user}>
+  const content = (
+    <>
       <Navbar />
       {children}
       <Footer
@@ -24,6 +25,17 @@ export default async function SiteLayout({
         location={footerData.location}
         AboutFooter={footerData.AboutFooter}
       />
+    </>
+  );
+
+  // Los admins también reciben los toasts de notificaciones mientras navegan el sitio.
+  return (
+    <SessionProvider initialUser={user}>
+      {user?.role === "ADMIN" ? (
+        <NotificationsProvider>{content}</NotificationsProvider>
+      ) : (
+        content
+      )}
     </SessionProvider>
   );
 }

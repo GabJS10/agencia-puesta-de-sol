@@ -12,12 +12,14 @@ import {
   Users,
   BookOpen,
   BarChart3,
+  Bell,
   ExternalLink,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { useNotifications } from "@/components/admin/notifications/NotificationsProvider";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -26,6 +28,7 @@ const NAV = [
   { href: "/admin/ubicaciones", label: "Ubicaciones", icon: MapPin },
   { href: "/admin/solicitudes", label: "Solicitudes", icon: Inbox },
   { href: "/admin/reportes", label: "Reportes", icon: BarChart3 },
+  { href: "/admin/notificaciones", label: "Notificaciones", icon: Bell },
   { href: "/admin/usuarios", label: "Usuarios", icon: Users },
   { href: "/admin/manual", label: "Manual de usuario", icon: BookOpen },
 ];
@@ -66,6 +69,7 @@ function setCollapsedStore(next: boolean) {
 export function AdminSidebar() {
   const pathname = usePathname();
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, () => false);
+  const { unread } = useNotifications();
 
   const toggle = () => setCollapsedStore(!collapsed);
 
@@ -136,8 +140,21 @@ export function AdminSidebar() {
                   : "text-[#cdbfa6] hover:bg-[#211a33] hover:text-arena",
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <span className="relative shrink-0">
+                <Icon className="h-4 w-4" />
+                {href === "/admin/notificaciones" && unread > 0 && collapsed && (
+                  <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-brasa" />
+                )}
+              </span>
               {!collapsed && <span className="truncate">{label}</span>}
+              {!collapsed && href === "/admin/notificaciones" && unread > 0 && (
+                <span
+                  className="ml-auto rounded-full bg-brasa px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white"
+                  aria-label={`${unread} sin leer`}
+                >
+                  {unread > 99 ? "99+" : unread}
+                </span>
+              )}
             </Link>
           );
         })}
