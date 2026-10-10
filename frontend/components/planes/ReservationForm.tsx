@@ -3,7 +3,8 @@
 import * as React from "react";
 import { format, addDays } from "date-fns";
 import { es } from "date-fns/locale";
-import type { DateRange } from "react-day-picker";
+import type { DateRange, DayButton } from "react-day-picker";
+import { toast } from "sonner";
 import {
   Calendar as CalendarIcon,
   ChevronDown,
@@ -15,7 +16,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { toDayKey } from "@/lib/date-range";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
 import { useSession } from "@/components/session-provider";
 import type { AvailabilityMode, BookingMode } from "@/types/Planes";
 
@@ -29,7 +30,56 @@ interface ReservationFormProps {
   bookingMode: BookingMode;
   bookingsOpen: boolean;
   unavailableDates?: string[];
+  tentativeDates?: string[];
   remainingByDay?: Record<string, number> | null;
+}
+
+// Cupos por día para el DayButton (definido fuera del render para no remontarlo).
+const DayInfoContext = React.createContext<{
+  remainingByDay: Record<string, number> | null;
+  capacity: number | null;
+  unavailable: Set<string>;
+}>({ remainingByDay: null, capacity: null, unavailable: new Set() });
+
+/** "Pocos cupos": 25 % del aforo o menos. */
+function isLow(remaining: number, capacity: number | null) {
+  return capacity ? remaining <= Math.max(1, Math.floor(capacity * 0.25)) : false;
+}
+
+function AvailabilityDayButton(props: React.ComponentProps<typeof DayButton>) {
+  const { remainingByDay, capacity, unavailable } = React.useContext(DayInfoContext);
+  const key = toDayKey(props.day.date);
+  const remaining = remainingByDay?.[key];
+  const showCount =
+    remaining !== undefined &&
+    !unavailable.has(key) &&
+    !props.modifiers.outside &&
+    !props.modifiers.disabled;
+  return (
+    <CalendarDayButton {...props}>
+      {props.children}
+      {showCount && (
+        <span
+          className={cn(
+            "!text-[10px] font-semibold !opacity-100",
+            isLow(remaining, capacity) ? "text-brasa" : "text-mar",
+            "group-data-[selected=true]/day:text-current",
+          )}
+        >
+          {remaining}
+        </span>
+      )}
+    </CalendarDayButton>
+  );
+}
+
+function LegendDot({ className, label }: { className: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={cn("h-2.5 w-2.5 rounded-full", className)} />
+      {label}
+    </span>
+  );
 }
 
 export function ReservationForm({
@@ -37,14 +87,22 @@ export function ReservationForm({
   bookingMode,
   bookingsOpen,
   availabilityMode,
+  capacity,
   unavailableDates = [],
+  tentativeDates = [],
   remainingByDay = null,
 }: ReservationFormProps) {
   const { user } = useSession();
   const isRange = bookingMode === "DATE_RANGE";
+  const isCapacity = availabilityMode === "CAPACITY";
   const unavailable = React.useMemo(
     () => new Set(unavailableDates),
     [unavailableDates],
+  );
+  const tentative = React.useMemo(() => new Set(tentativeDates), [tentativeDates]);
+  const dayInfo = React.useMemo(
+    () => ({ remainingByDay, capacity, unavailable }),
+    [remainingByDay, capacity, unavailable],
   );
 
   const [date, setDate] = React.useState<Date | undefined>();
@@ -96,10 +154,26 @@ export function ReservationForm({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const incrementGuests = () => setGuests((p) => Math.min(p + 1, 20));
-  const decrementGuests = () => setGuests((p) => Math.max(p - 1, 1));
-
   const hasDate = isRange ? !!(range?.from && range?.to) : !!date;
+
+  // Cupo mínimo en los días elegidos (solo aforo): limita el número de personas.
+  const selectedDays = React.useMemo(() => {
+    if (isRange) {
+      if (!range?.from || !range?.to) return [];
+      const keys: string[] = [];
+      for (let d = range.from; d <= range.to; d = addDays(d, 1)) keys.push(toDayKey(d));
+      return keys;
+    }
+    return date ? [toDayKey(date)] : [];
+  }, [isRange, range, date]);
+  const minRemaining =
+    remainingByDay && selectedDays.length > 0
+      ? Math.min(...selectedDays.map((k) => remainingByDay[k] ?? 0))
+      : null;
+
+  const maxGuests = Math.min(isCapacity && capacity ? capacity : 20, minRemaining ?? Infinity);
+  const incrementGuests = () => setGuests((p) => Math.min(p + 1, Math.max(maxGuests, 1)));
+  const decrementGuests = () => setGuests((p) => Math.max(p - 1, 1));
 
   const dateLabel = isRange
     ? range?.from && range?.to
@@ -139,11 +213,16 @@ export function ReservationForm({
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "No se pudo enviar la solicitud");
+        toast.error(data.error ?? "No se pudo enviar la solicitud");
         return;
       }
       setSuccess(true);
+      toast.success("¡Solicitud enviada!", {
+        description: "Te enviamos un correo con el resumen.",
+      });
     } catch {
       setError("Error de conexión");
+      toast.error("Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -157,9 +236,14 @@ export function ReservationForm({
           ¡Solicitud enviada!
         </h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Hemos recibido tu solicitud. Nuestro equipo te contactará muy pronto para
-          confirmar los detalles.
+          Tu cupo queda apartado por 72 horas mientras lo confirmamos. Te enviamos un
+          correo con el resumen y te avisaremos de cada cambio.
         </p>
+        {user && (
+          <a href="/cuenta" className="mt-3 inline-block text-sm font-semibold text-primary hover:underline">
+            Ver mis solicitudes
+          </a>
+        )}
       </div>
     );
   }
@@ -180,9 +264,22 @@ export function ReservationForm({
 
   const field =
     "w-full h-12 rounded-xl border border-border bg-surface px-4 text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20";
-  const isFormValid = hasDate && !!name && !!email && !!phone && guests >= 1;
+  const overCapacity = minRemaining !== null && guests > minRemaining;
+  const isFormValid =
+    hasDate && !!name && !!email && !!phone && guests >= 1 && !overCapacity;
+
+  const modifiers = {
+    unavailable: (d: Date) => unavailable.has(toDayKey(d)) && !tentative.has(toDayKey(d)),
+    tentative: (d: Date) => tentative.has(toDayKey(d)),
+  };
+  const modifiersClassNames = {
+    unavailable: "line-through opacity-40",
+    tentative: "[&_button]:!opacity-100 [&_button]:text-sol [&_button]:underline [&_button]:decoration-dotted [&_button]:decoration-2 [&_button]:underline-offset-4",
+  };
+  const calendarClass = cn("p-3", isCapacity && "[--cell-size:--spacing(10)]");
 
   return (
+    <DayInfoContext.Provider value={dayInfo}>
     <form onSubmit={handleSubmit} className="mt-auto space-y-4">
       {error && (
         <div className="rounded-lg border border-brasa/30 bg-brasa/10 px-4 py-3 text-sm text-brasa">
@@ -237,10 +334,11 @@ export function ReservationForm({
                   onSelect={setRange}
                   disabled={isDayDisabled}
                   excludeDisabled
-                  modifiers={{ unavailable: (d) => unavailable.has(toDayKey(d)) }}
-                  modifiersClassNames={{ unavailable: "line-through opacity-40" }}
+                  modifiers={modifiers}
+                  modifiersClassNames={modifiersClassNames}
+                  components={{ DayButton: AvailabilityDayButton }}
                   locale={es}
-                  className="p-3"
+                  className={calendarClass}
                 />
               ) : (
                 <Calendar
@@ -248,18 +346,32 @@ export function ReservationForm({
                   selected={date}
                   onSelect={setDate}
                   disabled={isDayDisabled}
-                  modifiers={{ unavailable: (d) => unavailable.has(toDayKey(d)) }}
-                  modifiersClassNames={{ unavailable: "line-through opacity-40" }}
+                  modifiers={modifiers}
+                  modifiersClassNames={modifiersClassNames}
+                  components={{ DayButton: AvailabilityDayButton }}
                   locale={es}
-                  className="p-3"
+                  className={calendarClass}
                 />
               )}
             </div>
-            {(unavailable.size > 0 || availabilityMode === "CAPACITY") && (
-              <p className="border-t border-border px-3 pt-2 text-xs text-muted-foreground">
-                {availabilityMode === "CAPACITY"
-                  ? "Las fechas tachadas o sin cupo para tu número de personas no están disponibles."
-                  : "Las fechas tachadas ya están reservadas."}
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 border-t border-border px-3 pt-2.5 text-xs text-muted-foreground">
+              {isCapacity ? (
+                <>
+                  <LegendDot className="bg-mar" label="Cupos libres" />
+                  <LegendDot className="bg-brasa" label="Últimos cupos" />
+                </>
+              ) : (
+                <LegendDot className="bg-mar" label="Disponible" />
+              )}
+              <LegendDot className="bg-sol" label="Apartado (puede liberarse)" />
+              <span className="inline-flex items-center gap-1.5">
+                <span className="line-through">15</span> No disponible
+              </span>
+            </div>
+            {isCapacity && (
+              <p className="px-3 pt-1.5 text-xs text-muted-foreground">
+                El número bajo cada día son los cupos que quedan. Los días sin cupo para{" "}
+                {guests} {guests === 1 ? "persona" : "personas"} se deshabilitan.
               </p>
             )}
             <div className="flex justify-end gap-3 border-t border-border p-3">
@@ -291,11 +403,25 @@ export function ReservationForm({
               <Minus className="h-4 w-4" />
             </button>
             <span className="w-4 text-center font-medium">{guests}</span>
-            <button type="button" onClick={incrementGuests} disabled={guests >= 20} className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground hover:bg-muted disabled:opacity-50">
+            <button type="button" onClick={incrementGuests} disabled={guests >= maxGuests} className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground hover:bg-muted disabled:opacity-50">
               <Plus className="h-4 w-4" />
             </button>
           </div>
         </div>
+        {minRemaining !== null && capacity && (
+          <p
+            className={cn(
+              "mt-1.5 text-xs font-medium",
+              overCapacity ? "text-brasa" : isLow(minRemaining, capacity) ? "text-brasa" : "text-mar",
+            )}
+          >
+            {overCapacity
+              ? `Solo quedan ${minRemaining} cupos ${selectedDays.length > 1 ? "en tus fechas" : "ese día"}. Reduce el número de personas o elige otra fecha.`
+              : selectedDays.length > 1
+                ? `Mínimo ${minRemaining} de ${capacity} cupos libres en tus fechas.`
+                : `Quedan ${minRemaining} de ${capacity} cupos ese día.`}
+          </p>
+        )}
       </div>
 
       {/* Mensaje */}
@@ -317,8 +443,9 @@ export function ReservationForm({
         {loading ? "Enviando…" : "Solicitar plan"}
       </button>
       <p className="text-center text-xs text-muted-foreground">
-        * Te contactaremos para confirmar disponibilidad y detalles
+        * Tu cupo queda apartado 72 h; te confirmamos por correo
       </p>
     </form>
+    </DayInfoContext.Provider>
   );
 }

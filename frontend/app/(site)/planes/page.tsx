@@ -17,6 +17,13 @@ export const metadata = {
 // Consulta la BD: renderizar en cada request (el build no alcanza el Postgres interno).
 export const dynamic = "force-dynamic";
 
+function availabilityTag(plan: Plane) {
+  if (!plan.bookingsOpen) return { label: "Reservas cerradas", muted: true };
+  return plan.availabilityMode === "CAPACITY"
+    ? { label: `Cupo ${plan.capacity}/día` }
+    : { label: "Salida privada" };
+}
+
 export default async function PlanesPage({
   searchParams,
 }: {
@@ -105,6 +112,7 @@ export default async function PlanesPage({
                   price={plan.price.toString()}
                   url={`/planes/${plan.url}`}
                   badge={plan.plan_type?.type || undefined}
+                  availabilityTag={availabilityTag(plan)}
                 />
               ))}
             </div>

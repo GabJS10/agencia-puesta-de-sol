@@ -10,6 +10,8 @@ interface DestinationCardProps {
   price: string;
   url: string;
   badge?: string;
+  /** Condición de disponibilidad (p. ej. "Cupos limitados"); `muted` = reservas cerradas. */
+  availabilityTag?: { label: string; muted?: boolean };
   description?: string;
   className?: string;
 }
@@ -21,6 +23,7 @@ export function DestinationCard({
   price,
   url,
   badge,
+  availabilityTag,
   description,
   className,
 }: DestinationCardProps) {
@@ -49,6 +52,16 @@ export function DestinationCard({
           {badge && (
             <span className="absolute left-3 top-3 rounded-full bg-noche/75 px-3 py-1 text-xs font-bold text-arena backdrop-blur-sm">
               {badge}
+            </span>
+          )}
+          {availabilityTag && (
+            <span
+              className={cn(
+                "absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-bold backdrop-blur-sm",
+                availabilityTag.muted ? "bg-noche/75 text-arena/80" : "bg-arena/90 text-noche",
+              )}
+            >
+              {availabilityTag.label}
             </span>
           )}
         </div>

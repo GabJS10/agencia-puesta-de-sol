@@ -4,10 +4,11 @@ import { getPlanes } from "@/lib/get-planes";
 import { getPlanCalendar } from "@/lib/get-plan-availability";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Clock, CheckCircle2, ShieldCheck, Award } from "lucide-react";
+import { MapPin, Users, CheckCircle2, ShieldCheck, Award } from "lucide-react";
 import { PlanGallery } from "@/components/planes/PlanGallery";
 import { PlanTabs } from "@/components/planes/PlanTabs";
 import { ReservationForm } from "@/components/planes/ReservationForm";
+import { AvailabilitySummary } from "@/components/planes/AvailabilitySummary";
 import { RelatedPlanes } from "@/components/planes/RelatedPlanes";
 import { formatPrice } from "@/helpers/formatPrice";
 import { Plane } from "@/types/Planes";
@@ -30,7 +31,7 @@ export default async function PlanPage({
     notFound();
   }
 
-  const { unavailableDays, remainingByDay } = await getPlanCalendar({
+  const availability = await getPlanCalendar({
     id: plan.id,
     availabilityMode: plan.availabilityMode,
     capacity: plan.capacity,
@@ -100,8 +101,10 @@ export default async function PlanPage({
                 {plan.plan_location.location}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Clock className="h-4 w-4" />
-                Salidas programadas
+                <Users className="h-4 w-4" />
+                {plan.availabilityMode === "CAPACITY"
+                  ? `Cupo de ${plan.capacity} personas por día`
+                  : "Salida privada"}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4 text-mar" />
@@ -135,9 +138,17 @@ export default async function PlanPage({
                 <h2 className="font-display text-2xl font-semibold">
                   Solicita este plan
                 </h2>
-                <p className="mb-5 mt-1 text-sm text-muted-foreground">
-                  Te contactamos para confirmar disponibilidad.
+                <p className="mb-4 mt-1 text-sm text-muted-foreground">
+                  Elige tu fecha y te confirmamos por correo.
                 </p>
+
+                <AvailabilitySummary
+                  availabilityMode={plan.availabilityMode}
+                  capacity={plan.capacity}
+                  bookingMode={plan.bookingMode}
+                  bookingsOpen={plan.bookingsOpen}
+                  availability={availability}
+                />
 
                 <ReservationForm
                   planId={plan.id}
@@ -148,8 +159,9 @@ export default async function PlanPage({
                   capacity={plan.capacity}
                   bookingMode={plan.bookingMode}
                   bookingsOpen={plan.bookingsOpen}
-                  unavailableDates={unavailableDays}
-                  remainingByDay={remainingByDay}
+                  unavailableDates={availability.unavailableDays}
+                  tentativeDates={availability.tentativeDays}
+                  remainingByDay={availability.remainingByDay}
                 />
 
                 <div className="mt-6 space-y-3 border-t border-border pt-5">
