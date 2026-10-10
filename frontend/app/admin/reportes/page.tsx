@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Download } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { expireStaleRequests } from "@/lib/request-workflow";
 import { getPipelineCards, getReport, getUpcomingOccupancy, parseReportFilters } from "@/lib/reports";
 import { PipelineBoard } from "@/components/admin/pipeline/PipelineBoard";
+import { ExportMenu } from "@/components/admin/ExportMenu";
 import { STATUS_META } from "@/lib/request-status";
 import { formatPrice } from "@/helpers/formatPrice";
 import { formatTravelDay } from "@/lib/format-dates";
@@ -94,13 +94,7 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
             {filters.base === "viaje" ? "viaje" : "solicitud"}
           </p>
         </div>
-        <a
-          href={`/api/admin/reportes/export?${qs}`}
-          className="inline-flex items-center gap-2 self-start rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-bold hover:bg-surface-hover"
-        >
-          <Download className="h-4 w-4" />
-          Exportar CSV
-        </a>
+        <ExportMenu qs={qs} />
       </div>
 
       {/* Filtros: una fila sobre los gráficos */}

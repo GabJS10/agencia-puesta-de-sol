@@ -24,21 +24,15 @@ import { cn } from "@/lib/utils";
 import { allowedTransitions, type RequestStatus } from "@/lib/request-status";
 import { formatTravelRange } from "@/lib/format-dates";
 import type { PipelineCard } from "@/lib/reports";
+import { PIPELINE_STAGES, type StageId } from "@/lib/pipeline-stages";
 import { HoldBadge, StatusBadge } from "@/components/requests/StatusBadge";
 import { TransitionDialog } from "@/components/admin/TransitionDialog";
 
 const REFRESH_MS = 20_000;
 const MAX_CARDS = 50;
 
-type ColumnId = "PENDING" | "CONTACTED" | "CONFIRMED" | "COMPLETED" | "LOST";
-
-const COLUMNS: { id: ColumnId; title: string; statuses: RequestStatus[]; dot: string }[] = [
-  { id: "PENDING", title: "Sin contactar", statuses: ["PENDING"], dot: "bg-sol" },
-  { id: "CONTACTED", title: "Contactados", statuses: ["CONTACTED"], dot: "bg-mar" },
-  { id: "CONFIRMED", title: "Confirmados", statuses: ["CONFIRMED"], dot: "bg-green-600" },
-  { id: "COMPLETED", title: "Completados", statuses: ["COMPLETED"], dot: "bg-noche dark:bg-arena" },
-  { id: "LOST", title: "Perdidas", statuses: ["REJECTED", "CANCELLED", "EXPIRED"], dot: "bg-brasa" },
-];
+type ColumnId = StageId;
+const COLUMNS = PIPELINE_STAGES;
 
 const LOST_TARGETS: RequestStatus[] = ["REJECTED", "CANCELLED"];
 
