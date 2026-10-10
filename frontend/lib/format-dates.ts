@@ -53,3 +53,10 @@ export function formatRemaining(until: Date, now: Date = new Date()): string {
 export function hoursUntil(until: Date, now: Date = new Date()): number {
   return (until.getTime() - now.getTime()) / 3600_000;
 }
+
+/** Duración permitida de un plan por rango: "de 2 a 5 días", "de 3 días", "al menos 2 días". */
+export function durationText(min: number, max: number): string {
+  if (!Number.isFinite(max)) return `al menos ${min} ${min === 1 ? "día" : "días"}`;
+  if (min === max) return `de ${min} ${min === 1 ? "día" : "días"}`;
+  return `de ${min} a ${max} días`;
+}

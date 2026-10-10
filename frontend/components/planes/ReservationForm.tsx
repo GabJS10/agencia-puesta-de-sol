@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { format, addDays } from "date-fns";
+import { format, addDays, differenceInCalendarDays } from "date-fns";
 import { es } from "date-fns/locale";
 import type { DateRange, DayButton } from "react-day-picker";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { toDayKey } from "@/lib/date-range";
+import { durationText } from "@/lib/format-dates";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
 import { useSession } from "@/components/session-provider";
 import type { AvailabilityMode, BookingMode } from "@/types/Planes";
@@ -29,6 +30,9 @@ interface ReservationFormProps {
   capacity: number | null;
   bookingMode: BookingMode;
   bookingsOpen: boolean;
+  /** DATE_RANGE: duración permitida en días (inicio y fin incluidos). */
+  minDays?: number | null;
+  maxDays?: number | null;
   unavailableDates?: string[];
   tentativeDates?: string[];
   remainingByDay?: Record<string, number> | null;
@@ -88,6 +92,8 @@ export function ReservationForm({
   bookingsOpen,
   availabilityMode,
   capacity,
+  minDays = null,
+  maxDays = null,
   unavailableDates = [],
   tentativeDates = [],
   remainingByDay = null,
@@ -121,8 +127,17 @@ export function ReservationForm({
 
   const calendarRef = React.useRef<HTMLDivElement>(null);
 
-  // Un día no se puede elegir si es pasado, está bloqueado, o (en aforo) no
-  // tiene cupo para el número de personas seleccionado.
+  const minLen = isRange ? (minDays ?? 1) : 1;
+  const maxLen = isRange ? (maxDays ?? Infinity) : 1;
+  // El primer clic deja from === to: si el plan exige más de un día, aún falta elegir el regreso.
+  const choosingEnd =
+    isRange &&
+    !!range?.from &&
+    (!range.to || (minLen > 1 && differenceInCalendarDays(range.to, range.from) === 0));
+
+  // Un día no se puede elegir si es pasado, está bloqueado, (en aforo) no tiene
+  // cupo para el número de personas, o (en rango, con el inicio ya elegido)
+  // dejaría un viaje más corto o más largo de lo que permite el plan.
   const isDayDisabled = React.useCallback(
     (d: Date) => {
       if (d < new Date(new Date().setHours(0, 0, 0, 0))) return true;
@@ -131,9 +146,13 @@ export function ReservationForm({
       if (remainingByDay && key in remainingByDay && remainingByDay[key] < guests) {
         return true;
       }
+      if (choosingEnd && range?.from) {
+        const len = Math.abs(differenceInCalendarDays(d, range.from)) + 1;
+        if (len > 1 && (len < minLen || len > maxLen)) return true;
+      }
       return false;
     },
-    [unavailable, remainingByDay, guests],
+    [unavailable, remainingByDay, guests, choosingEnd, range, minLen, maxLen],
   );
 
   // Prefill si el usuario tiene sesión (sin pisar lo que ya haya escrito).
@@ -265,8 +284,16 @@ export function ReservationForm({
   const field =
     "w-full h-12 rounded-xl border border-border bg-surface px-4 text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20";
   const overCapacity = minRemaining !== null && guests > minRemaining;
+  const rangeLen =
+    isRange && !choosingEnd && range?.from && range?.to
+      ? differenceInCalendarDays(range.to, range.from) + 1
+      : null;
+  const rangeError =
+    rangeLen !== null && (rangeLen < minLen || rangeLen > maxLen)
+      ? `Este plan se reserva ${durationText(minLen, maxLen)}; elegiste ${rangeLen} ${rangeLen === 1 ? "día" : "días"}.`
+      : null;
   const isFormValid =
-    hasDate && !!name && !!email && !!phone && guests >= 1 && !overCapacity;
+    hasDate && !choosingEnd && !!name && !!email && !!phone && guests >= 1 && !overCapacity && !rangeError;
 
   const modifiers = {
     unavailable: (d: Date) => unavailable.has(toDayKey(d)) && !tentative.has(toDayKey(d)),
@@ -308,6 +335,14 @@ export function ReservationForm({
         <label className="mb-1.5 block text-sm font-medium text-foreground">
           {isRange ? "Fechas de viaje" : "Fecha de viaje"}
         </label>
+        {isRange && (
+          <p className={cn("-mt-1 mb-1.5 text-xs", rangeError ? "font-medium text-brasa" : "text-muted-foreground")}>
+            {rangeError ??
+              (choosingEnd
+                ? `Ahora elige el día de regreso (viaje ${durationText(minLen, maxLen)}).`
+                : `Elige el día de salida y el de regreso: ${durationText(minLen, maxLen)}${rangeLen ? ` (${rangeLen} ${rangeLen === 1 ? "día" : "días"} elegidos)` : ""}.`)}
+          </p>
+        )}
         <button
           type="button"
           onClick={() => setIsCalendarOpen(!isCalendarOpen)}

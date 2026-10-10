@@ -47,6 +47,8 @@ export default async function DisponibilidadPlanPage({
           capacity: plan.capacity,
           bookingMode: plan.bookingMode,
           bookingsOpen: plan.bookingsOpen,
+          minDays: plan.minDays,
+          maxDays: plan.maxDays,
         }}
       />
 

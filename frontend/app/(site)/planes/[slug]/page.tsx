@@ -147,6 +147,8 @@ export default async function PlanPage({
                   capacity={plan.capacity}
                   bookingMode={plan.bookingMode}
                   bookingsOpen={plan.bookingsOpen}
+                  minDays={plan.minDays}
+                  maxDays={plan.maxDays}
                   availability={availability}
                 />
 
@@ -159,6 +161,8 @@ export default async function PlanPage({
                   capacity={plan.capacity}
                   bookingMode={plan.bookingMode}
                   bookingsOpen={plan.bookingsOpen}
+                  minDays={plan.minDays}
+                  maxDays={plan.maxDays}
                   unavailableDates={availability.unavailableDays}
                   tentativeDates={availability.tentativeDays}
                   remainingByDay={availability.remainingByDay}

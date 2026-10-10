@@ -40,4 +40,7 @@ export interface Plane {
   capacity: number | null;
   bookingMode: BookingMode;
   bookingsOpen: boolean;
+  /** DATE_RANGE: duración permitida en días (inicio y fin incluidos). */
+  minDays: number | null;
+  maxDays: number | null;
 }

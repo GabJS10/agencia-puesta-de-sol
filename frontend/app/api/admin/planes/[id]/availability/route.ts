@@ -35,6 +35,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
         capacity: d.availabilityMode === "CAPACITY" ? (d.capacity ?? null) : null,
         bookingMode: d.bookingMode,
         bookingsOpen: d.bookingsOpen,
+        minDays: d.bookingMode === "DATE_RANGE" ? (d.minDays ?? null) : null,
+        maxDays: d.bookingMode === "DATE_RANGE" ? (d.maxDays ?? null) : null,
       },
     });
   } catch {

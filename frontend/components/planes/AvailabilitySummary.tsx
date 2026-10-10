@@ -1,7 +1,7 @@
 import { CalendarCheck, CalendarDays, Users, Lock, Unlock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { eachDayKey, startOfDayUtc } from "@/lib/date-range";
-import { formatDayKey } from "@/lib/format-dates";
+import { durationText, formatDayKey } from "@/lib/format-dates";
 import type { AvailabilityResult } from "@/lib/availability";
 import type { AvailabilityMode, BookingMode } from "@/types/Planes";
 
@@ -13,12 +13,16 @@ export function AvailabilitySummary({
   capacity,
   bookingMode,
   bookingsOpen,
+  minDays = null,
+  maxDays = null,
   availability,
 }: {
   availabilityMode: AvailabilityMode;
   capacity: number | null;
   bookingMode: BookingMode;
   bookingsOpen: boolean;
+  minDays?: number | null;
+  maxDays?: number | null;
   availability: AvailabilityResult;
 }) {
   const today = startOfDayUtc(new Date());
@@ -40,7 +44,11 @@ export function AvailabilitySummary({
       ? { icon: Users, title: `Cupo de ${capacity} personas por día`, text: "Varios grupos comparten la salida hasta llenar el cupo." }
       : { icon: Users, title: "Salida privada", text: "Una sola reserva por fecha: el día es para tu grupo." },
     bookingMode === "DATE_RANGE"
-      ? { icon: CalendarDays, title: "Plan de varios días", text: "Eliges fecha de inicio y de regreso." }
+      ? {
+          icon: CalendarDays,
+          title: `Plan de varios días: ${durationText(minDays ?? 1, maxDays ?? Infinity)}`,
+          text: "Eliges fecha de inicio y de regreso.",
+        }
       : { icon: CalendarDays, title: "Plan de un día", text: "Eliges una sola fecha de salida." },
     bookingsOpen
       ? { icon: Unlock, title: "Reservas abiertas", text: "Tu solicitud aparta el cupo 72 h mientras la confirmamos." }

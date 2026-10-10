@@ -207,6 +207,8 @@ export const availabilitySelect = {
   capacity: true,
   bookingsOpen: true,
   bookingMode: true,
+  minDays: true,
+  maxDays: true,
 } as const;
 
 // Re-export para serializar rangos día a día en el frontend.

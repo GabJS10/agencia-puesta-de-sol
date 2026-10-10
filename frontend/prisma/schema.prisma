@@ -88,6 +88,8 @@ model Plan {
   availabilityMode AvailabilityMode @default(EXCLUSIVE)
   capacity         Int? // cupo de personas/día cuando availabilityMode = CAPACITY
   bookingMode      BookingMode      @default(SINGLE_DAY)
+  minDays          Int? // DATE_RANGE: duración mínima en días (inicio y fin incluidos)
+  maxDays          Int? // DATE_RANGE: duración máxima en días
   bookingsOpen     Boolean          @default(true) // pausar reservas ("agotado") sin despublicar
   blackouts        PlanBlackout[]
   planType         PlanType?        @relation(fields: [planTypeId], references: [id])

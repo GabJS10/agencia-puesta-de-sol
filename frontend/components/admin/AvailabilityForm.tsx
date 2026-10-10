@@ -9,7 +9,12 @@ export interface AvailabilityData {
   capacity: number | null;
   bookingMode: "SINGLE_DAY" | "DATE_RANGE";
   bookingsOpen: boolean;
+  minDays: number | null;
+  maxDays: number | null;
 }
+
+const DEFAULT_MIN_DAYS = 2;
+const DEFAULT_MAX_DAYS = 7;
 
 export function AvailabilityForm({
   planId,
@@ -33,6 +38,17 @@ export function AvailabilityForm({
     if (form.availabilityMode === "CAPACITY" && !(form.capacity && form.capacity > 0)) {
       setError("Indica un cupo mayor que 0 para el modo Aforo");
       return;
+    }
+    if (form.bookingMode === "DATE_RANGE") {
+      const { minDays, maxDays } = form;
+      if (!minDays || !maxDays || minDays < 1 || maxDays < 1) {
+        setError("Indica el mínimo y el máximo de días del plan");
+        return;
+      }
+      if (minDays > maxDays) {
+        setError("El mínimo de días no puede ser mayor que el máximo");
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -107,14 +123,50 @@ export function AvailabilityForm({
             <select
               className={field}
               value={form.bookingMode}
-              onChange={(e) =>
-                set("bookingMode", e.target.value as AvailabilityData["bookingMode"])
-              }
+              onChange={(e) => {
+                const mode = e.target.value as AvailabilityData["bookingMode"];
+                setForm((f) => ({
+                  ...f,
+                  bookingMode: mode,
+                  // Al pasar a rango, sugiere límites para no dejarlo abierto.
+                  minDays: mode === "DATE_RANGE" ? (f.minDays ?? DEFAULT_MIN_DAYS) : f.minDays,
+                  maxDays: mode === "DATE_RANGE" ? (f.maxDays ?? DEFAULT_MAX_DAYS) : f.maxDays,
+                }));
+              }}
             >
               <option value="SINGLE_DAY">Día único</option>
               <option value="DATE_RANGE">Rango de fechas</option>
             </select>
           </div>
+          {form.bookingMode === "DATE_RANGE" && (
+            <>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Mínimo de días</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  className={field}
+                  value={form.minDays ?? ""}
+                  onChange={(e) => set("minDays", e.target.value ? Number(e.target.value) : null)}
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Máximo de días</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  className={field}
+                  value={form.maxDays ?? ""}
+                  onChange={(e) => set("maxDays", e.target.value ? Number(e.target.value) : null)}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Días contando el de inicio y el de regreso.
+                </p>
+              </div>
+            </>
+          )}
         </div>
         <label className="flex items-center gap-2 text-sm font-medium">
           <input

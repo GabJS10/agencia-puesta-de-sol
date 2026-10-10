@@ -29,6 +29,8 @@ export function toPlane(p: PlanWithRelations): Plane {
     capacity: p.capacity,
     bookingMode: p.bookingMode,
     bookingsOpen: p.bookingsOpen,
+    minDays: p.minDays,
+    maxDays: p.maxDays,
   };
 }
 

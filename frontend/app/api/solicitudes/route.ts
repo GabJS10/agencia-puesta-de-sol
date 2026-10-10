@@ -84,6 +84,20 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+    // Duración en días (inicio y fin incluidos) = endDay − startDay, con fin exclusivo.
+    const days = Math.round((endDay.getTime() - startDay.getTime()) / 86_400_000);
+    const min = plan.minDays ?? 1;
+    const max = plan.maxDays ?? Infinity;
+    if (days < min || days > max) {
+      return NextResponse.json(
+        {
+          error: Number.isFinite(max)
+            ? `Este plan se reserva de ${min} a ${max} días`
+            : `Este plan se reserva por al menos ${min} días`,
+        },
+        { status: 400 },
+      );
+    }
   }
 
   const session = await getSession();
