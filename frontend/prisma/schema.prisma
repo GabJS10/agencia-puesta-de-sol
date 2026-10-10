@@ -16,10 +16,20 @@ enum Role {
 }
 
 enum RequestStatus {
-  PENDING
-  CONTACTED
-  CONFIRMED
-  CANCELLED
+  PENDING // recién recibida: aparta cupo hasta holdExpiresAt
+  CONTACTED // en gestión: aparta cupo (renovado al contactar)
+  CONFIRMED // reserva en firme: ocupa cupo
+  COMPLETED // viaje realizado
+  REJECTED // la agencia no puede atenderla
+  CANCELLED // desistida (cliente) o anulada (admin)
+  EXPIRED // venció el apartado sin confirmarse
+}
+
+// Quién originó un cambio de estado.
+enum EventActor {
+  CLIENT
+  ADMIN
+  SYSTEM
 }
 
 // Cómo se ocupa un plan un día dado.
@@ -35,15 +45,16 @@ enum BookingMode {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  passwordHash String
-  name         String
-  phone        String?
-  role         Role          @default(CLIENT)
-  requests     PlanRequest[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id            Int                @id @default(autoincrement())
+  email         String             @unique
+  passwordHash  String
+  name          String
+  phone         String?
+  role          Role               @default(CLIENT)
+  requests      PlanRequest[]
+  requestEvents PlanRequestEvent[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }
 
 model PlanType {
@@ -59,51 +70,72 @@ model PlanLocation {
 }
 
 model Plan {
-  id              Int           @id @default(autoincrement())
-  title           String
-  slug            String        @unique // expuesto al frontend como `url`
-  price           Float
-  location        String
-  description     String // Markdown
-  itinerary       String? // Markdown
-  includes        String // Markdown
-  recommendations String // Markdown
-  photoUrl        String
-  galleryUrls     String[]
-  tags            String[]
-  published       Boolean       @default(true)
+  id               Int              @id @default(autoincrement())
+  title            String
+  slug             String           @unique // expuesto al frontend como `url`
+  price            Float
+  location         String
+  description      String // Markdown
+  itinerary        String? // Markdown
+  includes         String // Markdown
+  recommendations  String // Markdown
+  photoUrl         String
+  galleryUrls      String[]
+  tags             String[]
+  published        Boolean          @default(true)
   // Disponibilidad
   availabilityMode AvailabilityMode @default(EXCLUSIVE)
   capacity         Int? // cupo de personas/día cuando availabilityMode = CAPACITY
   bookingMode      BookingMode      @default(SINGLE_DAY)
   bookingsOpen     Boolean          @default(true) // pausar reservas ("agotado") sin despublicar
   blackouts        PlanBlackout[]
-  planType        PlanType?     @relation(fields: [planTypeId], references: [id])
-  planTypeId      Int?
-  planLocation    PlanLocation? @relation(fields: [planLocationId], references: [id])
-  planLocationId  Int?
-  requests        PlanRequest[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  planType         PlanType?        @relation(fields: [planTypeId], references: [id])
+  planTypeId       Int?
+  planLocation     PlanLocation?    @relation(fields: [planLocationId], references: [id])
+  planLocationId   Int?
+  requests         PlanRequest[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model PlanRequest {
-  id         Int           @id @default(autoincrement())
-  plan       Plan?         @relation(fields: [planId], references: [id], onDelete: SetNull)
-  planId     Int?
-  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId     Int?
-  name       String
-  email      String
-  phone      String
-  travelDate DateTime // inicio del rango (o día único)
-  endDate    DateTime? // fin EXCLUSIVO del rango; null = día único ([travelDate, travelDate+1día))
-  guests     Int
-  message    String?
-  status     RequestStatus @default(PENDING)
-  createdAt  DateTime      @default(now())
+  id            Int                @id @default(autoincrement())
+  plan          Plan?              @relation(fields: [planId], references: [id], onDelete: SetNull)
+  planId        Int?
+  user          User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId        Int?
+  name          String
+  email         String
+  phone         String
+  travelDate    DateTime // inicio del rango (o día único)
+  endDate       DateTime? // fin EXCLUSIVO del rango; null = día único ([travelDate, travelDate+1día))
+  guests        Int
+  message       String?
+  status        RequestStatus      @default(PENDING)
+  holdExpiresAt DateTime? // hasta cuándo aparta cupo (PENDING/CONTACTED)
+  unitPrice     Float? // precio por persona del plan al solicitar (reportes)
+  events        PlanRequestEvent[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @default(now()) @updatedAt
 
   @@index([planId, status, travelDate])
+}
+
+// Historial de estados de una solicitud (trazabilidad + correos enviados).
+model PlanRequestEvent {
+  id          Int            @id @default(autoincrement())
+  request     PlanRequest    @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  requestId   Int
+  fromStatus  RequestStatus? // null = creación
+  toStatus    RequestStatus
+  note        String? // mensaje para el cliente (va en el correo)
+  actor       EventActor
+  actorUser   User?          @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorId     Int?
+  emailSentAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([requestId, createdAt])
 }
 
 model PlanBlackout {

@@ -45,3 +45,22 @@ export function eachDayKey(start: Date, end?: Date | null): string[] {
 export function effectiveEndUtc(start: Date, end?: Date | null): Date {
   return end ? startOfDayUtc(end) : nextDayUtc(start);
 }
+
+/** Fecha local con el mismo día calendario que el día UTC de `date` (para formatear sin desfase de zona). */
+export function utcDayAsLocal(date: Date): Date {
+  return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+
+/** Fecha local para una clave "yyyy-MM-dd". */
+export function dayKeyAsLocal(key: string): Date {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/** Último día (inclusive) de una reserva: endDate es exclusivo; null = día único. */
+export function lastDayUtc(start: Date, end?: Date | null): Date {
+  if (!end) return startOfDayUtc(start);
+  const last = startOfDayUtc(end);
+  last.setUTCDate(last.getUTCDate() - 1);
+  return last;
+}

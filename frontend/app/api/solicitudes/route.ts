@@ -1,9 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { startOfDayUtc } from "@/lib/date-range";
 import { checkRangeAvailable, withPlanLock, availabilitySelect } from "@/lib/availability";
+import { createPlanRequest } from "@/lib/request-workflow";
+import { HOLDING_STATUSES } from "@/lib/request-status";
+import { notifyRequestCreated } from "@/lib/notifications";
 
 export const runtime = "nodejs";
 
@@ -35,25 +38,24 @@ export async function POST(req: Request) {
   // Solicitud sin plan (contacto general): se crea sin chequeo de disponibilidad.
   if (!planId) {
     const session = await getSession();
-    const request = await prisma.planRequest.create({
-      data: {
-        planId: null,
-        userId: session?.id ?? null,
-        name,
-        email,
-        phone,
-        travelDate: startDay,
-        endDate: null,
-        guests,
-        message: message || null,
-      },
+    const request = await createPlanRequest(prisma, {
+      planId: null,
+      userId: session?.id ?? null,
+      name,
+      email,
+      phone,
+      travelDate: startDay,
+      endDate: null,
+      guests,
+      message: message || null,
     });
+    after(() => notifyRequestCreated(request.id));
     return NextResponse.json({ ok: true, id: request.id }, { status: 201 });
   }
 
   const plan = await prisma.plan.findUnique({
     where: { id: planId },
-    select: availabilitySelect,
+    select: { ...availabilitySelect, price: true },
   });
   if (!plan) {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
@@ -86,21 +88,32 @@ export async function POST(req: Request) {
 
   // Reserva atómica: advisory lock por plan + re-chequeo dentro de la transacción.
   const result = await withPlanLock(planId, async (tx) => {
+    // Evita duplicados (doble envío): misma persona, plan y fecha aún en proceso.
+    const duplicate = await tx.planRequest.findFirst({
+      where: {
+        planId,
+        email: { equals: email, mode: "insensitive" },
+        travelDate: startDay,
+        status: { in: HOLDING_STATUSES },
+      },
+      select: { id: true },
+    });
+    if (duplicate) return { conflict: "Ya tienes una solicitud en proceso para esa fecha" };
+
     const check = await checkRangeAvailable(plan, startDay, endDay, guests, tx);
     if (!check.ok) return { conflict: check.reason };
 
-    const request = await tx.planRequest.create({
-      data: {
-        planId,
-        userId: session?.id ?? null,
-        name,
-        email,
-        phone,
-        travelDate: startDay,
-        endDate: endDay,
-        guests,
-        message: message || null,
-      },
+    const request = await createPlanRequest(tx, {
+      planId,
+      userId: session?.id ?? null,
+      name,
+      email,
+      phone,
+      travelDate: startDay,
+      endDate: endDay,
+      guests,
+      message: message || null,
+      unitPrice: plan.price,
     });
     return { id: request.id };
   });
@@ -108,5 +121,6 @@ export async function POST(req: Request) {
   if ("conflict" in result) {
     return NextResponse.json({ error: result.conflict }, { status: 409 });
   }
+  after(() => notifyRequestCreated(result.id));
   return NextResponse.json({ ok: true, id: result.id }, { status: 201 });
 }

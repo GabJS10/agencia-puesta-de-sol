@@ -1,5 +1,7 @@
 import type { Prisma, Plan } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { HOLDING_STATUSES } from "@/lib/request-status";
+import { formatDayKey } from "@/lib/format-dates";
 import {
   eachDayKey,
   effectiveEndUtc,
@@ -18,37 +20,55 @@ export type PlanAvailabilityConfig = Pick<
 export type AvailabilityResult = {
   /** Días completamente bloqueados (cerrado, blackout, exclusivo tomado o aforo lleno). */
   unavailableDays: string[];
+  /** Días bloqueados solo por solicitudes en proceso (apartados): podrían liberarse. */
+  tentativeDays: string[];
   /** Solo en CAPACITY: cupos libres por día dentro de la ventana. null en EXCLUSIVE. */
   remainingByDay: Record<string, number> | null;
+  /** Aforo por día (CAPACITY) o null (EXCLUSIVE). */
+  capacity: number | null;
 };
 
 /**
  * Calcula la disponibilidad de un plan para la ventana [from, to) (UTC, medio-abierta),
- * combinando reservas CONFIRMED (respetando rangos y aforo) y blackouts del admin.
+ * combinando reservas CONFIRMED, apartados vigentes de solicitudes en proceso
+ * (PENDING/CONTACTED con holdExpiresAt futuro) y blackouts del admin.
+ * `excludeRequestId` ignora una solicitud (para re-validar la propia al confirmarla).
  */
 export async function getPlanAvailability(
   plan: PlanAvailabilityConfig,
   from: Date,
   to: Date,
   db: Db = prisma,
+  excludeRequestId?: number,
 ): Promise<AvailabilityResult> {
   const winFrom = startOfDayUtc(from);
   const winTo = startOfDayUtc(to);
   const isCapacity = plan.availabilityMode === "CAPACITY";
   const capacity = plan.capacity ?? 0;
+  const now = new Date();
 
-  // Reservas CONFIRMED que solapan la ventana. endDate null = día único.
+  // Reservas que ocupan y solapan la ventana. endDate null = día único.
   const reservations = await db.planRequest.findMany({
     where: {
       planId: plan.id,
-      status: "CONFIRMED",
+      ...(excludeRequestId ? { id: { not: excludeRequestId } } : {}),
       travelDate: { lt: winTo },
-      OR: [
-        { endDate: { gt: winFrom } },
-        { endDate: null, travelDate: { gte: winFrom } },
+      AND: [
+        {
+          OR: [
+            { endDate: { gt: winFrom } },
+            { endDate: null, travelDate: { gte: winFrom } },
+          ],
+        },
+        {
+          OR: [
+            { status: "CONFIRMED" },
+            { status: { in: HOLDING_STATUSES }, holdExpiresAt: { gt: now } },
+          ],
+        },
       ],
     },
-    select: { travelDate: true, endDate: true, guests: true },
+    select: { travelDate: true, endDate: true, guests: true, status: true },
   });
 
   const blackouts = await db.planBlackout.findMany({
@@ -58,10 +78,17 @@ export async function getPlanAvailability(
 
   const blocked = new Set<string>();
   const remaining: Record<string, number> | null = isCapacity ? {} : null;
+  // Lo mismo, contando solo reservas confirmadas: distingue bloqueos "en firme"
+  // de los que dependen de apartados que pueden vencer o rechazarse.
+  const firmBlocked = new Set<string>();
+  const firmRemaining: Record<string, number> = {};
 
   const windowDays = eachDayKey(winFrom, winTo);
   if (isCapacity) {
-    for (const key of windowDays) remaining![key] = capacity;
+    for (const key of windowDays) {
+      remaining![key] = capacity;
+      firmRemaining[key] = capacity;
+    }
   }
 
   // Reservas abiertas cerradas ("agotado") => toda la ventana bloqueada.
@@ -72,13 +99,17 @@ export async function getPlanAvailability(
   for (const b of blackouts) {
     for (const key of eachDayKey(b.startDate, b.endDate)) blocked.add(key);
   }
+  for (const key of blocked) firmBlocked.add(key);
 
   for (const r of reservations) {
+    const firm = r.status === "CONFIRMED";
     for (const key of eachDayKey(r.travelDate, r.endDate)) {
       if (isCapacity) {
         if (key in remaining!) remaining![key] -= r.guests;
+        if (firm && key in firmRemaining) firmRemaining[key] -= r.guests;
       } else {
         blocked.add(key);
+        if (firm) firmBlocked.add(key);
       }
     }
   }
@@ -86,12 +117,19 @@ export async function getPlanAvailability(
   if (isCapacity) {
     for (const key of windowDays) {
       if (remaining![key] <= 0) blocked.add(key);
+      if (firmRemaining[key] <= 0) firmBlocked.add(key);
     }
   }
 
+  const tentativeDays = Array.from(blocked)
+    .filter((key) => !firmBlocked.has(key))
+    .sort();
+
   return {
     unavailableDays: Array.from(blocked).sort(),
+    tentativeDays,
     remainingByDay: remaining,
+    capacity: isCapacity ? capacity : null,
   };
 }
 
@@ -107,28 +145,32 @@ export async function checkRangeAvailable(
   end: Date | null,
   guests: number,
   db: Db,
+  excludeRequestId?: number,
 ): Promise<AvailabilityCheck> {
   if (!plan.bookingsOpen) {
     return { ok: false, reason: "Este plan no está aceptando reservas por ahora" };
   }
   const winFrom = startOfDayUtc(start);
   const winTo = effectiveEndUtc(start, end);
-  const { unavailableDays, remainingByDay } = await getPlanAvailability(
+  const { unavailableDays, tentativeDays, remainingByDay } = await getPlanAvailability(
     plan,
     winFrom,
     winTo,
     db,
+    excludeRequestId,
   );
 
   const requestedDays = eachDayKey(winFrom, winTo);
   const blocked = new Set(unavailableDays);
+  const tentative = new Set(tentativeDays);
 
   for (const key of requestedDays) {
     if (blocked.has(key)) {
       return {
         ok: false,
-        reason:
-          plan.availabilityMode === "CAPACITY"
+        reason: tentative.has(key)
+          ? `El ${formatDayKey(key)} está apartado por otra solicitud en proceso; podría liberarse pronto`
+          : plan.availabilityMode === "CAPACITY"
             ? "No hay cupo disponible para esas fechas"
             : "Esa fecha ya no está disponible para este plan",
       };
@@ -136,7 +178,7 @@ export async function checkRangeAvailable(
     if (remainingByDay && remainingByDay[key] < guests) {
       return {
         ok: false,
-        reason: `Solo quedan ${remainingByDay[key]} cupos para el ${key}`,
+        reason: `Solo quedan ${remainingByDay[key]} cupos para el ${formatDayKey(key)}`,
       };
     }
   }
