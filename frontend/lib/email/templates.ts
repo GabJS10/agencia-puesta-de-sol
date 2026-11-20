@@ -307,3 +307,18 @@ export function requestCancelledByClientAdmin(
       .join("\n"),
   };
 }
+
+/** Al usuario: enlace para restablecer la contraseña (vence en 1 hora). */
+export function passwordReset(name: string, resetUrl: string): EmailContent {
+  return {
+    subject: "Restablece tu contraseña · Puesta del Sol",
+    html: layout({
+      preheader: "Enlace para restablecer tu contraseña",
+      title: `Hola, ${name}`,
+      intro:
+        "Recibimos una solicitud para restablecer tu contraseña. El enlace vence en <strong>1 hora</strong> y solo puede usarse una vez. Si no fuiste tú, ignora este correo.",
+      cta: { label: "Definir nueva contraseña", href: resetUrl },
+    }),
+    text: `Hola, ${name}\n\nPara restablecer tu contraseña abre este enlace (vence en 1 hora, un solo uso):\n${resetUrl}\n\nSi no fuiste tú, ignora este correo.`,
+  };
+}

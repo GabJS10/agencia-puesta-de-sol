@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { PasswordInput, fieldClass } from "@/components/auth/PasswordInput";
 
 export function LoginForm() {
   const router = useRouter();
@@ -53,18 +54,23 @@ export function LoginForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className={fieldClass}
           placeholder="tucorreo@ejemplo.com"
         />
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium text-foreground">Contraseña</label>
-        <input
-          type="password"
+        <div className="mb-2 flex items-baseline justify-between">
+          <label htmlFor="password" className="block text-sm font-medium text-foreground">Contraseña</label>
+          <Link href="/recuperar" className="text-sm font-medium text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+        <PasswordInput
+          id="password"
           required
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           placeholder="••••••••"
         />
       </div>
