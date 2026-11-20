@@ -5,18 +5,25 @@ import { hashPassword, setSessionCookie } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-const schema = z.object({
-  name: z.string().min(2).max(60),
-  email: z.string().email(),
-  password: z.string().min(6).max(100),
-  phone: z.string().min(7).max(20).optional(),
-});
+const schema = z
+  .object({
+    name: z.string().min(2).max(60),
+    email: z.string().email(),
+    password: z.string().min(6).max(100),
+    confirmPassword: z.string(),
+    phone: z.string().min(7).max(20).optional(),
+  })
+  .refine((d) => d.password === d.confirmPassword, { path: ["confirmPassword"] });
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
+    const mismatch = parsed.error.issues.some((i) => i.path[0] === "confirmPassword");
+    return NextResponse.json(
+      { error: mismatch ? "Las contraseñas no coinciden" : "Datos inválidos" },
+      { status: 400 },
+    );
   }
   const { name, email, password, phone } = parsed.data;
 
