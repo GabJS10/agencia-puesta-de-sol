@@ -1,0 +1,15 @@
+Fecha: 2026-11-20T15:09:05-05:00  Base: https://frontend-production-0f36.up.railway.app
+Login cliente: HTTP 200
+Payload alterado: {"id":5,"email":"<redactado>","name":"QA RNF01","role":"ADMIN","iat":1795205345,"exp":1795810145}
+== GET /api/admin/notificaciones
+  sin cookie:     403 {"error":"No autorizado"}
+  token alterado: 403 {"error":"No autorizado"}
+  sesion cliente: 403 {"error":"No autorizado"}
+== GET /api/admin/planes/1/blackouts
+  sin cookie:     403 {"error":"No autorizado"}
+  token alterado: 403 {"error":"No autorizado"}
+  sesion cliente: 403 {"error":"No autorizado"}
+== GET /api/admin/reportes/export?type=requests
+  sin cookie:     403 No autorizado
+  token alterado: 403 No autorizado
+  sesion cliente: 403 No autorizado

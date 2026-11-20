@@ -1,0 +1,14 @@
+2026-11-20T15:03:38-05:00
+
+> frontend@0.1.0 lint /home/gabriel/datos/projects/puestadelsol-web/frontend
+> eslint
+
+
+/home/gabriel/datos/projects/puestadelsol-web/frontend/components/gallery/GalleryLightbox.tsx
+  6:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/gabriel/datos/projects/puestadelsol-web/frontend/components/planes/ReservationDate.tsx
+  6:49  warning  'X' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)
+

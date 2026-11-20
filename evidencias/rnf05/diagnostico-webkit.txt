@@ -1,0 +1,6 @@
+login 200 set-cookie secure: true
+cookies guardadas: [ 'pds_session secure=true' ]
+chromium login HTTP 200 | cookies en navegador: ["pds_session"] | url: http://localhost:3000/cuenta
+url: http://localhost:3000/ingresar?redirect=%2Fcuenta
+respuesta login: 200 set-cookie: pds_session=<token>; Path=/; Expires=Fri, 27 Nov 2026 20:16:05 GMT; Max-Age=604800; Secure; HttpOnly; SameSite=lax
+webkit cookies tras login: [] | url: http://localhost:3000/ingresar?redirect=%2Fcuenta

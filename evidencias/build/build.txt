@@ -1,0 +1,97 @@
+2026-11-20T15:03:04-05:00
+
+> frontend@0.1.0 build /home/gabriel/datos/projects/puestadelsol-web/frontend
+> prisma generate && next build
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: ]8;;https://pris.ly/prisma-confighttps://pris.ly/prisma-config]8;;
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.19.3) to ./node_modules/.pnpm/@prisma+client@6.19.3_prisma@6.19.3_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 157ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/gabriel/datos/projects/pnpm-lock.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /home/gabriel/datos/projects/puestadelsol-web/frontend/pnpm-lock.yaml
+
+▲ Next.js 16.1.2 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 10.1s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/22) ...
+  Generating static pages using 7 workers (5/22) 
+  Generating static pages using 7 workers (10/22) 
+  Generating static pages using 7 workers (16/22) 
+✓ Generating static pages using 7 workers (22/22) in 324.5ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/manual
+├ ƒ /admin/notificaciones
+├ ƒ /admin/planes
+├ ƒ /admin/planes/[id]
+├ ƒ /admin/planes/[id]/disponibilidad
+├ ƒ /admin/planes/nuevo
+├ ƒ /admin/reportes
+├ ƒ /admin/solicitudes
+├ ƒ /admin/solicitudes/[id]
+├ ƒ /admin/tipos
+├ ƒ /admin/ubicaciones
+├ ƒ /admin/usuarios
+├ ƒ /api/admin/notificaciones
+├ ƒ /api/admin/notificaciones/[id]
+├ ƒ /api/admin/plan-locations
+├ ƒ /api/admin/plan-locations/[id]
+├ ƒ /api/admin/plan-types
+├ ƒ /api/admin/plan-types/[id]
+├ ƒ /api/admin/planes
+├ ƒ /api/admin/planes/[id]
+├ ƒ /api/admin/planes/[id]/availability
+├ ƒ /api/admin/planes/[id]/blackouts
+├ ƒ /api/admin/planes/[id]/blackouts/[blackoutId]
+├ ƒ /api/admin/reportes/export
+├ ƒ /api/admin/solicitudes/[id]
+├ ƒ /api/admin/upload
+├ ƒ /api/admin/usuarios/[id]
+├ ƒ /api/auth/forgot-password
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/auth/register
+├ ƒ /api/auth/reset-password
+├ ƒ /api/mis-solicitudes
+├ ƒ /api/mis-solicitudes/[id]/cancelar
+├ ƒ /api/perfil
+├ ƒ /api/solicitudes
+├ ƒ /contactanos
+├ ƒ /cuenta
+├ ƒ /cuenta/perfil
+├ ƒ /galeria
+├ ƒ /ingresar
+├ ƒ /nosotros
+├ ƒ /planes
+├ ƒ /planes/[slug]
+├ ƒ /recuperar
+├ ƒ /registro
+└ ƒ /restablecer
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

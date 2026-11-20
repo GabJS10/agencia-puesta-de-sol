@@ -1,0 +1,9 @@
+pagina,ejecucion,fecha,score,LCP_s,CLS,formFactor,lighthouse
+planes,1,2026-11-20T20:12:05.653Z,89,1.74,0.000,mobile,12.8.2
+planes,2,2026-11-20T20:12:22.387Z,89,2.02,0.000,mobile,12.8.2
+planes,3,2026-11-20T20:12:39.992Z,92,1.70,0.000,mobile,12.8.2
+planes,MEDIANA,,89,1.74,0.000,,
+detalle,1,2026-11-20T20:12:57.133Z,74,3.77,0.000,mobile,12.8.2
+detalle,2,2026-11-20T20:13:14.432Z,76,3.40,0.001,mobile,12.8.2
+detalle,3,2026-11-20T20:13:32.084Z,75,3.80,0.000,mobile,12.8.2
+detalle,MEDIANA,,75,3.77,0.000,,

@@ -1,0 +1,4 @@
+Control local 2026-11-20T15:17:10-05:00: sesión ADMIN válida (BD de prueba)
+GET /api/admin/notificaciones -> 200
+GET /api/admin/planes/1/blackouts -> 200
+GET /api/admin/reportes/export?type=requests -> 200

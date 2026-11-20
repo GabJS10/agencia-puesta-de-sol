@@ -1,0 +1,29 @@
+Unable to find image 'zricethezav/gitleaks:v8.24.3' locally
+v8.24.3: Pulling from zricethezav/gitleaks
+83abf496f1b8: Pulling fs layer
+7042bd605ed9: Pulling fs layer
+0bde1133c0bf: Pulling fs layer
+f1c9435e03c7: Pulling fs layer
+f1c9435e03c7: Waiting
+83abf496f1b8: Verifying Checksum
+83abf496f1b8: Download complete
+0bde1133c0bf: Download complete
+7042bd605ed9: Verifying Checksum
+7042bd605ed9: Download complete
+f1c9435e03c7: Download complete
+83abf496f1b8: Pull complete
+7042bd605ed9: Pull complete
+0bde1133c0bf: Pull complete
+f1c9435e03c7: Pull complete
+Digest: sha256:e1b35e12a8c6fa8901f060459cfb6b2fc4c484d3afbe3b029733a3bbfab07055
+Status: Downloaded newer image for zricethezav/gitleaks:v8.24.3
+
+    ○
+    │╲
+    │ ○
+    ○ ░
+    ░    gitleaks
+
+8:09PM INF 52 commits scanned.
+8:09PM INF scanned ~2583874 bytes (2.58 MB) in 906ms
+8:09PM INF no leaks found

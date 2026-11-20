@@ -1,0 +1,1 @@
+[email] Brevo respondió 401: {"message":"We have detected you are using an unrecognised IP address <IP-redactada> If you performed this action make sure to add the new IP address in this link: https://app.brevo.com/security/authorised_ips","code":"unauthorized"}

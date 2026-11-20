@@ -1,0 +1,16 @@
+pagina,ancho,scrollWidth,innerWidth,desborde_horizontal,elementos_fuera_viewport,captura
+inicio,375,375,375,NO,0,inicio-375.png
+planes,375,375,375,NO,0,planes-375.png
+detalle,375,375,375,NO,0,detalle-375.png
+ingresar,375,375,375,NO,0,ingresar-375.png
+cuenta,375,375,375,NO,0,cuenta-375.png
+inicio,768,768,768,NO,"div.flex.items-center(776px) a.group.hidden(776px)",inicio-768.png
+planes,768,768,768,NO,"div.flex.items-center(776px) a.group.hidden(776px)",planes-768.png
+detalle,768,768,768,NO,"div.flex.items-center(776px) a.group.hidden(776px)",detalle-768.png
+ingresar,768,768,768,NO,"div.flex.items-center(776px) a.group.hidden(776px)",ingresar-768.png
+cuenta,768,768,768,NO,"div.flex.items-center(776px) a.group.hidden(776px)",cuenta-768.png
+inicio,1366,1366,1366,NO,0,inicio-1366.png
+planes,1366,1366,1366,NO,0,planes-1366.png
+detalle,1366,1366,1366,NO,0,detalle-1366.png
+ingresar,1366,1366,1366,NO,0,ingresar-1366.png
+cuenta,1366,1366,1366,NO,0,cuenta-1366.png

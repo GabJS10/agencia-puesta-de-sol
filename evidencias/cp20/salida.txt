@@ -1,0 +1,13 @@
+2026-11-20T15:08:34-05:00
+2026-11-20T20:08:36.474Z CP20 mensaje: Las contraseñas no coinciden | url: http://localhost:3000/registro | correo: cp20-1795205315703@test.local
+2026-11-20T20:08:36.726Z CP21 registro cuenta: 201
+2026-11-20T20:08:37.452Z CP21 respuesta: Si el correo está registrado, te enviamos un enlace para restablecer la contraseña.
+--- CP20 API (validación servidor) ---
+{"error":"Las contraseñas no coinciden"}
+HTTP 400
+--- SQL ---
+ usuarios_cp20 
+---------------
+             0
+(1 row)
+

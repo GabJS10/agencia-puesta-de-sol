@@ -1,0 +1,16 @@
+2026-11-20T15:10:41-05:00
+inicio 375 375 375 ok fuera: 0 
+planes 375 375 375 ok fuera: 0 
+detalle 375 375 375 ok fuera: 0 
+ingresar 375 375 375 ok fuera: 0 
+cuenta 375 375 375 ok fuera: 0 
+inicio 768 768 768 ok fuera: 2 div.flex.items-center(776px) a.group.hidden(776px)
+planes 768 768 768 ok fuera: 2 div.flex.items-center(776px) a.group.hidden(776px)
+detalle 768 768 768 ok fuera: 2 div.flex.items-center(776px) a.group.hidden(776px)
+ingresar 768 768 768 ok fuera: 2 div.flex.items-center(776px) a.group.hidden(776px)
+cuenta 768 768 768 ok fuera: 2 div.flex.items-center(776px) a.group.hidden(776px)
+inicio 1366 1366 1366 ok fuera: 0 
+planes 1366 1366 1366 ok fuera: 0 
+detalle 1366 1366 1366 ok fuera: 0 
+ingresar 1366 1366 1366 ok fuera: 0 
+cuenta 1366 1366 1366 ok fuera: 0 

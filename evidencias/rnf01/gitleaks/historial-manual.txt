@@ -1,0 +1,7 @@
+# Verificación manual: commits que contienen la contraseña de producción retirada (valor no impreso)
+37a6fbb 2026-11-20 chore(seguridad): retira credenciales versionadas
+86a05ab 2026-09-09 docs: bitácora Fase 6 (cutover y despliegue)
+# Commits que contienen la contraseña de desarrollo local (valor no impreso)
+37a6fbb 2026-11-20 chore(seguridad): retira credenciales versionadas
+86a05ab 2026-09-09 docs: bitácora Fase 6 (cutover y despliegue)
+f818900 2026-09-09 feat: reemplazar Strapi por backend propio (Next.js + Prisma/Postgres)
