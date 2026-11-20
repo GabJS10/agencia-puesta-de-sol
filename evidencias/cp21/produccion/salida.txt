@@ -1,0 +1,16 @@
+Fecha: 2026-11-20T15:50:02-05:00  Base: https://frontend-production-0f36.up.railway.app  Cuenta: jgabis65+cp21@gmail.com
+Registro de la cuenta de prueba: 201
+2026-11-20T20:50:05.823Z POST /api/auth/forgot-password -> 200
+2026-11-20T20:50:05.830Z Mensaje: Si el correo está registrado, te enviamos un enlace para restablecer la contraseña.
+
+== Reintento tras desactivar el bloqueo por IP en Brevo: 2026-11-20T15:57:44-05:00
+2026-11-20T20:57:47.968Z POST /api/auth/forgot-password -> 200
+2026-11-20T20:57:47.981Z Mensaje: Si el correo está registrado, te enviamos un enlace para restablecer la contraseña.
+
+== Fase 2: 2026-11-20T15:59:53-05:00. Correo recibido por el usuario en jgabis65@gmail.com (enlace de Brevo con seguimiento de clics, que redirige a /restablecer).
+2026-11-20T20:59:56.074Z Enlace abierto: /restablecer
+2026-11-20T20:59:56.839Z POST /api/auth/reset-password -> 200
+2026-11-20T20:59:56.849Z Mensaje: Tu contraseña fue actualizada. Ya puedes iniciar sesión.
+2026-11-20T20:59:58.693Z Login con la nueva -> URL /cuenta
+2026-11-20T20:59:59.741Z Login con la contraseña anterior -> 401
+2026-11-20T21:00:01.505Z Reutilizar el enlace -> 400 {"error":"El enlace no es válido o ya venció. Solicita uno nuevo."}
