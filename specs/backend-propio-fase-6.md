@@ -54,10 +54,10 @@ Después: **frontend** + **Postgres** (Strapi eliminado). Sin proxies TCP.
 ## Notas / pendientes
 
 - **Credenciales admin de producción:** `admin@puestadelsol.com` / la contraseña está en la variable
-  `ADMIN_PASSWORD` del servicio frontend (valor actual: `+1NXqTyMbg8p/DTL`). Recomendado cambiarla.
+  `ADMIN_PASSWORD` del servicio frontend (no se versiona aquí). El valor anterior quedó en el historial de git: debe rotarse.
 - Quedaron 2 imágenes de prueba 1×1 en Cloudinary (carpeta `puestadelsol/`) de las verificaciones de
   upload; borrar desde el panel de Cloudinary si se desea.
-- Dev local sigue con Postgres en Docker (`pds-postgres`, :5433) y admin `admin1234`.
+- Dev local sigue con Postgres en Docker (`pds-postgres`, :5433) y admin con la contraseña de `ADMIN_PASSWORD` del `.env` local.
 - Futuras migraciones a producción: recrear un proxy TCP temporal y `prisma migrate deploy`, o correr
   desde dentro de Railway; borrar el proxy al terminar.
 - **Migración completa (Fases 0–6). El sitio ya no depende de Strapi.**

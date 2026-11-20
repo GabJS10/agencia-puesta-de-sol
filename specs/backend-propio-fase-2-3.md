@@ -74,12 +74,12 @@
 - Runtime (`next start` :3100 contra Postgres local):
   - `/` 200; `/planes` lista los 4 planes; `/planes/cabo-de-la-vela-magico` renderiza (Markdown OK).
   - `/api/auth/me` anónimo → `{user:null}`; `/cuenta` anónimo → 307 `/ingresar?redirect=/cuenta`.
-  - Login admin (`admin@puestadelsol.com`/`admin1234`) → sesión ADMIN; `/cuenta` con cookie → 200.
+  - Login admin (`admin@puestadelsol.com` / `ADMIN_PASSWORD` del `.env`) → sesión ADMIN; `/cuenta` con cookie → 200.
   - Registro cliente → 201 (CLIENT); duplicado → 409; login errado → 401.
   - `/api/mis-solicitudes`: cliente → `{requests:[]}`; anónimo → 401.
   - `/admin`: anónimo → `/ingresar`; cliente → `/`; admin → 404 (aún sin página, Fase 5). Logout → ok.
 
 ## Notas / pendientes
-- Dev usa Postgres local en Docker (`pds-postgres`, :5433) y admin dev `admin1234`.
+- Dev usa Postgres local en Docker (`pds-postgres`, :5433) y admin dev con `ADMIN_PASSWORD` del `.env`.
 - Próximo: **Fase 4** (formulario de solicitud persistido: `POST /api/solicitudes` + reescribir
   `ReservationForm` para guardar en BD en vez de abrir WhatsApp) y **Fase 5** (panel admin).

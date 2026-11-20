@@ -104,7 +104,12 @@ const PLANS: SeedPlan[] = [
 async function main() {
   // 1. Admin (idempotente)
   const email = process.env.ADMIN_EMAIL ?? "admin@puestadelsol.com";
-  const password = process.env.ADMIN_PASSWORD ?? "admin1234";
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) {
+    throw new Error(
+      "Falta ADMIN_PASSWORD: defínela en el entorno (o en frontend/.env) antes de correr el seed.",
+    );
+  }
   const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.upsert({
     where: { email },
